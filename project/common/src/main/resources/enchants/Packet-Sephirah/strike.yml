@@ -53,3 +53,27 @@ mechanisms:
             }
           }
         }
+    on-kill:
+      listen: "projectile-hit"
+      handle: |-
+        if check &event[hitEntity] is null then {
+          exit
+        }
+        set shooter to &event[entity.shooter]
+        if not instance-of &shooter is org.bukkit.entity.Player then {
+          exit
+        }
+        if not anti-grief can-break &shooter &event[hitEntity.location] then {
+          exit
+        }
+        if check random2 0 to 100 <= type double &概率 then {
+          set cd to a-cd check &enchant &shooter type double &冷却 false
+          if &cd then {
+            set cd to a-cd check &enchant &shooter type double &冷却 false
+            strike-lightning &event[hitEntity.location]
+            real-damage &event[hitEntity] with type double &伤害
+            a-cd add &enchant &shooter
+            send-lang enchant-strike-damaged to &event[hitEntity] with array [ entity-name &shooter ]
+            send-lang enchant-strike-attacker to &shooter with array [ entity-name &event[hitEntity] ]
+          }
+        }
