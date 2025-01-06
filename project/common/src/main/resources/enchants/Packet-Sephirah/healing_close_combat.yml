@@ -29,18 +29,18 @@ variables:
 mechanisms:
   listeners:
     on-damage:
-      listen: "entity-damage-by-entity"
+      listen: "entity-damage-other"
       handle: |-
         if not instance-of &event[entity] is org.bukkit.entity.Player then {
           exit
         }
         if all [
           type boolean &require-full-charge
-          check &event[entity.attackCooldown] < 1.0
+          check &event[attacker.attackCooldown] < 1.0
         ] then {
           exit
         }
+        set &event[is-cancelled] to true
         set added to math add [ &event[entity.health] type double &血量 ]
-        set &event[damage] to 0
         add-potion-effect GLOWING on &event[entity] duration 3 amplifier 1
         set &event[entity.health] to min &added &event[entity.max-health]
