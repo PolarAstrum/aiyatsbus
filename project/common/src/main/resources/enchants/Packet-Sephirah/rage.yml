@@ -32,6 +32,10 @@ mechanisms:
     on-damage:
       listen: "entity-damage-other"
       handle: |-
+        if not instance-of &event[attacker] is org.bukkit.entity.Projectile then {
+          exit
+        }
+        
         if not check random2 0 to 100 <= type double &概率 then {
           exit
         }
@@ -51,7 +55,7 @@ mechanisms:
           for entity in near-by-entities &player in &range &range &range then {
         
             if instance-of &entity is org.bukkit.entity.Mob then {
-              set &entity[target] to &player
+              set &entity[target] to &creature
             }
         
           }
