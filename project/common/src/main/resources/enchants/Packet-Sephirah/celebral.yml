@@ -33,7 +33,7 @@ mechanisms:
       listen: "entity-damage-other"
       handle: |-
         if all [
-          instance-of &event[damager] is org.bukkit.entity.Arrow
+          instance-of &event[damager] is org.bukkit.entity.Projectile
           instance-of &event[entity] is org.bukkit.entity.LivingEntity
         ] then {
           set arrow to &event[damager]
