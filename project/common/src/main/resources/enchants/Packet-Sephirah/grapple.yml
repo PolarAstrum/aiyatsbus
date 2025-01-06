@@ -32,22 +32,24 @@ mechanisms:
     on-damage:
       listen: "entity-damage-other"
       handle: |-
-        if not instance-of &event[attacker] is org.bukkit.entity.LivingEntity then {
-          exit
+        if all [
+          instance-of &event[attacker] is org.bukkit.entity.LivingEntity
+          instance-of &event[entity] is org.bukkit.entity.LivingEntity
+        ] then {
+          set m to type double &力度
+          
+          set dl to &event[attacker.location.clone]
+          set el to &event[entity.location]
+          
+          set &dl[x] to math sub [ &dl[x] - &el[x] ]
+          set &dl[y] to math sub [ &dl[y] - &el[y] ]
+          set &dl[z] to math sub [ &dl[z] - &el[z] ]
+          
+          set velocity to &dl[vector.normalize]
+          
+          set &velocity[x] to math mul [ &velocity[x] &m ]
+          set &velocity[y] to math mul [ &velocity[y] &m ]
+          set &velocity[z] to math mul [ &velocity[z] &m ] 
+          
+          a-vec-add &velocity on &event[entity] safety true checkKnockback true
         }
-        set m to type double &力度
-
-        set dl to &event[attacker.location.clone]
-        set el to &event[entity.location]
-
-        set &dl[x] to math sub [ &dl[x] - &el[x] ]
-        set &dl[y] to math sub [ &dl[y] - &el[y] ]
-        set &dl[z] to math sub [ &dl[z] - &el[z] ]
-
-        set velocity to &dl[vector.normalize]
-
-        set &velocity[x] to math mul [ &velocity[x] &m ]
-        set &velocity[y] to math mul [ &velocity[y] &m ]
-        set &velocity[z] to math mul [ &velocity[z] &m ] 
-        
-        a-vec-add &velocity on &event[entity] safety true checkKnockback true
