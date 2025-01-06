@@ -32,16 +32,18 @@ mechanisms:
     on-damage:
       listen: "entity-damage-other"
       handle: |-
-        if not instance-of &event[attacker] is org.bukkit.entity.LivingEntity then {
-          exit
+        if all [
+          instance-of &event[attacker] is org.bukkit.entity.LivingEntity
+          instance-of &event[entity] is org.bukkit.entity.LivingEntity
+        ] then {
+          set eye-loc to &event[attacker.eye-loc]
+          set velocity to &eye-loc[direction]
+          
+          set m to type double &倍数
+          
+          set &velocity[x] to math mul [ &velocity[x] &m ]
+          set &velocity[y] to math mul [ &velocity[y] &m ]
+          set &velocity[z] to math mul [ &velocity[z] &m ] 
+          
+          a-vec-add &velocity on &event[entity] safety true checkKnockback true
         }
-        set eye-loc to &event[attacker.eye-loc]
-        set velocity to &eye-loc[direction]
-
-        set m to type double &倍数
-        
-        set &velocity[x] to math mul [ &velocity[x] &m ]
-        set &velocity[y] to math mul [ &velocity[y] &m ]
-        set &velocity[z] to math mul [ &velocity[z] &m ] 
-
-        a-vec-add &velocity on &event[entity] safety true checkKnockback true
