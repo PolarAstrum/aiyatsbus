@@ -32,7 +32,7 @@ mechanisms:
     on-damage:
       listen: "entity-damage-other"
       handle: |-
-        if not instance-of &event[attacker] is org.bukkit.entity.Projectile then {
+        if not check &event[cause] is PROJECTILE then {
           exit
         }
         
