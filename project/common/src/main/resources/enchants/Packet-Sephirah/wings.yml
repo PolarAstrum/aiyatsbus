@@ -6,7 +6,7 @@
 basic:
   id: wings
   name: "反重力"
-  max_level: 2
+  max_level: 3
 
 rarity: 传奇
 targets:
@@ -22,7 +22,7 @@ display:
 
 variables:
   leveled:
-    消耗耐久: "点:3-{level}"
+    消耗耐久: "点:4-{level}"
 
 mechanisms:
   listeners:
