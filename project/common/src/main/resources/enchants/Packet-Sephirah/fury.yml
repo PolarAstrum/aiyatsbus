@@ -41,7 +41,7 @@ mechanisms:
         
           if all [
             type boolean &only_player
-            &creature[type] != PLAYER
+            check &creature[type.name] != PLAYER
           ] then {
             exit
           }
