@@ -54,7 +54,7 @@ mechanisms:
         
           for entity in near-by-entities &player in &range &range &range then {
         
-            if instance-of &entity is org.bukkit.entity.Mob then {
+            if instance-of &entity is org.bukkit.entity.Monster then {
               set &entity[target] to &creature
             }
         
