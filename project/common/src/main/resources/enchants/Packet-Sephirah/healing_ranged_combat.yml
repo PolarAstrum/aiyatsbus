@@ -38,6 +38,7 @@ mechanisms:
         if not check &event[cause] is PROJECTILE then {
           exit
         }
+        remove-entity &event[attacker]
         set &event[is-cancelled] to true
         set added to math add [ &event[entity.health] type double &血量 ]
         add-potion-effect GLOWING on &event[entity] duration 3 amplifier 1
