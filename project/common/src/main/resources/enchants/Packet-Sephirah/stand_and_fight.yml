@@ -29,6 +29,9 @@ mechanisms:
     on-damage:
       listen: "entity-damage-other"
       handle: |-
+        if not instance-of &event[attacker] is org.bukkit.entity.Player then {
+          exit
+        }
         if &event[critical] then {
           set health to &event[attacker.health]
           set max to &event[attacker.max-health]
