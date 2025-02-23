@@ -2,3 +2,9 @@
 
 # Aiyatsbus
 Aiyatsbus 正在进行调整。
+
+## Todo
+- Spigot 下砂轮功能
+- 全部功能测试
+- isTradeable
+- isDiscoverable

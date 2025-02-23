@@ -141,10 +141,13 @@ class DefaultAiyatsbusEventExecutor : AiyatsbusEventExecutor {
     override fun registerListener(listen: String, eventMapping: EventMapping) {
         val (className, _, _, _, priority, ignoreCancelled) = eventMapping
         // 缓存
-        val clazz = cachedClasses.computeIfAbsent(className) { Class.forName(className) }
-        listeners.put(listen, priority, registerBukkitListener(clazz, priority, ignoreCancelled) {
-            processEvent(listen, it as? Event ?: return@registerBukkitListener, eventMapping, priority)
-        })
+        try {
+            val clazz = cachedClasses.computeIfAbsent(className) { Class.forName(className) }
+            listeners.put(listen, priority, registerBukkitListener(clazz, priority, ignoreCancelled) {
+                processEvent(listen, it as? Event ?: return@registerBukkitListener, eventMapping, priority)
+            })
+        } catch (_: ClassNotFoundException) {
+        }
     }
 
     override fun registerListeners() {

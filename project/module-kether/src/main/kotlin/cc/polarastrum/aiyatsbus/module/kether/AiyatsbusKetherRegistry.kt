@@ -121,7 +121,10 @@ object AiyatsbusKetherRegistry : ClassInjector() {
         }
 
         // 注册属性 私有
-        Kether.registeredScriptProperty.computeIfAbsent(annotation.type("bind").instance as Class<*>) { HashMap() }[property.id] = property
+        try {
+            Kether.registeredScriptProperty.computeIfAbsent(annotation.type("bind").instance as Class<*>) { HashMap() }[property.id] = property
+        } catch (_: ClassNotFoundException) {
+        }
     }
 
     /**

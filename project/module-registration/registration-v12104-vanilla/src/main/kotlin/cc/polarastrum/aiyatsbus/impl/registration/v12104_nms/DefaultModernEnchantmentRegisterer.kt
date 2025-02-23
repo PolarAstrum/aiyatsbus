@@ -40,6 +40,8 @@ import org.bukkit.craftbukkit.v1_21_R3.util.CraftNamespacedKey
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.platform.PlatformFactory
 import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.library.reflex.Reflex.Companion.invokeMethod
+import taboolib.module.nms.MinecraftVersion
 import java.lang.reflect.Modifier
 import java.util.*
 import java.util.function.BiFunction
@@ -53,21 +55,37 @@ import javax.annotation.Nullable
  */
 class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
 
-    private val enchantmentRegistry = (Bukkit.getServer() as CraftServer).server
-        .registryAccess()
-        .lookupOrThrow(Registries.ENCHANTMENT)
+    private val enchantmentRegistry = if (MinecraftVersion.isUniversalCraftBukkit) {
+        (Bukkit.getServer() as CraftServer).server
+            .registryAccess()
+            .lookupOrThrow(Registries.ENCHANTMENT)
+    } else {
+        ((Bukkit.getServer() as CraftServer).server)
+            .registryAccess()
+            .invokeMethod<IRegistry<NMSEnchantment>>("e", Registries.ENCHANTMENT, isStatic = false, remap = false)!! // lookupOrThrow
+    }
 
-    private val bukkitRegistry = (org.bukkit.Registry.ENCHANTMENT as DelayedRegistry<Enchantment, *>).delegate()
+    private val bukkitRegistry = if (MinecraftVersion.isUniversalCraftBukkit) {
+        (org.bukkit.Registry.ENCHANTMENT as DelayedRegistry<Enchantment, *>).delegate()
+    } else {
+        org.bukkit.Registry.ENCHANTMENT
+    }
 
     private val frozenField = RegistryMaterials::class.java
         .declaredFields
         .filter { it.type.isPrimitive }[0]
         .apply { isAccessible = true }
 
-    private val allTags = RegistryMaterials::class.java
-        .declaredFields
-        .filter { it.type.name.contains("TagSet") }[0]
-        .apply { isAccessible = true }
+    private val allTags = if (MinecraftVersion.isUniversalCraftBukkit) {
+        RegistryMaterials::class.java
+            .declaredFields
+            .filter { it.type.name.contains("TagSet") }[0]
+            .apply { isAccessible = true }
+    } else {
+        RegistryMaterials::class.java
+            .getDeclaredField("k") // allTags
+            .apply { isAccessible = true }
+    }
 
     private val unregisteredIntrusiveHoldersField = RegistryMaterials::class.java
         .declaredFields
@@ -93,7 +111,11 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
                 val aiyatsbus = api.getEnchant(key)
 
                 if (isVanilla) {
-                    EnchantmentHelper.createCraftEnchantment(enchantmentRegistry.get(CraftNamespacedKey.toMinecraft(key)).get())
+                    if (MinecraftVersion.isUniversalCraftBukkit) {
+                        EnchantmentHelper.createCraftEnchantment(enchantmentRegistry.get(CraftNamespacedKey.toMinecraft(key)).get())
+                    } else {
+                        CraftEnchantment(key, registry)
+                    }
                 } else if (aiyatsbus != null) {
                     aiyatsbus as Enchantment
                 } else null
@@ -101,10 +123,14 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
 
         // Update bukkit registry
         @Suppress("UNCHECKED_CAST")
-        minecraftToBukkit.set(
-            bukkitRegistry,
-            RegistryTypeMapper(newRegistryMTB as BiFunction<NamespacedKey, NMSEnchantment, Enchantment>)
-        )
+        if (MinecraftVersion.isUniversalCraftBukkit) {
+            minecraftToBukkit.set(
+                bukkitRegistry,
+                RegistryTypeMapper(newRegistryMTB as BiFunction<NamespacedKey, NMSEnchantment, Enchantment>)
+            )
+        } else {
+            minecraftToBukkit.set(bukkitRegistry, newRegistryMTB)
+        }
 
         // Clear the enchantment cache
         cache.set(bukkitRegistry, mutableMapOf<NamespacedKey, Enchantment>())
@@ -137,7 +163,11 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
             val nms = enchantmentRegistry[CraftNamespacedKey.toMinecraft(enchant.enchantmentKey)]
 
             if (nms.isPresent) {
-                return EnchantmentHelper.createAiyatsbusCraftEnchantment(enchant, nms.get()) as CraftEnchantment
+                if (MinecraftVersion.isUniversalCraftBukkit) {
+                    return EnchantmentHelper.createAiyatsbusCraftEnchantment(enchant, nms.get()) as CraftEnchantment
+                } else {
+                    return AiyatsbusVanillaCraftEnchantment(enchant, nms.get().value())
+                }
             } else {
                 throw IllegalStateException("Enchantment ${enchant.id} wasn't registered")
             }

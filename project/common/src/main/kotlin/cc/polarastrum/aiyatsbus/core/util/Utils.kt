@@ -18,6 +18,7 @@ package cc.polarastrum.aiyatsbus.core.util
 
 import com.google.common.base.Enums
 import com.google.gson.Gson
+import taboolib.common.util.unsafeLazy
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
 import taboolib.library.reflex.UnsafeAccess
