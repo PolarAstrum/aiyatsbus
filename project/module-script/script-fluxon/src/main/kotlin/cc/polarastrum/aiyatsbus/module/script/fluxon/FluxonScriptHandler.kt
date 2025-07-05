@@ -23,7 +23,6 @@ import org.tabooproject.fluxon.Fluxon
 import org.tabooproject.fluxon.interpreter.bytecode.FluxonClassLoader
 import org.tabooproject.fluxon.runtime.FluxonRuntime
 import org.tabooproject.fluxon.runtime.RuntimeScriptBase
-import taboolib.common.classloader.IsolatedClassLoader
 import taboolib.platform.BukkitPlugin
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -52,15 +51,26 @@ class FluxonScriptHandler : ScriptHandler {
         sender: CommandSender?,
         variables: Map<String, Any?>
     ): CompletableFuture<Any?>? {
-        val uuid = UUID.nameUUIDFromBytes(source.toByteArray())
-        if (!compiledScripts.containsKey(uuid)) preheat(source)
-
-        val base = compiledScripts[uuid] ?: return null
+        // 预热脚本的问题
+        // 编译脚本的话, 如果存在运行时传入的变量则根本无法通过编译
+        // 预热脚本也需要运行时传入的变量
+        // 所以现在只能不预热直接调用
         return CompletableFuture.supplyAsync {
-            base.eval(FluxonRuntime.getInstance().newEnvironment().apply {
+            val time = System.currentTimeMillis()
+            Fluxon.eval(source, FluxonRuntime.getInstance().newEnvironment().apply {
                 variables.forEach { (key, value) -> defineVariable(key, value) }
             })
+            println("time: ${System.currentTimeMillis() - time}ms")
         }
+//        val uuid = UUID.nameUUIDFromBytes(source.toByteArray())
+//        if (!compiledScripts.containsKey(uuid)) p(source)
+//
+//        val base = compiledScripts[uuid] ?: return null
+//        return CompletableFuture.supplyAsync {
+//            base.eval(FluxonRuntime.getInstance().newEnvironment().apply {
+//                variables.forEach { (key, value) -> defineVariable(key, value) }
+//            }.also { println(it.variables) })
+//        }
     }
 
     override fun invoke(
