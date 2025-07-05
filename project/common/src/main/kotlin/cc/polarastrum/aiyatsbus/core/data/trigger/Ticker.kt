@@ -40,7 +40,7 @@ data class Ticker @JvmOverloads constructor(
     /** 所属附魔 */
     private val enchant: AiyatsbusEnchantment,
     /** 脚本类型，默认为 KETHER */
-    val scriptType: ScriptType = ScriptType.valueOf(root.getString("type") ?: "KETHER"),
+    val scriptType: ScriptType = ScriptType.valueOf(root.getString("type")?.uppercase() ?: "KETHER"),
     /** 预处理脚本，在定时器启动前执行 */
     val preHandle: String = root.getString("pre-handle") ?: "",
     /** 主处理脚本，定时执行的主要逻辑 */

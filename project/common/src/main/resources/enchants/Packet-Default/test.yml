@@ -1,0 +1,43 @@
+
+
+#         Powered by TabooLib 6.2         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: test
+  name: "测试"
+  max_level: 2
+
+rarity: 稀世
+targets:
+  - 镐
+
+limitations: [ ]
+
+display:
+  description:
+    general: "测试附魔"
+    specific: "&7测试附魔, 测试变量值为&a{测试变量}"
+
+variables:
+  leveled:
+    测试变量: "个:3*{level}"
+
+mechanisms:
+  listeners:
+    on-break:
+      type: fluxon
+      listen: "block-break"
+      handle: |-
+        list = [1, 2, 3]
+        
+        print &list :: {
+            add 9
+            toString
+        }
+        
+        for i in &list then {
+            print &i
+        }

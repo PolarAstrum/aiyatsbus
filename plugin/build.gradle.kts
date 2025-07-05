@@ -27,11 +27,17 @@ taboolib {
 
     relocate("ink.ptms.um", "cc.polarastrum.aiyatsbus.module.compat.library.um")
     relocate("redempt", "cc.polarastrum.aiyatsbus.library")
+    relocate("org.tabooproject.fluxon", "cc.polarastrum.aiyatsbus.module.script.fluxon.library.fluxon")
+}
+
+repositories {
+    mavenLocal()
 }
 
 dependencies {
     taboo("ink.ptms:um:1.0.9")
     taboo("com.github.Redempt:Crunch:1.0.7")
+    taboo("org.tabooproject.fluxon:core:1.0-SNAPSHOT")
 }
 
 tasks {
