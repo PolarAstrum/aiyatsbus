@@ -41,3 +41,8 @@ mechanisms:
         for i in &list then {
             print &i
         }
+
+        print &enchant
+
+        print &测试变量
+        print leveled(&enchant, "测试变量", &level, true)

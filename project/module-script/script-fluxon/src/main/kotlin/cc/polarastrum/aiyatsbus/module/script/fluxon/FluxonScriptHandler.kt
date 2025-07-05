@@ -18,6 +18,7 @@ package cc.polarastrum.aiyatsbus.module.script.fluxon
 
 import cc.polarastrum.aiyatsbus.core.script.ScriptHandler
 import cc.polarastrum.aiyatsbus.core.util.coerceInt
+import cc.polarastrum.aiyatsbus.module.script.fluxon.function.FunctionVariables
 import org.bukkit.command.CommandSender
 import org.tabooproject.fluxon.Fluxon
 import org.tabooproject.fluxon.interpreter.bytecode.FluxonClassLoader
@@ -46,6 +47,10 @@ class FluxonScriptHandler : ScriptHandler {
     private val compiledScripts = ConcurrentHashMap<UUID, RuntimeScriptBase>()
     private val classLoader = FluxonClassLoader(BukkitPlugin::class.java.classLoader)
 
+    init {
+        FunctionVariables.init(FluxonRuntime.getInstance())
+    }
+
     override fun invoke(
         source: String,
         sender: CommandSender?,
@@ -56,12 +61,11 @@ class FluxonScriptHandler : ScriptHandler {
         // 预热脚本也需要运行时传入的变量
         // 所以现在只能不预热直接调用
         return CompletableFuture.supplyAsync {
-            val time = System.currentTimeMillis()
             Fluxon.eval(source, FluxonRuntime.getInstance().newEnvironment().apply {
                 variables.forEach { (key, value) -> defineVariable(key, value) }
             })
-            println("time: ${System.currentTimeMillis() - time}ms")
         }
+        // TODO
 //        val uuid = UUID.nameUUIDFromBytes(source.toByteArray())
 //        if (!compiledScripts.containsKey(uuid)) p(source)
 //
@@ -82,6 +86,9 @@ class FluxonScriptHandler : ScriptHandler {
     }
 
     override fun preheat(source: String) {
+
+        if (true) return // TODO
+
         // 生成一个唯一的标识
         // 脚本无变动, 则无需重复预热
         val uuid = UUID.nameUUIDFromBytes(source.toByteArray())
@@ -96,9 +103,7 @@ class FluxonScriptHandler : ScriptHandler {
         }
 
         val result = Fluxon.compile(source, className)
-        println(Fluxon::class.java.classLoader.name)
         val compiledScript = result.defineClass(classLoader)
-        println(compiledScript)
         compiledScripts[uuid] = compiledScript.newInstance() as RuntimeScriptBase
     }
 
