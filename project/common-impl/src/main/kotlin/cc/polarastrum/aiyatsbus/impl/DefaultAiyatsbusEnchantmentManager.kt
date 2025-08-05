@@ -268,7 +268,16 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
             DefaultAiyatsbusAPI.registerer = registerer
 
             if (registerer is ModernEnchantmentRegisterer) {
-                registerer.replaceRegistry()
+                try {
+                    registerer.replaceRegistry()
+                } catch (ex: Throwable) {
+                    severe("""
+                        无法替换注册表，为避免数据丢失，服务器将会被强制关闭！
+                        Failed to replace registry. To avoid data loss, the server will be forced to shut down!
+                    """.t())
+                    ex.printStackTrace()
+                    Runtime.getRuntime().halt(-1)
+                }
                 registerLifeCycleTask(LifeCycle.ACTIVE) {
                     registerer.replaceRegistry()
                 }
@@ -278,7 +287,18 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
             }
             reloadable {
                 registerLifeCycleTask(LifeCycle.ENABLE, StandardPriorities.ENCHANTMENT) {
-                    Aiyatsbus.api().getEnchantmentManager().loadEnchantments()
+                    try {
+                        Aiyatsbus.api().getEnchantmentManager().loadEnchantments()
+                    } catch (ex: Throwable) {
+                        if (TabooLib.getCurrentLifeCycle() != LifeCycle.ACTIVE) {
+                            severe("""
+                                无法初始化附魔，为避免数据丢失，服务器将会被强制关闭！
+                                Failed to initialize enchantments. To avoid data loss, the server will be forced to shut down!
+                            """.t())
+                            ex.printStackTrace()
+                            Runtime.getRuntime().halt(-1)
+                        }
+                    }
                 }
             }
         }
