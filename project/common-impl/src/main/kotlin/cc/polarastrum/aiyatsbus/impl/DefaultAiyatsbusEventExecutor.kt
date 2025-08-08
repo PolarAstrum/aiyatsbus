@@ -250,7 +250,15 @@ class DefaultAiyatsbusEventExecutor : AiyatsbusEventExecutor {
         for (enchantPair in enchants) {
             val enchant = enchantPair.key
 
-            if (enchant.limitations.checkAvailable(CheckType.USE, this, entity, slot, ignoreSlot).isFailure) continue
+            val checkResult = enchant.limitations.checkAvailable(CheckType.USE, this, entity, slot, ignoreSlot)
+
+            if (checkResult.isFailure) {
+                sendDebug("----- DefaultAiyatsbusEventExecutor -----")
+                sendDebug("附魔: " + enchant.basicData.name)
+                sendDebug("原因: " + checkResult.reason)
+                sendDebug("----- DefaultAiyatsbusEventExecutor -----")
+                continue
+            }
 
             enchant.trigger!!.listeners
                 .filterValues { it.listen == listen }

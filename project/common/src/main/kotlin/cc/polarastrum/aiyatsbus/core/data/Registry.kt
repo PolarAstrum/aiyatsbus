@@ -74,7 +74,7 @@ abstract class Registry<T : RegistryItem>(
     /** 注册项工厂函数，用于从配置节点创建注册项实例 */
     private val itemFactory: Function<ConfigurationSection, T>,
     /** 已注册项的存储容器，使用并发哈希映射保证线程安全 */
-    private val registered: ConcurrentHashMap<String, T> = ConcurrentHashMap()
+    val registered: ConcurrentHashMap<String, T> = ConcurrentHashMap()
 ) : Map<String, T> by registered {
 
     /** 注册器对应的配置文件 */

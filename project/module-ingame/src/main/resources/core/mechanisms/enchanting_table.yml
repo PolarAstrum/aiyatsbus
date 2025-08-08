@@ -39,3 +39,15 @@ privilege:
     - "aiyatsbus.privilege.table.vip:{chance}*1.2"
     - "aiyatsbus.privilege.table.svip:{chance}*1.4"
   full_level: "aiyatsbus.privilege.table.full"
+# 玩家附魔出特定品质的物品, 执行的操作, 也就是所谓的出金播报
+# 填写语言配置节点, 支持类型: message, title, actionbar
+celebrate-notice:
+  史诗:
+    - "message:celebrate-notice-epic-message"
+  传奇:
+    - "message:celebrate-notice-legendary-message"
+    - "title:celebrate-notice-legendary-title"
+  稀世:
+    - "message:celebrate-notice-splendid-message"
+    - "title:celebrate-notice-splendid-title"
+#    - "actionbar:celebrate-notice-splendid-actionbar" # 这个动作栏信息没有被添加到语言文件, 如果想用需要自己去添加

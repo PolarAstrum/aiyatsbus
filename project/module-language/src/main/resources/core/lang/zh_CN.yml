@@ -113,6 +113,11 @@ limitations-head: '头'
 
 ui-enchant-info-variables: '&b{variable} &7> {value}'
 
+# 适配 Iweleth 变量
+variable-base-damage: "基础伤害"
+variable-item-damage: "物品耐久"
+variable-experience: "经验值"
+
 # 适配 NereusOpus 变量
 variable-amount: "数量/规模"
 variable-chance: "触发几率"
@@ -313,3 +318,12 @@ command-script-list-all:
   - ' &5&l‹ ›&f &7运行脚本: &f{1}'
 command-script-reload-all:
   - ' &5&l‹ ›&f &7重载完成。'
+
+# message: 发送聊天栏信息
+# actionbar: 发送行为栏信息
+# title: 发送标题信息, 大小标题用分号隔开
+celebrate-notice-epic-message: "{prefix} &7恭喜玩家 {player} 获得了史诗附魔 {enchant}"
+celebrate-notice-legendary-message: "{prefix} &7恭喜玩家 {player} 获得了传奇附魔 {enchant}"
+celebrate-notice-legendary-title: "恭喜玩家 {player};获得了传奇附魔 {enchant}"
+celebrate-notice-splendid-message: "{prefix} &7恭喜玩家 {player} 获得了稀世附魔 {enchant}"
+celebrate-notice-splendid-title: "恭喜玩家 {player};获得了稀世附魔 {enchant}"

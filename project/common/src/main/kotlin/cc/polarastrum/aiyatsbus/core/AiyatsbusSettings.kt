@@ -141,4 +141,18 @@ object AiyatsbusSettings {
      */
     @ConfigNode("Settings.updater.contents")
     var updateContents = emptyList<String>()
+
+    /**
+     * 是否开启调试信息
+     * 默认值: false
+     */
+    @ConfigNode("Settings.debug")
+    var debug = false
+
+    /**
+     * 会收到调试信息的用户名列表
+     * 默认值: ["Y_Mical", "TabooLib", "xiaozhangup", "HamsterYDS"]
+     */
+    @ConfigNode("Settings.debug-users")
+    var debugUsers = listOf("Y_Mical", "TabooLib", "xiaozhangup", "HamsterYDS")
 }

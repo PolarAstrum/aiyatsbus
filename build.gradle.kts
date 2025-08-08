@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    id("io.izzel.taboolib") version "2.0.26" apply false
+    id("io.izzel.taboolib") version "2.0.27" apply false
     id("org.jetbrains.kotlin.jvm") version "1.8.22" apply false
 }
 
