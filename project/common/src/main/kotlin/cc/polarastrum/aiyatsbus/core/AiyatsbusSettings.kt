@@ -16,6 +16,10 @@
  */
 package cc.polarastrum.aiyatsbus.core
 
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
+import taboolib.common.util.ResettableLazy
+import taboolib.common.util.resettableLazy
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
@@ -38,6 +42,13 @@ object AiyatsbusSettings {
     @Config("core/config.yml", autoReload = true)
     lateinit var conf: Configuration
         private set
+
+    @Awake(LifeCycle.ENABLE)
+    private fun init() {
+        conf.onReload {
+            ResettableLazy.reset()
+        }
+    }
 
     /**
      * 是否在管理员登录游戏时发送鸣谢信息
@@ -146,13 +157,11 @@ object AiyatsbusSettings {
      * 是否开启调试信息
      * 默认值: false
      */
-    @ConfigNode("Settings.debug")
-    var debug = false
+    val debug by resettableLazy { conf.getBoolean("Settings.debug") }
 
     /**
      * 会收到调试信息的用户名列表
      * 默认值: ["Y_Mical", "TabooLib", "xiaozhangup", "HamsterYDS"]
      */
-    @ConfigNode("Settings.debug-users")
-    var debugUsers = listOf("Y_Mical", "TabooLib", "xiaozhangup", "HamsterYDS")
+    val debugUsers by resettableLazy { conf.getBoolean("Settings.debug-users") }
 }
