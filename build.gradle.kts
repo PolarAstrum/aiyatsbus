@@ -35,11 +35,12 @@ subprojects {
                 MinecraftEffect,
                 Metrics
             )
+            forceDownloadInDev = false
             disableOnSkippedVersion = false
             disableWhenPrimitiveLoaderError = true
         }
         version {
-            taboolib = "6.2.3-ee81cb0"
+            taboolib = "6.2.3-test-15"
         }
     }
 

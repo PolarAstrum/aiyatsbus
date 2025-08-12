@@ -128,7 +128,7 @@ object EnchantingTableSupport {
      * 出金播报
      */
     @delegate:ConfigNode("celebrate-notice")
-    val celebrateNotice by conversion<ConfigurationSection, Map<String, List<String>>> {
+    val celebrateNotice by conversion<ConfigurationSection, Map<String, List<String>>>(defaultValue = emptyMap()) {
         mapOf(*getKeys(false).map { it to getStringList(it) }.toTypedArray())
     }
 

@@ -163,5 +163,5 @@ object AiyatsbusSettings {
      * 会收到调试信息的用户名列表
      * 默认值: ["Y_Mical", "TabooLib", "xiaozhangup", "HamsterYDS"]
      */
-    val debugUsers by resettableLazy { conf.getBoolean("Settings.debug-users") }
+    val debugUsers by resettableLazy { conf.getStringList("Settings.debug-users") }
 }
