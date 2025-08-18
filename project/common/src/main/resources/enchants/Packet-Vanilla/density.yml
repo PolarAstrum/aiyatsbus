@@ -16,8 +16,6 @@ dependencies:
 
 limitations:
   - "CONFLICT_GROUP:原版增伤类附魔"
-  - "CONFLICT_ENCHANT:破甲"
-  - "CONFLICT_ENCHANT:穿刺"
 
 rarity: 普通
 targets:

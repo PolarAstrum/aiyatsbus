@@ -20,6 +20,7 @@ package cc.polarastrum.aiyatsbus.module.ingame.mechanics
 
 import cc.polarastrum.aiyatsbus.core.*
 import cc.polarastrum.aiyatsbus.core.data.CheckType
+import cc.polarastrum.aiyatsbus.core.data.registry.Rarity
 import cc.polarastrum.aiyatsbus.core.util.MathUtils.preheatExpression
 import cc.polarastrum.aiyatsbus.core.util.MathUtils.selectByWeight
 import cc.polarastrum.aiyatsbus.core.util.calcToDouble
@@ -42,6 +43,7 @@ import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.submit
 import taboolib.common.util.randomDouble
 import taboolib.common5.RandomList
+import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
@@ -49,6 +51,8 @@ import taboolib.module.configuration.conversion
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketSendEvent
 import taboolib.module.ui.InventoryViewProxy
+import taboolib.platform.util.onlinePlayers
+import taboolib.platform.util.sendActionBar
 import taboolib.platform.util.serializeToByteArray
 import kotlin.random.Random
 
@@ -118,6 +122,14 @@ object EnchantingTableSupport {
     @delegate:ConfigNode("privilege.chance")
     val moreEnchantPrivilege by conversion<List<String>, Map<String, String>> {
         mapOf(*map { it.split(":")[0] to it.split(":")[1] }.toTypedArray())
+    }
+
+    /**
+     * 出金播报
+     */
+    @delegate:ConfigNode("celebrate-notice")
+    val celebrateNotice by conversion<ConfigurationSection, Map<String, List<String>>>(defaultValue = emptyMap()) {
+        mapOf(*getKeys(false).map { it to getStringList(it) }.toTypedArray())
     }
 
     @ConfigNode("max_level_limit")
@@ -247,6 +259,24 @@ object EnchantingTableSupport {
         if (item.type == Material.ENCHANTED_BOOK) {
             submit {
                 event.inventory.setItem(0, result.second)
+            }
+        }
+
+        // 出金播报
+        event.enchantsToAdd.forEach { (enchant, level) ->
+            val rarity = (enchant as AiyatsbusEnchantment).rarity
+            (celebrateNotice[rarity.name] ?: celebrateNotice[rarity.id])?.let { lines ->
+                lines.forEach { line ->
+                    val type = line.substringBefore(":")
+                    onlinePlayers.forEach {
+                        val text = it.asLangOrNull(line.substringAfter(":"), event.enchanter.name to "player", enchant.displayName(level, true) to "enchant") ?: return@forEach
+                        when (type) {
+                            "actionbar" -> it.sendActionBar(text)
+                            "message" -> it.sendMessage(text)
+                            "title" -> it.sendTitle(text.split(";")[0], text.split(";")[1])
+                        }
+                    }
+                }
             }
         }
     }

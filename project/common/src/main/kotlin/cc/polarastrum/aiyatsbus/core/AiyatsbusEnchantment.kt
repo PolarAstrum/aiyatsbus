@@ -40,53 +40,107 @@ import java.io.File
  */
 interface AiyatsbusEnchantment {
 
-    /** 附魔标识 */
+    /**
+     * 附魔唯一标识符
+     * 
+     * 用于在系统内唯一标识该附魔，通常为文件名。
+     * 例如：`sharpness`、`flame`、`custom_enchant`
+     */
     val id: String
 
-    /** 附魔的 Key */
+    /**
+     * 附魔的命名空间键
+     * 
+     * Bukkit/Minecraft 系统中的附魔标识，用于注册到游戏内。
+     * 格式为 `namespace:key`，例如：`aiyatsbus:sharpness`
+     */
     val enchantmentKey: NamespacedKey
 
-    /** 附魔文件 */
+    /**
+     * 附魔配置文件
+     * 
+     * 存储附魔配置的 YAML 文件实例，包含所有附魔数据。
+     */
     val file: File
 
-    /** 附魔的配置 */
+    /**
+     * 附魔配置对象
+     * 
+     * 解析后的配置文件内容，用于读取附魔的各项设置。
+     */
     val config: Configuration
 
-    /** 附魔的基本数据 */
+    /**
+     * 附魔基本数据
+     * 
+     * 包含附魔的基础信息，如名称、描述、最大等级等。
+     */
     val basicData: BasicData
 
-    /** 附魔的额外数据 */
+    /**
+     * 附魔额外数据
+     * 
+     * 包含附魔的扩展配置，如是否可获得、特殊标记等。
+     */
     val alternativeData: AlternativeData
 
     /**
-     * 附魔的依赖信息，包括必须为 MC 哪个版本才能使用、必须安装哪些数据包、必须安装哪些插件。
+     * 附魔依赖信息
+     * 
+     * 包括必须为 MC 哪个版本才能使用、必须安装哪些数据包、必须安装哪些插件。
+     * 用于确保附魔在正确的环境下运行。
      */
     val dependencies: Dependencies
 
     /**
-     * Bukkit 附魔实例，在注册后赋值，一般是 CraftEnchantment。
-     *
+     * Bukkit 附魔实例
+     * 
+     * 在注册后赋值，一般是 CraftEnchantment。
      * 在 1.20.2 及以下版本中，这个是 LegacyCraftEnchantment。
      * 在 1.20.2 以上版本中，Bukkit 更改了注册附魔的方式，这个一般是 AiyatsbusCraftEnchantment。
      */
     val enchantment: Enchantment
 
-    /** 附魔品质 */
+    /**
+     * 附魔品质等级
+     * 
+     * 定义附魔的稀有度和颜色显示，影响附魔的获取概率和展示效果。
+     */
     val rarity: Rarity
 
-    /** 附魔的变量显示与替换 */
+    /**
+     * 附魔变量系统
+     * 
+     * 处理附魔显示文本中的变量替换，支持动态内容展示。
+     */
     val variables: Variables
 
-    /** 附魔显示 */
+    /**
+     * 附魔显示器
+     * 
+     * 负责附魔在物品上的显示效果，包括名称格式、颜色等。
+     */
     val displayer: Displayer
 
-    /** 附魔对象 */
+    /**
+     * 附魔适用目标
+     * 
+     * 定义附魔可以应用于哪些物品类型，如武器、工具、护甲等。
+     */
     val targets: List<Target>
 
-    /** 附魔限制 */
+    /**
+     * 附魔限制条件
+     * 
+     * 定义附魔的使用限制，如冲突检测、等级限制、环境要求等。
+     */
     val limitations: Limitations
 
-    /** 附魔的触发器 */
+    /**
+     * 附魔触发器
+     * 
+     * 定义附魔效果的触发条件和执行逻辑，为 null 表示不使用 Aiyatsbus 内置的触发器系统。
+     */
     val trigger: Trigger?
 
     /** 是否不可获得 */

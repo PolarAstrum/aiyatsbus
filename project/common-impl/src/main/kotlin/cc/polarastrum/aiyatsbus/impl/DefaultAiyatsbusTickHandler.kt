@@ -105,13 +105,14 @@ class DefaultAiyatsbusTickHandler : AiyatsbusTickHandler {
                         val level = item.etLevel(ench)
 
                         if (level > 0) {
-                            if (ench.limitations.checkAvailable(
-                                    CheckType.USE,
-                                    item,
-                                    player,
-                                    slot
-                                ).isFailure
-                            ) return@slot
+                            val checkResult = ench.limitations.checkAvailable(CheckType.USE, item, player, slot)
+                            if (checkResult.isFailure) {
+                                sendDebug("----- DefaultAiyatsbusTickHandler -----")
+                                sendDebug("附魔: " + ench.basicData.name)
+                                sendDebug("原因: " + checkResult.reason)
+                                sendDebug("----- DefaultAiyatsbusTickHandler -----")
+                                return@slot
+                            }
                             flag = true
 
                             val vars = variables.toMutableMap()

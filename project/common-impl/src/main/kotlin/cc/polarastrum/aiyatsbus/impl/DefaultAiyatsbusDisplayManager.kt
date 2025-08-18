@@ -221,7 +221,7 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
             }
             // 除去 enchant lore
             val (first, last) = loreIndex
-            lore(lore()!!.subList(first, last))
+            lore(lore()?.subList(first, last))
             remove("enchants_serialized")
             remove("lore_index")
             remove("custom_book")

@@ -61,3 +61,11 @@ Settings:
       - "display"
       - "variables"
       - "mechanisms"
+  # 是否开启调试信息
+  debug: false
+  # 以下用户会收到 Debug 信息
+  debug-users:
+    - Y_Mical
+    - TabooLib
+    - xiaozhangup
+    - HamsterYDS

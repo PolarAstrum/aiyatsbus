@@ -57,8 +57,8 @@ import taboolib.platform.util.modifyMeta
  * ```
  */
 var ItemStack.repairCost: Int
-    get() = Aiyatsbus.api().getMinecraftAPI().getRepairCost(this)
-    set(value) = Aiyatsbus.api().getMinecraftAPI().setRepairCost(this, value)
+    get() = Aiyatsbus.api().getMinecraftAPI().getItemOperator().getRepairCost(this)
+    set(value) = Aiyatsbus.api().getMinecraftAPI().getItemOperator().setRepairCost(this, value)
 
 /**
  * 批量变量替换

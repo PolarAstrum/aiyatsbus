@@ -21,8 +21,12 @@ package cc.polarastrum.aiyatsbus.core.data
 import cc.polarastrum.aiyatsbus.core.StandardPriorities
 import cc.polarastrum.aiyatsbus.core.sendLang
 import cc.polarastrum.aiyatsbus.core.util.reloadable
+import taboolib.common.LifeCycle
+import taboolib.common.TabooLib
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.registerLifeCycleTask
+import taboolib.common.platform.function.severe
+import taboolib.common.util.t
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
 import java.util.concurrent.ConcurrentHashMap
@@ -70,7 +74,7 @@ abstract class Registry<T : RegistryItem>(
     /** 注册项工厂函数，用于从配置节点创建注册项实例 */
     private val itemFactory: Function<ConfigurationSection, T>,
     /** 已注册项的存储容器，使用并发哈希映射保证线程安全 */
-    private val registered: ConcurrentHashMap<String, T> = ConcurrentHashMap()
+    val registered: ConcurrentHashMap<String, T> = ConcurrentHashMap()
 ) : Map<String, T> by registered {
 
     /** 注册器对应的配置文件 */
@@ -83,13 +87,24 @@ abstract class Registry<T : RegistryItem>(
         // 注册生命周期任务，在插件启用时自动初始化
         reloadable {
             registerLifeCycleTask(StandardPriorities.getDataLifeCycle(registryId), StandardPriorities.getDataProperty(registryId)) {
-                initialize()
-                // 监听配置文件重载事件
-                if (!isLoaded) {
-                    config.onReload {
-                        measureTimeMillis { loadItem() }.let { console().sendLang("configuration-reload", config.file!!.name, it) }
+                try {
+                    initialize()
+                    // 监听配置文件重载事件
+                    if (!isLoaded) {
+                        config.onReload {
+                            measureTimeMillis { loadItem() }.let { console().sendLang("configuration-reload", config.file!!.name, it) }
+                        }
+                        isLoaded = true
                     }
-                    isLoaded = true
+                } catch (ex: Throwable) {
+                    if (TabooLib.getCurrentLifeCycle() != LifeCycle.ACTIVE) {
+                        severe("""
+                            无法初始化附魔数据，为避免数据丢失，服务器将会被强制关闭！
+                            Failed to initialize enchantment data. To avoid data loss, the server will be forced to shut down!
+                        """.t())
+                        ex.printStackTrace()
+                        Runtime.getRuntime().halt(-1)
+                    }
                 }
             }
         }
