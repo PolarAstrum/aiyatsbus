@@ -36,6 +36,7 @@ object PacketOpenWindowMerchant {
         if (name == "PacketPlayOutOpenWindowMerchant" || name == "ClientboundMerchantOffersPacket") {
             // 1.16 - 1.20.4 全部版本都可以直接读 b, 1.20.5 改成 c
             Aiyatsbus.api().getMinecraftAPI()
+                .getItemOperator()
                 .adaptMerchantRecipe(
                     e.packet.read<Any>("offers")!!,
                     e.player

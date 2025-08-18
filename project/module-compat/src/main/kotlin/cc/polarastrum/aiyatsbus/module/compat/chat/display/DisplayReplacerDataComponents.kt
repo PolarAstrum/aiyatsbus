@@ -43,7 +43,7 @@ object DisplayReplacerDataComponents : DisplayReplacer {
         val json = when (component) {
             is Component -> gson.serialize(component) // Adventure Component
             is String -> component // Json
-            else -> Aiyatsbus.api().getMinecraftAPI().componentToJson(component) // 大胆假设是 IChatBaseComponent
+            else -> Aiyatsbus.api().getMinecraftAPI().getHelper().componentToJson(component) // 大胆假设是 IChatBaseComponent
         }
 
         // 尝试修复 Source: '' 的警告
@@ -54,7 +54,7 @@ object DisplayReplacerDataComponents : DisplayReplacer {
         return when (component) {
             is Component -> gson.deserialize(jsonObject.toString())
             is String -> jsonObject.toString()
-            else -> Aiyatsbus.api().getMinecraftAPI().componentFromJson(jsonObject.toString())
+            else -> Aiyatsbus.api().getMinecraftAPI().getHelper().componentFromJson(jsonObject.toString())
         }
     }
 

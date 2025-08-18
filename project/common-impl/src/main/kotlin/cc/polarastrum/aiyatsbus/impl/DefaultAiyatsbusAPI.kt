@@ -22,6 +22,7 @@ import cc.polarastrum.aiyatsbus.core.script.AiyatsbusScriptHandler
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.util.t
 import taboolib.module.nms.nmsProxy
+import java.util.concurrent.CompletableFuture
 
 /**
  * Aiyatsbus
@@ -49,7 +50,7 @@ class DefaultAiyatsbusAPI : AiyatsbusAPI {
     private lateinit var enchantmentRegisterer: AiyatsbusEnchantmentRegisterer
 
     private val minecraftAPI0 by lazy {
-        proxy<AiyatsbusMinecraftAPI>("cc.polarastrum.aiyatsbus.impl.nms.DefaultAiyatsbusMinecraftAPI")
+        proxy<AiyatsbusMinecraftAPI>("cc.polarastrum.aiyatsbus.impl.DefaultAiyatsbusMinecraftAPI")
     }
 
     private val tickHandler = PlatformFactory.getAPI<AiyatsbusTickHandler>()
@@ -95,6 +96,12 @@ class DefaultAiyatsbusAPI : AiyatsbusAPI {
 
     override fun getTickHandler(): AiyatsbusTickHandler {
         return tickHandler
+    }
+
+    init {
+        CompletableFuture.runAsync {
+            minecraftAPI0
+        }
     }
 
     companion object {

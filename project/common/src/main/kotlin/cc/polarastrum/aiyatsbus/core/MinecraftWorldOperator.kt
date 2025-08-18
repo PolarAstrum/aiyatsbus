@@ -14,34 +14,30 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cc.polarastrum.aiyatsbus.impl.nms.v12005_nms
+package cc.polarastrum.aiyatsbus.core
 
-import org.bukkit.entity.LivingEntity
+import org.bukkit.block.Block
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.ItemMeta
-import taboolib.common.util.unsafeLazy
-import taboolib.module.nms.nmsProxy
 
 /**
- * Aiyatsbus
- * com.mcstarrysky.aiyatsbus.impl.nms.nms12005.NMS12005
+ * Minecraft 世界操作器接口
+ *
+ * 提供世界相关的底层操作功能，
+ * 包括方块破坏等跨版本兼容的世界交互操作。
  *
  * @author mical
- * @since 2024/5/5 20:20
+ * @since 2025/8/16 08:44
  */
-abstract class NMS12005 {
+interface MinecraftWorldOperator {
 
-    abstract fun getRepairCost(item: ItemStack): Int
-
-    abstract fun setRepairCost(item: ItemStack, cost: Int)
-
-    abstract fun adaptMerchantRecipe(merchantRecipeList: Any, player: Player)
-
-    abstract fun hurtAndBreak(nmsItem: Any, amount: Int, entity: LivingEntity)
-
-    companion object {
-
-        val instance by unsafeLazy { nmsProxy<NMS12005>() }
-    }
+    /**
+     * 破坏方块
+     *
+     * 取代高版本 player.breakBlock 的函数，会触发 BlockBreakEvent。
+     *
+     * @param player 玩家
+     * @param block 方块
+     * @return 是否成功破坏
+     */
+    fun breakBlock(player: Player, block: Block): Boolean
 }
