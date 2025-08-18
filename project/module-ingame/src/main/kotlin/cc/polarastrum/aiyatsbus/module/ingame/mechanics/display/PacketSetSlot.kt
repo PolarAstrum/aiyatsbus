@@ -36,15 +36,11 @@ object PacketSetSlot {
     fun e(e: PacketSendEvent) {
         val name = e.packet.name
         if (name == "PacketPlayOutSetSlot" || name == "ClientboundContainerSetSlotPacket") {
-            try {
-                val origin = e.packet.read<Any>("itemStack")!!
-                val bkItem = NMSItemTag.asBukkitCopy(origin)
-                if (bkItem.isNull) return
-                val adapted = NMSItemTag.asNMSCopy(bkItem.toDisplayMode(e.player))
-                e.packet.write("itemStack", adapted)
-            } catch (e: Throwable) {
-                e.printStackTrace()
-            }
+            val origin = e.packet.read<Any>("itemStack")!!
+            val bkItem = NMSItemTag.asBukkitCopy(origin)
+            if (bkItem.isNull) return
+            val adapted = NMSItemTag.asNMSCopy(bkItem.toDisplayMode(e.player))
+            e.packet.write("itemStack", adapted)
         }
     }
 }

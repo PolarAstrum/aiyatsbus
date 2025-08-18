@@ -14,61 +14,44 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-@file:Suppress("PrivatePropertyName", "SameParameterValue", "unused")
-
 package cc.polarastrum.aiyatsbus.impl.nms
 
-import cc.polarastrum.aiyatsbus.core.AiyatsbusMinecraftAPI
+import cc.polarastrum.aiyatsbus.core.MinecraftItemOperator
 import cc.polarastrum.aiyatsbus.core.toDisplayMode
 import cc.polarastrum.aiyatsbus.core.util.isNull
-import cc.polarastrum.aiyatsbus.impl.nms.v12005_nms.NMS12005
-import io.papermc.paper.adventure.AdventureComponent
+import cc.polarastrum.aiyatsbus.impl.nmsj21.NMSJ21
 import io.papermc.paper.adventure.PaperAdventure
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.util.Codec
-import net.minecraft.core.BlockPosition
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.network.chat.IChatBaseComponent
 import net.minecraft.world.entity.EnumItemSlot
 import net.minecraft.world.item.trading.MerchantRecipeList
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftLivingEntity
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
-import org.bukkit.craftbukkit.v1_20_R3.util.CraftChatMessage
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.setProperty
-import taboolib.module.nms.MinecraftVersion.isUniversalCraftBukkit
 import taboolib.module.nms.MinecraftVersion.versionId
 import taboolib.module.nms.NMSItemTag
 import java.io.IOException
 
 /**
  * Aiyatsbus
- * com.mcstarrysky.aiyatsbus.impl.nms.DefaultAiyatsbusMinecraftAPI
+ * cc.polarastrum.aiyatsbus.impl.nms.nms.DefaultMinecraftItemOperator
  *
  * @author mical
- * @since 2024/2/18 00:21
+ * @since 2025/8/16 08:51
  */
-class DefaultAiyatsbusMinecraftAPI : AiyatsbusMinecraftAPI {
-
-    init {
-        // 预热
-        if (versionId >= 12005) {
-            NMS12005.instance
-        }
-    }
+class DefaultMinecraftItemOperator : MinecraftItemOperator {
 
     private val NBT_CODEC: Codec<Any, String, IOException, IOException> = PaperAdventure::class.java.getProperty("NBT_CODEC", isStatic = true)!!
 
     override fun getRepairCost(item: ItemStack): Int {
         return if (versionId >= 12005) {
-            NMS12005.instance.getRepairCost(item)
+            NMSJ21.instance.getRepairCost(item)
         } else {
             (NMSItemTag.asNMSCopy(item) as NMSItemStack).baseRepairCost
         }
@@ -76,7 +59,7 @@ class DefaultAiyatsbusMinecraftAPI : AiyatsbusMinecraftAPI {
 
     override fun setRepairCost(item: ItemStack, cost: Int) {
         if (versionId >= 12005) {
-            NMS12005.instance.setRepairCost(item, cost)
+            NMSJ21.instance.setRepairCost(item, cost)
         } else {
             (NMSItemTag.asNMSCopy(item) as NMSItemStack).setRepairCost(cost)
         }
@@ -106,7 +89,7 @@ class DefaultAiyatsbusMinecraftAPI : AiyatsbusMinecraftAPI {
     override fun adaptMerchantRecipe(merchantRecipeList: Any, player: Player) {
 
         if (versionId >= 12005) {
-            return NMS12005.instance.adaptMerchantRecipe(merchantRecipeList, player)
+            return NMSJ21.instance.adaptMerchantRecipe(merchantRecipeList, player)
         }
 
         fun adapt(item: Any, player: Player): Any {
@@ -123,24 +106,6 @@ class DefaultAiyatsbusMinecraftAPI : AiyatsbusMinecraftAPI {
                 setProperty("result", adapt(result, player) as NMSItemStack)
             }
         }
-    }
-
-    override fun componentFromJson(json: String): Any {
-        return CraftChatMessage.fromJSON(json)
-    }
-
-    override fun componentToJson(iChatBaseComponent: Any): String {
-        // 逆天 paper 1.21.4+
-        if (isUniversalCraftBukkit && versionId >= 12104) {
-            if (iChatBaseComponent is AdventureComponent) {
-                return GsonComponentSerializer.gson().serialize(iChatBaseComponent.`adventure$component`())
-            }
-        }
-        return CraftChatMessage.toJSON(iChatBaseComponent as IChatBaseComponent)
-    }
-
-    override fun breakBlock(player: Player, block: Block): Boolean {
-        return (player as CraftPlayer).handle.gameMode.destroyBlock(BlockPosition(block.x, block.y, block.z))
     }
 
     override fun damageItemStack(item: ItemStack, amount: Int, entity: LivingEntity): ItemStack {
@@ -184,16 +149,12 @@ class DefaultAiyatsbusMinecraftAPI : AiyatsbusMinecraftAPI {
         // 1.20.4 -> hurtAndBreak(int, EntityLiving, Consumer<EntityLiving>)
         // 1.20.5, 1.21 -> hurtAndBreak(int, EntityLiving, EnumItemSlot), 自动广播事件
         if (versionId >= 12005) {
-            NMS12005.instance.hurtAndBreak(nmsStack, amount, entity)
+            NMSJ21.instance.hurtAndBreak(nmsStack, amount, entity)
         } else {
             nmsStack.hurtAndBreak(amount, (entity as CraftLivingEntity).handle) { entityLiving ->
                 (enumItemSlot as? EnumItemSlot)?.let { entityLiving.broadcastBreakEvent(it) }
             }
         }
-    }
-
-    override fun getCursorItem(player: Player): Any? {
-        return (player as CraftPlayer).handle.containerMenu.carried
     }
 }
 

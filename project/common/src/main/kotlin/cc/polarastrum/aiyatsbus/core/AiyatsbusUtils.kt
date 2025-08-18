@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.getProxyPlayer
 import taboolib.common5.RandomList
 import taboolib.platform.util.modifyMeta
 
@@ -150,7 +151,16 @@ fun ProxyCommandSender.asLangList(node: String, vararg args: Any): List<String> 
  * @throws IllegalStateException 如果附魔未找到（可能是原版附魔，请确保所有原版附魔文件完整）
  */
 val Enchantment.aiyatsbusEt: AiyatsbusEnchantment
-    get() = Aiyatsbus.api().getEnchantmentManager().getEnchant(key) ?: error("Enchantment ${key.key} not found. (Maybe it's a vanilla enchantment. Please ensure all of the vanilla enchantment's files are complete.)")
+    get() = Aiyatsbus.api().getEnchantmentManager().getEnchant(key) ?: throw IllegalStateException("Enchantment ${key.key} not found. (Maybe it's a vanilla enchantment. Please ensure all of the vanilla enchantment's files are complete.)")
+
+/**
+ * 发送调试信息
+ */
+fun sendDebug(message: String) {
+    if (AiyatsbusSettings.debug) {
+        AiyatsbusSettings.debugUsers.mapNotNull(::getProxyPlayer).forEach { t -> t.sendMessage(message) }
+    }
+}
 
 /**
  * 根据名称或 Key 获取 AiyatsbusEnchantment 附魔对象

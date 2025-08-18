@@ -18,9 +18,6 @@ rarity: 罕见
 targets:
   - 靴子
 
-limitations:
-  - "CONFLICT_GROUP:原版移动机制类附魔"
-
 display:
   description:
     general: "提高在灵魂沙和灵魂土上的移动速度"

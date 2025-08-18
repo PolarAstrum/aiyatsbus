@@ -20,6 +20,10 @@ import cc.polarastrum.aiyatsbus.core.Aiyatsbus
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.data.trigger.event.EventExecutor
 import cc.polarastrum.aiyatsbus.core.util.coerceInt
+import taboolib.common.LifeCycle
+import taboolib.common.TabooLib
+import taboolib.common.platform.function.severe
+import taboolib.common.util.t
 import taboolib.library.configuration.ConfigurationSection
 import java.util.concurrent.ConcurrentHashMap
 
@@ -51,20 +55,31 @@ data class Trigger(
     val tickers: ConcurrentHashMap<String, Ticker> = ConcurrentHashMap()
 
     init {
-        // 初始化事件监听器
-        section?.getConfigurationSection("listeners")?.let { listenersSection ->
-            listeners += listenersSection.getKeys(false)
-                .associateWith { EventExecutor(listenersSection.getConfigurationSection(it)!!, enchant) }
-        }
-        // 初始化定时器
-        section?.getConfigurationSection("tickers")?.let { tickersSection ->
-            tickers += tickersSection.getKeys(false)
-                .associateWith { Ticker(tickersSection.getConfigurationSection(it)!!, enchant) }
-                .mapKeys { "${enchant.basicData.id}.$it" }.also {
-                    it.entries.forEach { (id, ticker) ->
-                        Aiyatsbus.api().getTickHandler().getRoutine().put(enchant, id, ticker.interval)
+        try {
+            // 初始化事件监听器
+            section?.getConfigurationSection("listeners")?.let { listenersSection ->
+                listeners += listenersSection.getKeys(false)
+                    .associateWith { EventExecutor(listenersSection.getConfigurationSection(it)!!, enchant) }
+            }
+            // 初始化定时器
+            section?.getConfigurationSection("tickers")?.let { tickersSection ->
+                tickers += tickersSection.getKeys(false)
+                    .associateWith { Ticker(tickersSection.getConfigurationSection(it)!!, enchant) }
+                    .mapKeys { "${enchant.basicData.id}.$it" }.also {
+                        it.entries.forEach { (id, ticker) ->
+                            Aiyatsbus.api().getTickHandler().getRoutine().put(enchant, id, ticker.interval)
+                        }
                     }
-                }
+            }
+        } catch (ex: Throwable) {
+            if (TabooLib.getCurrentLifeCycle() != LifeCycle.ACTIVE) {
+                severe("""
+                    无法初始化附魔触发器，为避免数据丢失，服务器将会被强制关闭！
+                    Failed to initialize trigger. To avoid data loss, the server will be forced to shut down!
+                """.t())
+                ex.printStackTrace()
+                Runtime.getRuntime().halt(-1)
+            }
         }
     }
 

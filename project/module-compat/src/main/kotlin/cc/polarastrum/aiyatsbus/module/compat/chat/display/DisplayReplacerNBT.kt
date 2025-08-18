@@ -43,7 +43,7 @@ object DisplayReplacerNBT : DisplayReplacer {
         var json = when (component) {
             is Component -> gson.serialize(component) // Adventure Component
             is String -> component // Json
-            else -> Aiyatsbus.api().getMinecraftAPI().componentToJson(component) // 大胆假设是 IChatBaseComponent
+            else -> Aiyatsbus.api().getMinecraftAPI().getHelper().componentToJson(component) // 大胆假设是 IChatBaseComponent
         }
 
         // 尝试修复 Source: '' 的警告
@@ -62,20 +62,23 @@ object DisplayReplacerNBT : DisplayReplacer {
             val id = stack.get("id").asString
             val tag = stack.get("tag")?.asString ?: continue
 
-            val item = Aiyatsbus.api().getMinecraftAPI().createItemStack(id, tag)
+            val item = Aiyatsbus.api().getMinecraftAPI().getItemOperator().createItemStack(id, tag)
             val display = item.toDisplayMode(player)
 
             val target = display.displayName().hoverEvent(display.asHoverEvent())
-            json = json.replace(
-                stack.get("tag").asString.flat(),
-                extractHoverEvents(gson.serialize(target)).first().get("tag").asString.flat()
-            )
+            val targetStack = extractHoverEvents(gson.serialize(target)).first().get("tag")
+            if (targetStack != null) {
+                json = json.replace(
+                    tag.flat(),
+                    targetStack.asString.flat()
+                )
+            }
         }
 
         return when (component) {
             is Component -> gson.deserialize(json)
             is String -> json
-            else -> Aiyatsbus.api().getMinecraftAPI().componentFromJson(json)
+            else -> Aiyatsbus.api().getMinecraftAPI().getHelper().componentFromJson(json)
         }
     }
 

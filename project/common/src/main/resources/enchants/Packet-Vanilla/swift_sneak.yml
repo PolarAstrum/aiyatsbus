@@ -19,9 +19,6 @@ rarity: 精良
 targets:
   - 护腿
 
-limitations:
-  - "CONFLICT_GROUP:原版移动机制类附魔"
-
 display:
   description:
     general: "提高玩家潜行时的移动速度"

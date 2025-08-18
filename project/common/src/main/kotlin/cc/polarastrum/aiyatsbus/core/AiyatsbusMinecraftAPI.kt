@@ -16,12 +16,6 @@
  */
 package cc.polarastrum.aiyatsbus.core
 
-import org.bukkit.block.Block
-import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import kotlin.jvm.Throws
-
 /**
  * Aiyatsbus Minecraft API 接口
  *
@@ -34,81 +28,38 @@ import kotlin.jvm.Throws
 interface AiyatsbusMinecraftAPI {
 
     /**
-     * 获取物品在铁砧上的操作数
+     * 获取 Minecraft 杂项工具
      *
-     * @param item 物品
-     * @return 操作数
+     * 提供 Minecraft 底层的通用杂项操作工具，包括组件转换等功能。
+     *
+     * @return Minecraft 杂项工具实例
      */
-    fun getRepairCost(item: ItemStack): Int
+    fun getHelper(): MinecraftHelper
 
     /**
-     * 设置物品在铁砧上的操作数
+     * 获取物品操作器
      *
-     * @param item 物品
-     * @param cost 操作数
+     * 提供物品相关的底层操作，包括修复成本、物品损坏、物品创建等功能。
+     *
+     * @return 物品操作器实例
      */
-    fun setRepairCost(item: ItemStack, cost: Int)
+    fun getItemOperator(): MinecraftItemOperator
 
     /**
-     * 创建物品堆栈
+     * 获取数据包处理器
      *
-     * 1.18.2 以下版本（不包含 1.18.2）中 ItemFactory#createItemStack 不存在，
-     * 此函数用以替代。
+     * 负责处理网络数据包相关的操作，包括容器点击事件等。
      *
-     * @param material 材料名称
-     * @param tag 标签
-     * @return 物品堆栈
-     * @throws IllegalStateException 如果创建失败
+     * @return 数据包处理器实例
      */
-    @Throws(IllegalStateException::class)
-    fun createItemStack(material: String, tag: String?): ItemStack
+    fun getPacketHandler(): MinecraftPacketHandler
 
     /**
-     * 为原版的 MerchantRecipeList 的物品显示更多附魔
+     * 获取世界操作器
      *
-     * @param merchantRecipeList 商人配方列表
-     * @param player 玩家
+     * 提供世界相关的底层操作，包括方块破坏等功能。
+     *
+     * @return 世界操作器实例
      */
-    fun adaptMerchantRecipe(merchantRecipeList: Any, player: Player)
-
-    /**
-     * 将 Json 转成 IChatBaseComponent
-     *
-     * @param json JSON 字符串
-     * @return IChatBaseComponent 对象
-     */
-    fun componentFromJson(json: String): Any
-
-    /**
-     * 将 IChatBaseComponent 转成 Json
-     *
-     * @param iChatBaseComponent IChatBaseComponent 对象
-     * @return JSON 字符串
-     */
-    fun componentToJson(iChatBaseComponent: Any): String
-
-    /**
-     * 破坏方块
-     *
-     * 取代高版本 player.breakBlock 的函数，会触发 BlockBreakEvent。
-     *
-     * @param player 玩家
-     * @param block 方块
-     * @return 是否成功破坏
-     */
-    fun breakBlock(player: Player, block: Block): Boolean
-
-    /**
-     * 损坏物品堆栈
-     *
-     * 取代高版本 ItemStack#damage。
-     *
-     * @param item 物品堆栈
-     * @param amount 损坏量
-     * @param entity 实体
-     * @return 损坏后的物品堆栈
-     */
-    fun damageItemStack(item: ItemStack, amount: Int, entity: LivingEntity): ItemStack
-
-    fun getCursorItem(player: Player): Any?
+    fun getWorldOperator(): MinecraftWorldOperator
 }

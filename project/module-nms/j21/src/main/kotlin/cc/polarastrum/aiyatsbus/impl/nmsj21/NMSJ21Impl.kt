@@ -14,14 +14,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cc.polarastrum.aiyatsbus.impl.nms.v12005_nms
+package cc.polarastrum.aiyatsbus.impl.nmsj21
 
 import cc.polarastrum.aiyatsbus.core.toDisplayMode
 import cc.polarastrum.aiyatsbus.core.util.isNull
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.trading.MerchantRecipeList
-import org.bukkit.craftbukkit.v1_20_R4.entity.CraftLivingEntity
-import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_21_R4.entity.CraftLivingEntity
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftItemStack
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -36,7 +36,7 @@ import kotlin.jvm.optionals.getOrNull
  * @author mical
  * @since 2024/5/5 20:26
  */
-class NMS12005Impl : NMS12005() {
+class NMSJ21Impl : NMSJ21() {
 
     override fun getRepairCost(item: ItemStack): Int {
         return (CraftItemStack.asNMSCopy(item) as NMSItemStack)[DataComponents.REPAIR_COST] ?: 0

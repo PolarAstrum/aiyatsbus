@@ -17,7 +17,7 @@ targets:
   - 靴子
 
 limitations:
-  - "CONFLICT_GROUP:原版移动机制类附魔"
+  - "CONFLICT_GROUP:深海探索者"
 
 display:
   description:

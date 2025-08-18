@@ -254,7 +254,7 @@ fun Player.placeBlock(placedBlock: Block, itemInHand: ItemStack = this.itemInHan
 fun Player.doBreakBlock(block: Block) {
     try {
         block.mark("block-ignored")
-        Aiyatsbus.api().getMinecraftAPI().breakBlock(this, block)
+        Aiyatsbus.api().getMinecraftAPI().getWorldOperator().breakBlock(this, block)
     } catch (ex: Throwable) {
         ex.printStackTrace()
     } finally {

@@ -36,15 +36,11 @@ object PacketSetCreativeSlot {
     fun e(e: PacketReceiveEvent) {
         val name = e.packet.name
         if (name == "PacketPlayInSetCreativeSlot" || name == "ServerboundSetCreativeModeSlotPacket") {
-            try {
-                val origin = e.packet.read<Any>("itemStack")!!
-                val bkItem = NMSItemTag.asBukkitCopy(origin)
-                if (bkItem.isNull) return
-                val adapted = NMSItemTag.asNMSCopy(bkItem.toRevertMode(e.player))
-                e.packet.write("itemStack", adapted)
-            } catch (e: Throwable) {
-                e.printStackTrace()
-            }
+            val origin = e.packet.read<Any>("itemStack")!!
+            val bkItem = NMSItemTag.asBukkitCopy(origin)
+            if (bkItem.isNull) return
+            val adapted = NMSItemTag.asNMSCopy(bkItem.toRevertMode(e.player))
+            e.packet.write("itemStack", adapted)
         }
     }
 }

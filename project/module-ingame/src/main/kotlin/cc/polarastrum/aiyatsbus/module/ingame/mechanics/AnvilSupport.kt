@@ -34,6 +34,7 @@ import taboolib.common.platform.function.console
 import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common5.cdouble
 import taboolib.common5.cint
+import taboolib.module.chat.uncolored
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
@@ -165,12 +166,16 @@ object AnvilSupport {
         }
 
         // 改名, 用了自己写的一个扩展属性
-        result?.name = name
+        // 是否没改名, 也就是改名框内的名字和原物品是一样的
+        val nameIsEqual = left.name?.uncolored() == renameText?.uncolored()
+        if (!nameIsEqual) {
+            result?.name = renameText
+        }
 
         // 如果右面物品不存在, 就只是改名, 可以直接返回结果了
         if (right.isNull) {
             // 如果没改名, 改名框内的名字和原物品是一样的
-            if (left.name == renameText) return AnvilResult.Failed
+            if (nameIsEqual) return AnvilResult.Failed
             return AnvilResult.Successful(result, experience.cint, 0, true)
         }
 

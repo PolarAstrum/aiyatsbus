@@ -36,24 +36,20 @@ object PacketWindowItems {
     fun e(e: PacketSendEvent) {
         val name = e.packet.name
         if (name == "PacketPlayOutWindowItems" || name == "ClientboundContainerSetContentPacket") {
-            try {
-                val slots = e.packet.read<List<Any>>("items")!!.toMutableList()
-                for (i in slots.indices) {
-                    val bkItem = NMSItemTag.asBukkitCopy(slots[i])
-                    if (bkItem.isNull) continue
-                    val nmsItem = NMSItemTag.asNMSCopy(bkItem.toDisplayMode(e.player))
-                    slots[i] = nmsItem
-                }
-                e.packet.write("items", slots)
-
-                val cursor = e.packet.read<Any>("carriedItem")!! // carriedItem
-                val bkItem = NMSItemTag.asBukkitCopy(cursor)
-                if (bkItem.isNull) return
+            val slots = e.packet.read<List<Any>>("items")!!.toMutableList()
+            for (i in slots.indices) {
+                val bkItem = NMSItemTag.asBukkitCopy(slots[i])
+                if (bkItem.isNull) continue
                 val nmsItem = NMSItemTag.asNMSCopy(bkItem.toDisplayMode(e.player))
-                e.packet.write("carriedItem", nmsItem)
-            } catch (e: Throwable) {
-                e.printStackTrace()
+                slots[i] = nmsItem
             }
+            e.packet.write("items", slots)
+
+            val cursor = e.packet.read<Any>("carriedItem")!! // carriedItem
+            val bkItem = NMSItemTag.asBukkitCopy(cursor)
+            if (bkItem.isNull) return
+            val nmsItem = NMSItemTag.asNMSCopy(bkItem.toDisplayMode(e.player))
+            e.packet.write("carriedItem", nmsItem)
         }
     }
 }

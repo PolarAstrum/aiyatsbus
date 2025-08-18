@@ -17,7 +17,7 @@ include(
     // NMS 实现
     "project:module-nms",
     // 1.20.5 NMS 实现
-    "project:module-nms:nms-v12005",
+    "project:module-nms:j21",
     // 旧版本自定义附魔注册器
     "project:module-registration:registration-legacy",
     // 1.20.4 (1.20.3) 自定义附魔注册器
