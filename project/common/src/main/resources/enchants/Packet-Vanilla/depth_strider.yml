@@ -16,7 +16,7 @@ targets:
   - 靴子
 
 limitations:
-  - "CONFLICT_GROUP:原版移动机制类附魔"
+  - "CONFLICT_ENCHANT:冰霜行者"
 
 display:
   description:

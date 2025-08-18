@@ -11,6 +11,11 @@ basic:
 alternative:
   is-vanilla: true
 
+limitations:
+  - "CONFLICT_GROUP:原版增伤类附魔"
+  - "CONFLICT_ENCHANT:致密"
+  - "CONFLICT_ENCHANT:穿刺"
+
 rarity: 精良
 targets:
   - 三叉戟
