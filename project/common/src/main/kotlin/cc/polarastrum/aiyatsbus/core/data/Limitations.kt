@@ -21,6 +21,7 @@ import cc.polarastrum.aiyatsbus.core.data.LimitType.*
 import cc.polarastrum.aiyatsbus.core.util.coerceBoolean
 import cc.polarastrum.aiyatsbus.core.util.reloadable
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.LivingEntity
@@ -126,30 +127,6 @@ data class Limitations(
         slot: EquipmentSlot? = null,
         ignoreSlot: Boolean = false
     ): CheckResult {
-        return checkAvailable(checkType.limitTypes, item, checkType == CheckType.USE, creature, slot, ignoreSlot)
-    }
-
-    /**
-     * 检查操作是否被允许（重载方法）
-     *
-     * 根据指定的限制类型集合进行检查。
-     *
-     * @param limits 要检查的限制类型集合
-     * @param item 相关物品
-     * @param use 是否为使用操作
-     * @param creature 生物实体
-     * @param slot 装备槽位
-     * @param ignoreSlot 是否忽略槽位检查
-     * @return 检查结果
-     */
-    fun checkAvailable(
-        limits: Collection<LimitType>,
-        item: ItemStack,
-        use: Boolean = false,
-        creature: LivingEntity? = null,
-        slot: EquipmentSlot? = null,
-        ignoreSlot: Boolean = false
-    ): CheckResult {
         // 获取语言发送者
         val sender = creature as? Player ?: Bukkit.getConsoleSender()
 
@@ -160,15 +137,15 @@ data class Limitations(
 
         // 检查所有相关限制
         for ((type, value) in limitations) {
-            if (type !in limits) continue
-            
+            if (type !in checkType.limitTypes) continue
+
             val result = when (type) {
                 PAPI_EXPRESSION -> checkPapiExpression(value, creature)
                 PERMISSION -> checkPermission(value, creature)
                 DISABLE_WORLD -> checkDisableWorld(creature)
-                else -> checkItem(type, item, value, slot, use, ignoreSlot)
+                else -> checkItem(checkType, type, item, value, creature, slot, checkType == CheckType.USE, ignoreSlot)
             }
-            
+
             if (!result) {
                 return CheckResult.Failed(
                     sender.asLang(
@@ -243,9 +220,11 @@ data class Limitations(
      * @return 检查结果
      */
     private fun checkItem(
+        checkType: CheckType,
         type: LimitType, 
         item: ItemStack, 
-        value: String, 
+        value: String,
+        creature: LivingEntity?,
         slot: EquipmentSlot?, 
         use: Boolean, 
         ignoreSlot: Boolean
@@ -255,7 +234,7 @@ data class Limitations(
         
         return when (type) {
             SLOT -> checkSlot(itemType, slot, ignoreSlot)
-            TARGET -> checkTarget(itemType, use)
+            TARGET -> checkTarget(checkType, creature, itemType, use)
             MAX_CAPABILITY -> checkMaxCapability(itemType, enchants)
             DEPENDENCE_ENCHANT -> checkDependenceEnchant(value, enchants)
             CONFLICT_ENCHANT -> checkConflictEnchant(value, enchants)
@@ -286,12 +265,15 @@ data class Limitations(
      * 检查物品类型是否符合附魔的目标要求。
      *
      * @param itemType 物品类型
+     * @param entity 生物实体
      * @param use 是否为使用操作
      * @return 检查结果
      */
-    private fun checkTarget(itemType: Material, use: Boolean): Boolean {
+    private fun checkTarget(checkType: CheckType, entity: LivingEntity?, itemType: Material, use: Boolean): Boolean {
+        val isCreative = if (entity is Player) entity.gameMode == GameMode.CREATIVE else false
+        val isBook = itemType == Material.BOOK
         return belonging.targets.any { itemType.isInTarget(it) } || 
-               (!use && (itemType == Material.BOOK || itemType == Material.ENCHANTED_BOOK))
+               (!use && (if (checkType == CheckType.ANVIL) if (isCreative) isBook else false else isBook || itemType == Material.ENCHANTED_BOOK))
     }
 
     /**
