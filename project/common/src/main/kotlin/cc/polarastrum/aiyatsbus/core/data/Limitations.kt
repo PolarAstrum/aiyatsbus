@@ -264,16 +264,28 @@ data class Limitations(
      *
      * 检查物品类型是否符合附魔的目标要求。
      *
-     * @param itemType 物品类型
+     * @param checkType 检查类型
      * @param entity 生物实体
+     * @param itemType 物品类型
      * @param use 是否为使用操作
      * @return 检查结果
      */
-    private fun checkTarget(checkType: CheckType, entity: LivingEntity?, itemType: Material, use: Boolean): Boolean {
-        val isCreative = if (entity is Player) entity.gameMode == GameMode.CREATIVE else false
-        val isBook = itemType == Material.BOOK
-        return belonging.targets.any { itemType.isInTarget(it) } || 
-               (!use && (if (checkType == CheckType.ANVIL) if (isCreative) isBook else false else isBook || itemType == Material.ENCHANTED_BOOK))
+    private fun checkTarget(
+        checkType: CheckType,
+        entity: LivingEntity?,
+        itemType: Material,
+        use: Boolean
+    ): Boolean {
+        if (belonging.targets.any { itemType.isInTarget(it) }) return true
+        if (use) return false
+
+        val isCreative = entity is Player && entity.gameMode == GameMode.CREATIVE
+        val isBookLike = itemType == Material.BOOK || itemType == Material.ENCHANTED_BOOK
+
+        return when (checkType) {
+            CheckType.ANVIL -> if (isCreative) isBookLike else itemType == Material.ENCHANTED_BOOK
+            else -> isBookLike
+        }
     }
 
     /**
