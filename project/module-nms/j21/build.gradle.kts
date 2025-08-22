@@ -4,7 +4,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
-    compileOnly("ink.ptms.core:v12105:12105:mapped")
+    compileOnly("paper:v12104:12104:core")
     compileOnly(project(":project:module-nms"))
     compileOnly(project(":project:common"))
     compileOnly("com.mojang:brigadier:1.2.9")
