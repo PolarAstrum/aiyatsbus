@@ -61,11 +61,9 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
         return if (versionId >= 12005) {
             NMSJ21.instance.setRepairCost(item, cost)
         } else {
-            NMSItemTag.asBukkitCopy(
-                (NMSItemTag.asNMSCopy(item) as NMSItemStack).apply {
-                    setRepairCost(cost)
-                }
-            )
+            (item as CraftItemStack).apply {
+                getProperty<NMSItemStack>("handle")?.setRepairCost(cost)
+            }
         }
     }
 
