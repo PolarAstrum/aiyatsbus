@@ -45,7 +45,7 @@ interface MinecraftItemOperator {
      * @param item 物品
      * @param cost 操作数
      */
-    fun setRepairCost(item: ItemStack, cost: Int)
+    fun setRepairCost(item: ItemStack, cost: Int) : ItemStack
 
     /**
      * 创建物品堆栈

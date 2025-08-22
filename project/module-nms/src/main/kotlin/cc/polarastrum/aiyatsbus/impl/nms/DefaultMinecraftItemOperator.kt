@@ -57,11 +57,15 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
         }
     }
 
-    override fun setRepairCost(item: ItemStack, cost: Int) {
-        if (versionId >= 12005) {
+    override fun setRepairCost(item: ItemStack, cost: Int): ItemStack {
+        return if (versionId >= 12005) {
             NMSJ21.instance.setRepairCost(item, cost)
         } else {
-            (NMSItemTag.asNMSCopy(item) as NMSItemStack).setRepairCost(cost)
+            NMSItemTag.asBukkitCopy(
+                (NMSItemTag.asNMSCopy(item) as NMSItemStack).apply {
+                    setRepairCost(cost)
+                }
+            )
         }
     }
 

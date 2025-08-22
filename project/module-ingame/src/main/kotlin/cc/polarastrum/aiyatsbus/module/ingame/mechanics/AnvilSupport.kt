@@ -128,15 +128,18 @@ object AnvilSupport {
             return
         }
 
-        if (useReworkPenalty && !result.onlyEditName) result.item?.repairCost = reworkPenalty.calcToInt("repairCost" to (result.item?.repairCost ?: 0))
+        var resultItem = result.item
+        if (useReworkPenalty && !result.onlyEditName && resultItem != null) {
+            resultItem = resultItem.setRepairCost(reworkPenalty.calcToInt("repairCost" to resultItem.getRepairCost()))
+        }
         e.inventory.repairCost = result.experience
         e.inventory.repairCostAmount = result.costItemAmount
-        e.result = result.item
-        e.inventory.result = result.item
+        e.result = resultItem
+        e.inventory.result = resultItem
     }
 
     fun doMerge(left: ItemStack, right: ItemStack?, name: String?, player: Player): AnvilResult {
-        var experience = 0.0
+        var experience = if (useReworkPenalty) left.getRepairCost().toDouble() else 0.0
         var costItemAmount = 0
         var result: ItemStack? = left.clone()
         var renameText = name

@@ -22,6 +22,7 @@ import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.trading.MerchantRecipeList
 import org.bukkit.craftbukkit.v1_21_R4.entity.CraftLivingEntity
 import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftItemType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -42,8 +43,10 @@ class NMSJ21Impl : NMSJ21() {
         return (CraftItemStack.asNMSCopy(item) as NMSItemStack)[DataComponents.REPAIR_COST] ?: 0
     }
 
-    override fun setRepairCost(item: ItemStack, cost: Int) {
-        (CraftItemStack.asNMSCopy(item) as NMSItemStack)[DataComponents.REPAIR_COST] = cost
+    override fun setRepairCost(item: ItemStack, cost: Int) : ItemStack {
+        return CraftItemStack.asBukkitCopy((CraftItemStack.asNMSCopy(item) as NMSItemStack).apply {
+            this[DataComponents.REPAIR_COST] = cost
+        })
     }
 
     override fun adaptMerchantRecipe(merchantRecipeList: Any, player: Player) {
