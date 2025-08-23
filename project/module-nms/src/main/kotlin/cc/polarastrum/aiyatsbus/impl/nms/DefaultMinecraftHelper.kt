@@ -20,7 +20,9 @@ import cc.polarastrum.aiyatsbus.core.MinecraftHelper
 import io.papermc.paper.adventure.AdventureComponent
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.minecraft.network.chat.IChatBaseComponent
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.craftbukkit.v1_20_R3.util.CraftChatMessage
+import org.bukkit.inventory.ItemStack
 import taboolib.module.nms.MinecraftVersion.isUniversalCraftBukkit
 import taboolib.module.nms.MinecraftVersion.versionId
 
@@ -45,5 +47,9 @@ class DefaultMinecraftHelper : MinecraftHelper {
             }
         }
         return CraftChatMessage.toJSON(iChatBaseComponent as IChatBaseComponent)
+    }
+
+    override fun asCraftMirror(nmsItemStack: Any): ItemStack {
+        return CraftItemStack.asCraftMirror(nmsItemStack as NMSItemStack)
     }
 }

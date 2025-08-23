@@ -73,13 +73,13 @@ object PacketDisplay {
     }
 
     private fun renderItem(item: Any, player: Player): Any {
-        val bkItem = NMSItemTag.asBukkitCopy(item)
+        val bkItem = Aiyatsbus.api().getMinecraftAPI().getHelper().asCraftMirror(item)
         if (bkItem.isNull) return item
         return bkItem.toDisplayMode(player).getProperty("handle")!!
     }
 
     private fun recoverItem(item: Any, player: Player): Any {
-        val bkItem = NMSItemTag.asBukkitCopy(item)
+        val bkItem = Aiyatsbus.api().getMinecraftAPI().getHelper().asCraftMirror(item)
         if (bkItem.isNull) return item
         return bkItem.toRevertMode(player).getProperty("handle")!!
     }

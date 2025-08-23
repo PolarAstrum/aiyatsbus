@@ -21,9 +21,10 @@ package cc.polarastrum.aiyatsbus.impl.nms
 import cc.polarastrum.aiyatsbus.core.MinecraftPacketHandler
 import cc.polarastrum.aiyatsbus.core.toRevertMode
 import cc.polarastrum.aiyatsbus.core.util.isNull
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
+import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.module.nms.MinecraftVersion.isUniversal
-import taboolib.module.nms.NMSItemTag
 import taboolib.module.nms.PacketReceiveEvent
 
 /**
@@ -62,8 +63,8 @@ class DefaultMinecraftPacketHandler : MinecraftPacketHandler {
     }
 
     private fun handleItem(nmsItem: Any?, player: Player): Any? {
-        val bkItem = NMSItemTag.asBukkitCopy(nmsItem ?: return null)
+        val bkItem = CraftItemStack.asCraftMirror(nmsItem as? NMSItemStack ?: return null)
         if (bkItem.isNull) return null
-        return NMSItemTag.asNMSCopy(bkItem.toRevertMode(player))
+        return (bkItem.toRevertMode(player) as CraftItemStack).getProperty("handle")
     }
 }

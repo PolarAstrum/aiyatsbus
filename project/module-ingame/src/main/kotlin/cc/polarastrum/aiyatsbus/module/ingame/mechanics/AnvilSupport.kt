@@ -123,6 +123,8 @@ object AnvilSupport {
 
         // 失败
         if (result == AnvilResult.Failed) {
+            e.result = null
+            e.inventory.result = null
             return
         }
 
