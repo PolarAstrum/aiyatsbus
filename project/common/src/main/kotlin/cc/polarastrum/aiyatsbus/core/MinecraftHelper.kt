@@ -52,4 +52,12 @@ interface MinecraftHelper {
      * @return CraftItemStack 对象
      */
     fun asCraftMirror(nmsItemStack: Any): ItemStack
+
+    /**
+     * 通过 CraftItemStack 直接获取 NMSItemStack, 避免转换
+     *
+     * @param item CraftItemStack 对象
+     * @return NMS 的 ItemStack 对象
+     */
+    fun getCraftItemStackHandle(item: ItemStack): Any
 }

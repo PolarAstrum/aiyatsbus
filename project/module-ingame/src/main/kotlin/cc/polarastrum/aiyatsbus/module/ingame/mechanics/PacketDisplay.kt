@@ -6,8 +6,6 @@ import cc.polarastrum.aiyatsbus.core.toRevertMode
 import cc.polarastrum.aiyatsbus.core.util.isNull
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.library.reflex.Reflex.Companion.getProperty
-import taboolib.module.nms.NMSItemTag
 import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.PacketSendEvent
 
@@ -75,12 +73,12 @@ object PacketDisplay {
     private fun renderItem(item: Any, player: Player): Any {
         val bkItem = Aiyatsbus.api().getMinecraftAPI().getHelper().asCraftMirror(item)
         if (bkItem.isNull) return item
-        return bkItem.toDisplayMode(player).getProperty("handle")!!
+        return Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(bkItem.toDisplayMode(player))
     }
 
     private fun recoverItem(item: Any, player: Player): Any {
         val bkItem = Aiyatsbus.api().getMinecraftAPI().getHelper().asCraftMirror(item)
         if (bkItem.isNull) return item
-        return bkItem.toRevertMode(player).getProperty("handle")!!
+        return Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(bkItem.toRevertMode(player))
     }
 }

@@ -40,7 +40,7 @@ subprojects {
             disableWhenPrimitiveLoaderError = true
         }
         version {
-            taboolib = "6.2.3-test-15"
+            taboolib = "6.2.3-test-17"
         }
     }
 

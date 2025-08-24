@@ -23,11 +23,18 @@ import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.fixedEnchants
 import cc.polarastrum.aiyatsbus.core.toDisplayMode
+import cc.polarastrum.aiyatsbus.core.toRevertMode
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.function.submitAsync
+import taboolib.common5.util.createBar
+import taboolib.module.chat.colored
+import taboolib.module.nms.NMSItemTag
 import taboolib.platform.util.giveItem
+import kotlin.system.measureTimeMillis
 
 /**
  * Aiyatsbus
@@ -40,6 +47,18 @@ val devSubCommand = subCommand {
     execute<Player> { sender, _, _ ->
 //        sender.giveItem(sender.equipment.itemInMainHand.toDisplayMode(sender))
         val item = sender.equipment.itemInMainHand
+        val clone = item.clone()
+
+        submitAsync {
+            testItemStackCopy(clone, sender)
+            testItemStackHandle(clone, sender)
+        }
+
+        sender.giveItem(clone.toDisplayMode(sender))
+        sender.giveItem(clone.toRevertMode(sender))
+
+        if (true) return@execute
+
         sender.sendMessage("----- fixedEnchants -----")
         val aiyatsbusEt = item.fixedEnchants.keys.firstOrNull()
         if (aiyatsbusEt != null) {
@@ -81,4 +100,24 @@ val devSubCommand = subCommand {
             sender.sendMessage((et5 is Enchantment).toString())
         }
     }
+}
+
+private fun testItemStackCopy(item: ItemStack, player: Player) {
+    val nmsItem = NMSItemTag.asNMSCopy(item)
+    measureTimeMillis {
+        repeat(100000) { c ->
+            NMSItemTag.asNMSCopy(NMSItemTag.asBukkitCopy(nmsItem).toDisplayMode(player))
+            player.sendActionBar("当前进度: " + createBar("&f|".colored(), "&a|".colored(), 100, c.toDouble() / 100000.0))
+        }
+    }.let { player.sendMessage(it.toString() + " ms") }
+}
+
+private fun testItemStackHandle(item: ItemStack, player: Player) {
+    val nmsItem = NMSItemTag.asNMSCopy(item)
+    measureTimeMillis {
+        repeat(100000) { c ->
+            Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(Aiyatsbus.api().getMinecraftAPI().getHelper().asCraftMirror(nmsItem).toDisplayMode(player))
+            player.sendActionBar("当前进度: " + createBar("&f|".colored(), "&a|".colored(), 100, c.toDouble() / 100000.0))
+        }
+    }.let { player.sendMessage(it.toString() + " ms") }
 }
