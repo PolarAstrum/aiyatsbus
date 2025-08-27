@@ -33,7 +33,7 @@ abstract class NMSJ21 {
 
     abstract fun getRepairCost(item: ItemStack): Int
 
-    abstract fun setRepairCost(item: ItemStack, cost: Int)
+    abstract fun setRepairCost(item: ItemStack, cost: Int) : ItemStack
 
     abstract fun adaptMerchantRecipe(merchantRecipeList: Any, player: Player)
 

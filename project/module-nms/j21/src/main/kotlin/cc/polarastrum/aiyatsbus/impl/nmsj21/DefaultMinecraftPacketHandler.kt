@@ -26,9 +26,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps
 import net.minecraft.network.HashedPatchMap
 import net.minecraft.network.HashedStack
 import net.minecraft.world.item.ItemStack
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import taboolib.module.nms.MinecraftVersion.isUniversal
-import taboolib.module.nms.NMSItemTag
 import taboolib.module.nms.PacketReceiveEvent
 
 /**
@@ -89,9 +89,9 @@ class DefaultMinecraftPacketHandler : MinecraftPacketHandler {
             var itemToMatch = serverItem
 
             // 判断是不是本插件的物品
-            val bkItem = NMSItemTag.asBukkitCopy(itemToMatch)
+            val bkItem = CraftItemStack.asCraftMirror(itemToMatch)
             if (!bkItem.isNull) {
-                itemToMatch = NMSItemTag.asNMSCopy(bkItem.toDisplayMode(player)) as ItemStack
+                itemToMatch = (bkItem.toDisplayMode(player) as CraftItemStack).handle
             }
 
             // 匹配 (动态修饰的部分不一样也要同步, 不然怎么刷新呢)

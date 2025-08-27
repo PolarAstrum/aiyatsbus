@@ -78,6 +78,7 @@ data class Trigger(
                     Failed to initialize trigger. To avoid data loss, the server will be forced to shut down!
                 """.t())
                 ex.printStackTrace()
+                Thread.sleep(5000)
                 Runtime.getRuntime().halt(-1)
             }
         }

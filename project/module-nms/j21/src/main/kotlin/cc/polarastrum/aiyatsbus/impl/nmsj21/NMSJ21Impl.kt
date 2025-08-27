@@ -19,9 +19,9 @@ package cc.polarastrum.aiyatsbus.impl.nmsj21
 import cc.polarastrum.aiyatsbus.core.toDisplayMode
 import cc.polarastrum.aiyatsbus.core.util.isNull
 import net.minecraft.core.component.DataComponents
-import net.minecraft.world.item.trading.MerchantRecipeList
-import org.bukkit.craftbukkit.v1_21_R4.entity.CraftLivingEntity
-import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftItemStack
+import net.minecraft.world.item.trading.MerchantOffers
+import org.bukkit.craftbukkit.entity.CraftLivingEntity
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -39,22 +39,24 @@ import kotlin.jvm.optionals.getOrNull
 class NMSJ21Impl : NMSJ21() {
 
     override fun getRepairCost(item: ItemStack): Int {
-        return (CraftItemStack.asNMSCopy(item) as NMSItemStack)[DataComponents.REPAIR_COST] ?: 0
+        return (item as CraftItemStack).handle[DataComponents.REPAIR_COST] ?: 0
     }
 
-    override fun setRepairCost(item: ItemStack, cost: Int) {
-        (CraftItemStack.asNMSCopy(item) as NMSItemStack)[DataComponents.REPAIR_COST] = cost
+    override fun setRepairCost(item: ItemStack, cost: Int) : ItemStack {
+        return item.apply {
+            (this as CraftItemStack).handle[DataComponents.REPAIR_COST] = cost
+        }
     }
 
     override fun adaptMerchantRecipe(merchantRecipeList: Any, player: Player) {
 
         fun adapt(item: Any, player: Player): Any {
-            val bkItem = CraftItemStack.asBukkitCopy(item as NMSItemStack)
+            val bkItem = CraftItemStack.asCraftMirror(item as NMSItemStack)
             if (bkItem.isNull) return item
-            return CraftItemStack.asNMSCopy(bkItem.toDisplayMode(player))
+            return (bkItem.toDisplayMode(player) as CraftItemStack).handle
         }
 
-        val previous = merchantRecipeList as MerchantRecipeList
+        val previous = merchantRecipeList as MerchantOffers
         for (i in 0 until previous.size) {
             with(previous[i]!!) {
                 baseCostA.setProperty("itemStack", adapt(baseCostA.itemStack, player))

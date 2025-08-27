@@ -128,15 +128,18 @@ object AnvilSupport {
             return
         }
 
-        if (useReworkPenalty && !result.onlyEditName) result.item?.repairCost = reworkPenalty.calcToInt("repairCost" to (result.item?.repairCost ?: 0))
+        var resultItem = result.item
+        if (useReworkPenalty && !result.onlyEditName && resultItem != null) {
+            resultItem = resultItem.setRepairCost(reworkPenalty.calcToInt("repairCost" to resultItem.getRepairCost()))
+        }
         e.inventory.repairCost = result.experience
         e.inventory.repairCostAmount = result.costItemAmount
-        e.result = result.item
-        e.inventory.result = result.item
+        e.result = resultItem
+        e.inventory.result = resultItem
     }
 
     fun doMerge(left: ItemStack, right: ItemStack?, name: String?, player: Player): AnvilResult {
-        var experience = 0.0
+        var experience = if (useReworkPenalty) left.getRepairCost().toDouble() else 0.0
         var costItemAmount = 0
         var result: ItemStack? = left.clone()
         var renameText = name
@@ -225,6 +228,8 @@ object AnvilSupport {
                 (left.dura + ceil(repairCombineValue.calcToDouble("right" to right.dura, "max" to left.type.maxDurability)).cint)
                     .coerceIn(0..left.type.maxDurability.toInt())
             experience += combineRepairCost
+            // 同样的物品合成也要设置 costItemAmount 为 1，不然就会出现第二个物品留在铁砧的情况
+            costItemAmount += 1
             onlyEditName = false
         }
 
@@ -289,6 +294,9 @@ object AnvilSupport {
                 val previousLevel = leftEnchants[outEnchant] ?: 0
                 experience += enchantCostPerLevel.calcToDouble("max_level" to outEnchant.basicData.maxLevel) * (level - previousLevel)
             }
+
+            // 暂时不清楚是否需要
+            if (costItemAmount == 0) costItemAmount += 1
         }
 
         // 如果只改了名字就不让过, 因为只改名字的情况已经在前面返回了

@@ -94,8 +94,8 @@ object EnchantInfoUI {
         player.record(UIType.ENCHANT_INFO, "enchant" to enchant, "level" to level, "checked" to checked, "category" to category)
         player.openMenu<PageableChest<String>>(
             config.title()
-                .replace("[enchant_display_roman]", enchant.displayName(level)
-                    .component().buildColored().toLegacyText())
+                .replace("[enchant_display_roman]", enchant.displayName(level))
+                .component().buildColored().toLegacyText()
         ) {
 //            virtualize()
 

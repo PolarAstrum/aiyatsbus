@@ -20,12 +20,12 @@ package cc.polarastrum.aiyatsbus.module.ingame.mechanics
 
 import cc.polarastrum.aiyatsbus.core.*
 import cc.polarastrum.aiyatsbus.core.data.CheckType
-import cc.polarastrum.aiyatsbus.core.data.registry.Rarity
 import cc.polarastrum.aiyatsbus.core.util.MathUtils.preheatExpression
 import cc.polarastrum.aiyatsbus.core.util.MathUtils.selectByWeight
 import cc.polarastrum.aiyatsbus.core.util.calcToDouble
 import cc.polarastrum.aiyatsbus.core.util.calcToInt
 import cc.polarastrum.aiyatsbus.core.util.serialized
+import com.google.common.collect.HashBasedTable
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.enchantments.EnchantmentOffer
@@ -38,11 +38,9 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.console
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.submit
 import taboolib.common.util.randomDouble
-import taboolib.common5.RandomList
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
@@ -52,8 +50,8 @@ import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketSendEvent
 import taboolib.module.ui.InventoryViewProxy
 import taboolib.platform.util.onlinePlayers
-import taboolib.platform.util.sendActionBar
 import taboolib.platform.util.serializeToByteArray
+import java.util.UUID
 import kotlin.random.Random
 
 @ConfigNode(bind = "core/mechanisms/enchanting_table.yml")
@@ -73,7 +71,7 @@ object EnchantingTableSupport {
      * 记录附魔台三个选项的附魔
      * 位置 to whichButton to (Enchantment to level)
      */
-    private val enchantmentOffers = mutableMapOf<String, List<EnchantmentOffer?>>()
+    private val enchantmentOffers = HashBasedTable.create<UUID, String, List<EnchantmentOffer?>>()
 
     @Config("core/mechanisms/enchanting_table.yml", autoReload = true)
     lateinit var conf: Configuration
@@ -207,7 +205,7 @@ object EnchantingTableSupport {
         val bonus = event.enchantmentBonus.coerceAtMost(16)
         shelfAmount[location] = bonus
         // 记录附魔台三个附魔选项
-        enchantmentOffers[location] = event.offers.toList()
+        enchantmentOffers.put(event.enchanter.uniqueId, location, event.offers.toList())
         if (dataDrivenEnchantment) {
             // 预先为所有附魔项生成一个附魔
             val enchants = doPrepareEnchant(event.enchanter, event.item, bonus)
@@ -229,7 +227,7 @@ object EnchantingTableSupport {
         val item = event.item.clone()
         val cost = event.whichButton() + 1
         val bonus = shelfAmount[location] ?: 1
-        val enchantmentOfferHint = enchantmentOffers[location]?.get(event.whichButton()) ?: return
+        val enchantmentOfferHint = enchantmentOffers.get(event.enchanter.uniqueId, location)?.get(event.whichButton()) ?: return
 
         // 书附魔完变成附魔书
         if (item.type == Material.BOOK) item.type = Material.ENCHANTED_BOOK
