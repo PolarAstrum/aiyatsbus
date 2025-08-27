@@ -34,7 +34,7 @@ import org.bukkit.inventory.ItemStack
  * @author mical
  * @since 2024/2/17 15:01
  */
-class LegacyCraftEnchantment(
+class LegacyAiyatsbusCraftEnchantment(
     private val enchant: AiyatsbusEnchantmentBase
 ) : Enchantment(enchant.enchantmentKey), AiyatsbusEnchantment by enchant {
 
@@ -56,7 +56,7 @@ class LegacyCraftEnchantment(
 
     override fun conflictsWith(other: Enchantment): Boolean = enchant.conflictsWith(other)
 
-    override fun canEnchantItem(item: ItemStack): Boolean = true
+    override fun canEnchantItem(item: ItemStack): Boolean = enchant.canEnchantItem(item)
 
     override fun displayName(level: Int): Component {
         return enchant.displayName(level).legacyToAdventure()

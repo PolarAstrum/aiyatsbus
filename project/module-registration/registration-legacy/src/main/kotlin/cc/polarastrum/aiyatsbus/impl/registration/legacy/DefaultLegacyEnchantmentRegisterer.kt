@@ -25,6 +25,7 @@ import taboolib.common.platform.Awake
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.nmsProxyClass
 
 /**
  * Aiyatsbus
@@ -34,6 +35,9 @@ import taboolib.module.nms.MinecraftVersion
  * @since 2024/2/17 18:51
  */
 object DefaultLegacyEnchantmentRegisterer : AiyatsbusEnchantmentRegisterer {
+
+    val clazzLegacyVanillaCraftEnchantment =
+        nmsProxyClass<Enchantment>(DefaultLegacyEnchantmentRegisterer::class.java.packageName + ".LegacyVanillaCraftEnchantment")
 
     @Awake(LifeCycle.CONST)
     fun init() {
@@ -50,11 +54,18 @@ object DefaultLegacyEnchantmentRegisterer : AiyatsbusEnchantmentRegisterer {
     }
 
     override fun register(enchant: AiyatsbusEnchantmentBase): Enchantment {
-        val enchantment = LegacyCraftEnchantment(enchant)
-        // 不需要向 Bukkit 注册原版附魔
-        if (!enchant.alternativeData.isVanilla) {
-            Enchantment.registerEnchantment(enchantment)
+        val enchantment = if (enchant.alternativeData.isVanilla) {
+            val bukkitEnchantment = Enchantment.getByKey(enchant.enchantmentKey)!!
+            clazzLegacyVanillaCraftEnchantment
+                .getConstructor(AiyatsbusEnchantmentBase::class.java, Enchantment::class.java)
+                .newInstance(enchant, bukkitEnchantment).also {
+                    Enchantment::class.java.getProperty<HashMap<*, *>>("byKey", true)!!.remove(bukkitEnchantment.key)
+                    Enchantment::class.java.getProperty<HashMap<*, *>>("byName", true)!!.remove(bukkitEnchantment.name)
+                }
+        } else {
+            LegacyAiyatsbusCraftEnchantment(enchant)
         }
+        Enchantment.registerEnchantment(enchantment)
         return enchantment
     }
 

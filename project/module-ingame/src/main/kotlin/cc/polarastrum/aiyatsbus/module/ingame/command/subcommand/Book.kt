@@ -40,7 +40,7 @@ val bookSubCommand = subCommand cmd@{
         suggestion<CommandSender> { _, _ -> AiyatsbusCommand.enchantNamesAndIds }
         execute<CommandSender> { sender, args, _ -> handleBook(sender, null, aiyatsbusEt(args["enchant"])!!) }
         dynamic("level", true) {
-            suggestion<Player> level@{ _, cmd ->
+            suggestionUncheck<Player> level@{ _, cmd ->
                 val maxLevel = (aiyatsbusEt(cmd["enchant"])?.basicData?.maxLevel ?: return@level listOf())
                 buildList { repeat(maxLevel) { add("${it + 1}") } }
             }

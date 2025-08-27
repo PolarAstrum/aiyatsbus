@@ -51,9 +51,9 @@ class NMSJ21Impl : NMSJ21() {
     override fun adaptMerchantRecipe(merchantRecipeList: Any, player: Player) {
 
         fun adapt(item: Any, player: Player): Any {
-            val bkItem = CraftItemStack.asBukkitCopy(item as NMSItemStack)
+            val bkItem = CraftItemStack.asCraftMirror(item as NMSItemStack)
             if (bkItem.isNull) return item
-            return CraftItemStack.asNMSCopy(bkItem.toDisplayMode(player))
+            return (bkItem.toDisplayMode(player) as CraftItemStack).handle
         }
 
         val previous = merchantRecipeList as MerchantOffers

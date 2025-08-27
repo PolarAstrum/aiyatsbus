@@ -39,7 +39,7 @@ class DefaultAiyatsbusMinecraftAPI : AiyatsbusMinecraftAPI {
 
     /** 杂项 */
     val nmsHelper by lazy {
-        proxy<MinecraftHelper>("$group.nms.DefaultMinecraftHelper")
+        proxy<MinecraftHelper>("$group.nmsj21.DefaultMinecraftHelper")
     }
 
     /** 物品操作接口 */
