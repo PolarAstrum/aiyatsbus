@@ -56,16 +56,4 @@ class KetherScriptHandler : ScriptHandler {
         val s = if (source.startsWith("def ")) source else "def main = { $source }"
         KetherShell.mainCache.scriptMap[s] = s.parseKetherScript(listOf("aiyatsbus"))
     }
-
-    override fun invoke(
-        source: List<String>,
-        sender: CommandSender?,
-        variables: Map<String, Any?>
-    ): CompletableFuture<Any?>? {
-        TODO("Not yet implemented")
-    }
-
-    override fun preheat(source: List<String>) {
-        TODO("Not yet implemented")
-    }
 }

@@ -19,7 +19,6 @@ package cc.polarastrum.aiyatsbus.module.script
 import cc.polarastrum.aiyatsbus.core.script.AiyatsbusScriptHandler
 import cc.polarastrum.aiyatsbus.core.script.ScriptHandler
 import cc.polarastrum.aiyatsbus.core.script.ScriptType
-import cc.polarastrum.aiyatsbus.module.script.fluxon.FluxonScriptHandler
 import cc.polarastrum.aiyatsbus.module.script.kether.KetherScriptHandler
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake

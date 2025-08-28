@@ -33,7 +33,7 @@ subprojects {
                 Kether,
                 MinecraftChat,
                 MinecraftEffect,
-                Metrics
+                Metrics,
             )
             forceDownloadInDev = false
             disableOnSkippedVersion = false
