@@ -118,8 +118,9 @@ object AnvilSupport {
     fun onAnvil(e: PrepareAnvilEvent) {
         e.inventory.maximumRepairCost = maxCost
         val renameText = e.inventory.renameText ?: ""
+        val viewer = e.viewers.getOrNull(0) as? Player ?: return
 
-        val result = doMerge(e.inventory.firstItem ?: return, e.inventory.secondItem, renameText, e.viewers[0] as Player)
+        val result = doMerge(e.inventory.firstItem ?: return, e.inventory.secondItem, renameText, viewer)
 
         // 失败
         if (result == AnvilResult.Failed) {

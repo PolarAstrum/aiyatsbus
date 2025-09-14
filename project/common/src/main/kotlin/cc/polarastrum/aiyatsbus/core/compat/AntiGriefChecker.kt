@@ -23,6 +23,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.server.PluginDisableEvent
 import org.bukkit.event.server.PluginEnableEvent
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.getProxyPlayer
 
 /**
  * 反破坏检查器
@@ -60,7 +61,9 @@ object AntiGriefChecker {
      * @return 如果玩家可以破坏则返回 true
      */
     fun canBreak(player: Player, location: Location): Boolean =
-        checkPermission(player) { it.canBreak(player, location) }
+        checkPermission(player) {
+            it.canBreak(player, location)
+        }
 
     /**
      * 检查玩家是否可以与方块交互
