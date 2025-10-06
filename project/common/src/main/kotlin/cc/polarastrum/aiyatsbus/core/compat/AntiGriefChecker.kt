@@ -62,6 +62,11 @@ object AntiGriefChecker {
      */
     fun canBreak(player: Player, location: Location): Boolean =
         checkPermission(player) {
+//            with(getProxyPlayer("Y_Mical")) {
+//                this?.sendMessage("插件名称: " + it.getAntiGriefPluginName())
+//                this?.sendMessage("是否运行: " + it.checkRunning())
+//                this?.sendMessage("检查结果: " + it.canBreak(player, location).toString())
+//            }
             it.canBreak(player, location)
         }
 

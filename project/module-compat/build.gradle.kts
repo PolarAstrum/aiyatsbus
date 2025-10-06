@@ -42,6 +42,7 @@ dependencies {
     compileOnly("biz.princeps:landlord-core:4.364")                               // Landlord
     compileOnly("com.github.UlrichBR:UClans-API:8.8.0-R1")                        // UltimateClans
     compileOnly("cn.lunadeer:DominionAPI:4.3")                                    // UltimateClans
+    compileOnly("com.intellectualsites.plotsquared:plotsquared-bukkit:7.3.5")     // PlotSquared
 
     compileOnly("public:Residence:minimize")                                      // Residence, 为维护作者权益已去除所有逻辑代码
     compileOnly("public:CMILib:1.4.7.2:minimize")                                 // CMILib, 为维护作者权益已去除所有逻辑代码

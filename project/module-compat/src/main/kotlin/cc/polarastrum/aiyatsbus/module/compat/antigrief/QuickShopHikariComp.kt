@@ -19,15 +19,15 @@ import taboolib.common.platform.Awake
 class QuickShopHikariComp : AntiGrief {
 
     override fun canPlace(player: Player, location: Location): Boolean {
-        return QuickShopAPI.getInstance().shopManager.getShop(location)?.owner == player
+        return (QuickShopAPI.getInstance().shopManager.getShop(location)?.owner ?: return true) == player
     }
 
     override fun canBreak(player: Player, location: Location): Boolean {
-        return QuickShopAPI.getInstance().shopManager.getShop(location)?.owner == player
+        return (QuickShopAPI.getInstance().shopManager.getShop(location)?.owner ?: return true) == player
     }
 
     override fun canInteract(player: Player, location: Location): Boolean {
-        return QuickShopAPI.getInstance().shopManager.getShop(location)?.owner == player
+        return (QuickShopAPI.getInstance().shopManager.getShop(location)?.owner ?: return true) == player
     }
 
     override fun canInteractEntity(player: Player, entity: Entity): Boolean {
