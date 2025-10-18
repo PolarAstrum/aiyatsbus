@@ -27,7 +27,6 @@ import cc.polarastrum.aiyatsbus.core.compat.AntiGrief
 import cc.polarastrum.aiyatsbus.core.compat.AntiGriefChecker
 import org.bukkit.Location
 import org.bukkit.entity.Entity
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import p1xel.nobuildplus.Flags
 import p1xel.nobuildplus.NoBuildPlus
@@ -44,20 +43,20 @@ import taboolib.common.platform.Awake
 class NoBuildPlusComp : AntiGrief {
 
     override fun canPlace(player: Player, location: Location): Boolean {
-        return NoBuildPlus.getInstance().api.canExecute(player.world.name, Flags.build)
+        return !NoBuildPlus.getInstance().api.canExecute(player.world.name, Flags.build)
     }
 
     override fun canBreak(player: Player, location: Location): Boolean {
-        return NoBuildPlus.getInstance().api.canExecute(player.world.name, Flags.destroy)
+        return !NoBuildPlus.getInstance().api.canExecute(player.world.name, Flags.destroy)
     }
 
     override fun canInteract(player: Player, location: Location): Boolean {
-        return NoBuildPlus.getInstance().api.canExecute(player.world.name, Flags.use)
+        return !NoBuildPlus.getInstance().api.canExecute(player.world.name, Flags.use)
     }
 
     override fun canInteractEntity(player: Player, entity: Entity): Boolean {
         val world = player.world.name
-        return when (entity.type.name.uppercase()) {
+        return !when (entity.type.name.uppercase()) {
             "VILLAGER" -> NoBuildPlus.getInstance().api.canExecute(world, Flags.villager)
             "HORSE", "DONKEY", "MULE", "SKELETON_HORSE", "ZOMBIE_HORSE", "MINECART", "MINECART_CHEST", "MINECART_FURNACE", "MINECART_HOPPER", "MINECART_TNT" -> NoBuildPlus.getInstance().api.canExecute(
                 world,
@@ -68,12 +67,12 @@ class NoBuildPlusComp : AntiGrief {
             "ARMOR_STAND" -> NoBuildPlus.getInstance().api.canExecute(world, Flags.armorstand)
             "PAINTING" -> NoBuildPlus.getInstance().api.canExecute(world, Flags.painting)
             "FISHING_HOOK" -> NoBuildPlus.getInstance().api.canExecute(world, Flags.hook)
-            else -> true
+            else -> false
         }
     }
 
     override fun canDamage(player: Player, entity: Entity): Boolean {
-        return NoBuildPlus.getInstance().api.canExecute(
+        return !NoBuildPlus.getInstance().api.canExecute(
             player.world.name,
             if (entity is Player) Flags.pvp else Flags.mob_damage
         )
