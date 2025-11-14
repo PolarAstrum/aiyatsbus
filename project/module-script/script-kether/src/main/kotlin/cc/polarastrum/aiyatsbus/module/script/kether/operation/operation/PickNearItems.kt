@@ -24,7 +24,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import taboolib.common.platform.function.submit
+import taboolib.platform.util.submit
 
 /**
  * Aiyatsbus
@@ -45,7 +45,7 @@ object PickNearItems {
     }
 
     fun pickNearItems(player: Player, location: Location, checkRadius: Int, checkDelay: Long) {
-        submit(delay = checkDelay) {
+        player.submit(delay = checkDelay) {
             for (item in location.getNearbyEntitiesByType(Item::class.java, checkRadius.toDouble())) {
                 if (GuardItemChecker.checkIsGuardItem(item, player)) continue
                 if (!item.isDead && canFitItem(player, item.itemStack)) {

@@ -30,6 +30,7 @@ import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.platform.util.onlinePlayers
+import taboolib.platform.util.submit
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -77,65 +78,67 @@ class DefaultAiyatsbusTickHandler : AiyatsbusTickHandler {
                 val slots = ench.targets.flatMap { it.activeSlots }.toSet()
 
                 onlinePlayers.forEach { player ->
-                    var flag = false
-                    val record = recorder.computeIfAbsent(player.uniqueId) { mutableSetOf() }
+                    player.submit {
+                        var flag = false
+                        val record = recorder.computeIfAbsent(player.uniqueId) { mutableSetOf() }
 
-                    // 一般能存在 routine 里的, trigger 和 tickers 必不为 null
-                    val ticker =
-                        ench.trigger!!.tickers[id] ?: error("Unknown ticker $id for enchantment ${ench.basicData.id}")
+                        // 一般能存在 routine 里的, trigger 和 tickers 必不为 null
+                        val ticker =
+                            ench.trigger!!.tickers[id] ?: error("Unknown ticker $id for enchantment ${ench.basicData.id}")
 
-                    val variables = mutableMapOf(
-                        "player" to player,
-                        "enchant" to ench,
-                    )
+                        val variables = mutableMapOf(
+                            "player" to player,
+                            "enchant" to ench,
+                        )
 
-                    variables += ench.variables.ordinary
+                        variables += ench.variables.ordinary
 
-                    slots.forEach slot@{ slot ->
-                        val item: ItemStack
-                        try {
-                            item = player.inventory.getItem(slot)
-                        } catch (_: Throwable) {
-                            // 离谱的低版本报错:
-                            // java.lang.NullPointerException: player.inventory.getItem(slot) must not be null
-                            return@slot
-                        }
-                        if (item.isNull) return@slot
-
-                        val level = item.etLevel(ench)
-
-                        if (level > 0) {
-                            val checkResult = ench.limitations.checkAvailable(CheckType.USE, item, player, slot)
-                            if (checkResult.isFailure) {
-                                sendDebug("----- DefaultAiyatsbusTickHandler -----")
-                                sendDebug("附魔: " + ench.basicData.name)
-                                sendDebug("原因: " + checkResult.reason)
-                                sendDebug("----- DefaultAiyatsbusTickHandler -----")
+                        slots.forEach slot@{ slot ->
+                            val item: ItemStack
+                            try {
+                                item = player.inventory.getItem(slot)
+                            } catch (_: Throwable) {
+                                // 离谱的低版本报错:
+                                // java.lang.NullPointerException: player.inventory.getItem(slot) must not be null
                                 return@slot
                             }
-                            flag = true
+                            if (item.isNull) return@slot
 
-                            val vars = variables.toMutableMap()
-                            vars += mapOf(
-                                "triggerSlot" to slot.name,
-                                "trigger-slot" to slot.name,
-                                "item" to item,
-                                "level" to level,
-                            )
+                            val level = item.etLevel(ench)
 
-                            vars += ench.variables.variables(level, item, false)
+                            if (level > 0) {
+                                val checkResult = ench.limitations.checkAvailable(CheckType.USE, item, player, slot)
+                                if (checkResult.isFailure) {
+                                    sendDebug("----- DefaultAiyatsbusTickHandler -----")
+                                    sendDebug("附魔: " + ench.basicData.name)
+                                    sendDebug("原因: " + checkResult.reason)
+                                    sendDebug("----- DefaultAiyatsbusTickHandler -----")
+                                    return@slot
+                                }
+                                flag = true
 
-                            if (!record.contains(id)) {
-                                record += id
-                                ticker.execute(ticker.preHandle, player, vars)
+                                val vars = variables.toMutableMap()
+                                vars += mapOf(
+                                    "triggerSlot" to slot.name,
+                                    "trigger-slot" to slot.name,
+                                    "item" to item,
+                                    "level" to level,
+                                )
+
+                                vars += ench.variables.variables(level, item, false)
+
+                                if (!record.contains(id)) {
+                                    record += id
+                                    ticker.execute(ticker.preHandle, player, vars)
+                                }
+
+                                ticker.execute(ticker.handle, player, vars)
                             }
-
-                            ticker.execute(ticker.handle, player, vars)
                         }
-                    }
-                    if (!flag && record.contains(id)) {
-                        record -= id
-                        ticker.execute(ticker.postHandle, player, variables)
+                        if (!flag && record.contains(id)) {
+                            record -= id
+                            ticker.execute(ticker.postHandle, player, variables)
+                        }
                     }
                 }
             }

@@ -21,7 +21,7 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.*
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.util.Vector
-import taboolib.common.platform.function.submit
+import taboolib.platform.util.submit
 
 /**
  * Aiyatsbus
@@ -47,52 +47,54 @@ object Aiming {
         if (event.projectile is AbstractArrow) {
             val player = event.entity
             var minAng = 6.28f
-            var minEntity: Entity? = null
-            for (entity in player.getNearbyEntities(range, range, range)) {
-                if (player.hasLineOfSight(entity) && entity is LivingEntity && entity.type.name.lowercase() !in blackList) {
-                    val to = entity.location.toVector().clone().subtract(player.location.toVector())
-                    val angle = event.projectile.velocity.angle(to)
-                    if (angle >= minAng) {
-                        continue
+            player.submit {
+                var minEntity: Entity? = null
+                for (entity in player.getNearbyEntities(range, range, range)) {
+                    if (player.hasLineOfSight(entity) && entity is LivingEntity && entity.type.name.lowercase() !in blackList) {
+                        val to = entity.location.toVector().clone().subtract(player.location.toVector())
+                        val angle = event.projectile.velocity.angle(to)
+                        if (angle >= minAng) {
+                            continue
+                        }
+                        minAng = angle
+                        minEntity = entity
                     }
-                    minAng = angle
-                    minEntity = entity
                 }
-            }
-            val arrow = event.projectile as AbstractArrow
-            if (minEntity != null) {
+                val arrow = event.projectile as AbstractArrow
+                if (minEntity != null) {
 
 //                TeamColorUtils.getTeamByColor(color)?.addEntry(arrow.uniqueId.toString())
-                arrow.isGlowing = true
+                    arrow.isGlowing = true
 //                TeamColorUtils.getTeamByColor(color)?.addEntry(minEntity.uniqueId.toString())
-                minEntity.isGlowing = true
+                    minEntity.isGlowing = true
 
-                submit(delay = 1L, period = ticks) {
-                    val speed = arrow.velocity.length()
-                    if (arrow.isOnGround || arrow.isDead || minEntity.isDead) {
-                        arrow.isGlowing = false
-                        minEntity.isGlowing = false
-                        cancel()
-                        return@submit
-                    }
-                    val to = minEntity.location.clone().add(Vector(0.0, 0.5, 0.0)).subtract(arrow.location).toVector()
-                    val dirVel = arrow.velocity.clone().normalize()
-                    val dirTarget = to.clone().normalize()
-                    val ang = dirVel.angle(dirTarget)
-                    var speed_ = 0.9  * speed + 0.1399999999999999
-                    if (minEntity is Player && arrow.location.distance(minEntity.location) < 8.0) {
-                        if (minEntity.isBlocking) {
-                            speed_ = speed * 0.6
+                    arrow.submit(delay = 1L, period = ticks) {
+                        val speed = arrow.velocity.length()
+                        if (arrow.isOnGround || arrow.isDead || minEntity.isDead) {
+                            arrow.isGlowing = false
+                            minEntity.isGlowing = false
+                            cancel()
+                            return@submit
                         }
+                        val to = minEntity.location.clone().add(Vector(0.0, 0.5, 0.0)).subtract(arrow.location).toVector()
+                        val dirVel = arrow.velocity.clone().normalize()
+                        val dirTarget = to.clone().normalize()
+                        val ang = dirVel.angle(dirTarget)
+                        var speed_ = 0.9  * speed + 0.1399999999999999
+                        if (minEntity is Player && arrow.location.distance(minEntity.location) < 8.0) {
+                            if (minEntity.isBlocking) {
+                                speed_ = speed * 0.6
+                            }
+                        }
+                        val newVel = if (ang < 0.12) {
+                            dirVel.clone().multiply(speed_)
+                        } else {
+                            val newDir = dirVel.clone().multiply((ang - 0.12) / ang).add(dirTarget.clone().multiply(0.12 / ang))
+                            newDir.normalize()
+                            newDir.clone().multiply(speed_)
+                        }
+                        arrow.velocity = newVel.add(Vector(0.0, 0.03, 0.0))
                     }
-                    val newVel = if (ang < 0.12) {
-                        dirVel.clone().multiply(speed_)
-                    } else {
-                        val newDir = dirVel.clone().multiply((ang - 0.12) / ang).add(dirTarget.clone().multiply(0.12 / ang))
-                        newDir.normalize()
-                        newDir.clone().multiply(speed_)
-                    }
-                    arrow.velocity = newVel.add(Vector(0.0, 0.03, 0.0))
                 }
             }
         }

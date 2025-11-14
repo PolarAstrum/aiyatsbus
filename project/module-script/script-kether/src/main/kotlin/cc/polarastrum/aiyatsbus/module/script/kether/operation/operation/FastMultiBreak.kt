@@ -22,8 +22,8 @@ import cc.polarastrum.aiyatsbus.core.util.doBreakBlock
 import cc.polarastrum.aiyatsbus.core.util.serialized
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
+import taboolib.platform.util.submit
 
 /**
  * Aiyatsbus
@@ -40,7 +40,7 @@ object FastMultiBreak {
     }
 
     private fun fastMultiBreak(player: Player, breaks: MutableList<Location>, speed: Int) {
-        submit(delay = 0, period = 1) {
+        player.submit(delay = 0, period = 1) {
             for (i in 0 until speed) {
 
                 val loc = breaks.firstOrNull()
