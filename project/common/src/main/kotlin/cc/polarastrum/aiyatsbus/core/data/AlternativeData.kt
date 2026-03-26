@@ -23,25 +23,25 @@ data class AlternativeData(
 
     /** 是否为原版附魔，用于检测原版附魔，默认为 false */
     /** 3.0 的检测原版附魔的方法有点弱智，把检测原版放到这里其实是更好的选择 */
-    val isVanilla: Boolean = (root?.getBoolean("is-vanilla", false) ?: root?.getBoolean("is_vanilla", false)).coerceBoolean(false),
+    val isVanilla: Boolean = (root?.getBoolean("is-vanilla") ?: root?.getBoolean("is_vanilla"))?.coerceBoolean(false) ?: false,
 
     /** 是否可通过砂轮移除，默认为 true */
     val grindstoneable: Boolean = root?.getBoolean("grindstoneable", true).coerceBoolean(true),
     /** 是否为宝藏附魔，默认为 false */
-    val isTreasure: Boolean = (root?.getBoolean("is-treasure", false) ?: root?.getBoolean("is_treasure", false)).coerceBoolean(false),
+    val isTreasure: Boolean = (root?.getBoolean("is-treasure") ?: root?.getBoolean("is_treasure"))?.coerceBoolean(false) ?: false,
     /** 是否为诅咒附魔，默认为 false */
-    val isCursed: Boolean = (root?.getBoolean("is-cursed", false) ?: root?.getBoolean("is_cursed", false)).coerceBoolean(false),
+    val isCursed: Boolean = (root?.getBoolean("is-cursed") ?: root?.getBoolean("is_cursed"))?.coerceBoolean(false) ?: false,
     /** 是否可通过交易获得，默认为 true */
-    val isTradeable: Boolean = (root?.getBoolean("is-tradeable", true) ?: root?.getBoolean("is_tradeable", true)).coerceBoolean(true),
+    val isTradeable: Boolean = (root?.getBoolean("is-tradeable") ?: root?.getBoolean("is_tradeable"))?.coerceBoolean(true) ?: true,
     /** 是否可通过附魔台发现，默认为 true */
-    val isDiscoverable: Boolean = (root?.getBoolean("is-discoverable", true) ?: root?.getBoolean("is_discoverable", true)).coerceBoolean(true),
+    val isDiscoverable: Boolean = (root?.getBoolean("is-discoverable") ?: root?.getBoolean("is_discoverable"))?.coerceBoolean(true) ?: true,
 
     /** 交易最大等级限制，-1 表示无限制，默认为 -1 */
-    val tradeMaxLevel: Int = (root?.getInt("trade-max-level", -1) ?: root?.getInt("trade_max_level", -1)).coerceInt(-1),
+    val tradeMaxLevel: Int = (root?.getInt("trade-max-level") ?: root?.getInt("trade_max_level"))?.coerceInt(-1) ?: -1,
     /** 附魔台最大等级限制，-1 表示无限制，默认为 -1 */
-    val enchantMaxLevel: Int = (root?.getInt("enchant-max-level", -1) ?: root?.getInt("enchant-max-level", -1)).coerceInt(-1),
+    val enchantMaxLevel: Int = (root?.getInt("enchant-max-level") ?: root?.getInt("enchant_max_level"))?.coerceInt(-1) ?: -1,
     /** 战利品最大等级限制，-1 表示无限制，默认为 -1 */
-    val lootMaxLevel: Int = (root?.getInt("loot-max-level", -1) ?: root?.getInt("loot_max_level", -1)).coerceInt(-1),
+    val lootMaxLevel: Int = (root?.getInt("loot-max-level") ?: root?.getInt("loot_max_level"))?.coerceInt(-1) ?: -1,
 
     /** 是否不可获得，为 true 时玩家无法获得该附魔，默认为 false */
     val inaccessible: Boolean = root?.getBoolean("inaccessible", false).coerceBoolean(false)
