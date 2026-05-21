@@ -67,6 +67,7 @@ data class Limitations(
                 CONFLICT_ENCHANT -> {
                     if (value == "*") {
                         conflictsWithEverything = true
+                        result += CONFLICT_ENCHANT to "*"
                     } else {
                         conflicts += belonging.basicData.originName to value
                     }
@@ -114,6 +115,22 @@ data class Limitations(
         // 检查附魔是否启用
         if (!belonging.basicData.enable) {
             return CheckResult.Failed(sender.asLang("limitations-not-enable"))
+        }
+
+        // 检查物品上是否有设置了 conflictsWithEverything 的附魔
+        if (CONFLICT_ENCHANT in checkType.limitTypes) {
+            val existingEnchants = item.fastFixedEnchants
+            if (existingEnchants.any { (enchant, _) ->
+                enchant as AiyatsbusEnchantment
+                enchant != belonging && enchant.limitations.conflictsWithEverything
+            }) {
+                return CheckResult.Failed(
+                    sender.asLang(
+                        "limitations-check-failed",
+                        sender.asLang("limitations-typename-${CONFLICT_ENCHANT.name.lowercase()}") to "typename"
+                    )
+                )
+            }
         }
 
         // 检查所有相关限制
@@ -303,7 +320,13 @@ data class Limitations(
      * @return 检查结果
      */
     private fun checkConflictEnchant(value: String, enchants: Array<Array<Any>>): Boolean {
-        return enchants.none { it[0] == aiyatsbusEt(value) }
+        return enchants.none { (enchant, _) ->
+            enchant as AiyatsbusEnchantment
+            when (value) {
+                "*" -> enchant != belonging
+                else -> enchant == aiyatsbusEt(value)
+            }
+        }
     }
 
     /**
