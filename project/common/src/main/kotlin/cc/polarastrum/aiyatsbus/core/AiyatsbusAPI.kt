@@ -16,6 +16,15 @@ import cc.polarastrum.aiyatsbus.core.script.AiyatsbusScriptHandler
 interface AiyatsbusAPI {
 
     /**
+     * 获取粒子处理器
+     *
+     * 负责处理与粒子触发相关的全部逻辑。
+     *
+     * @return 粒子处理器实例
+     */
+    fun getArtifactHandler(): AiyatsbusArtifactHandler
+
+    /**
      * 获取附魔展示管理器
      *
      * 负责管理附魔的显示效果，包括物品名称、描述、光效等。

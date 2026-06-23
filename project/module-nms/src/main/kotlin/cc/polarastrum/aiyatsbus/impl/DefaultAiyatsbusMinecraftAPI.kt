@@ -6,7 +6,6 @@ import cc.polarastrum.aiyatsbus.core.MinecraftItemOperator
 import cc.polarastrum.aiyatsbus.core.MinecraftPacketHandler
 import cc.polarastrum.aiyatsbus.core.MinecraftWorldOperator
 import cc.polarastrum.aiyatsbus.impl.DefaultAiyatsbusAPI.Companion.proxy
-import cc.polarastrum.aiyatsbus.impl.nmsj21.NMSJ21
 import taboolib.module.nms.MinecraftVersion.versionId
 import java.util.concurrent.CompletableFuture
 
@@ -26,7 +25,11 @@ class DefaultAiyatsbusMinecraftAPI : AiyatsbusMinecraftAPI {
 
     /** 物品操作接口 */
     val nmsItemOperator by lazy {
-        proxy<MinecraftItemOperator>("$group.nms.DefaultMinecraftItemOperator")
+        if (versionId >= 12005) {
+            proxy<MinecraftItemOperator>("$group.nmsj21.DefaultMinecraftItemOperator")
+        } else {
+            proxy<MinecraftItemOperator>("$group.nms.DefaultMinecraftItemOperator")
+        }
     }
 
     /** 数据包控制接口 */
@@ -40,7 +43,7 @@ class DefaultAiyatsbusMinecraftAPI : AiyatsbusMinecraftAPI {
 
     /** 世界操作接口 */
     val nmsWorldOperator by lazy {
-        proxy<MinecraftWorldOperator>("$group.nms.DefaultMinecraftWorldOperator")
+        proxy<MinecraftWorldOperator>("$group.nmsj21.DefaultMinecraftWorldOperator")
     }
 
     override fun getHelper(): MinecraftHelper {
@@ -61,7 +64,6 @@ class DefaultAiyatsbusMinecraftAPI : AiyatsbusMinecraftAPI {
 
     init {
         CompletableFuture.runAsync {
-            if (versionId >= 12005) NMSJ21.instance
             nmsHelper
             nmsItemOperator
             nmsPacketHandler

@@ -2,7 +2,6 @@ package cc.polarastrum.aiyatsbus.impl.nms
 
 import cc.polarastrum.aiyatsbus.core.*
 import cc.polarastrum.aiyatsbus.core.util.isNull
-import cc.polarastrum.aiyatsbus.impl.nmsj21.NMSJ21
 import io.papermc.paper.adventure.PaperAdventure
 import net.kyori.adventure.util.Codec
 import net.minecraft.nbt.NBTTagCompound
@@ -38,21 +37,13 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
     private val NBT_CODEC: Codec<Any, String, IOException, IOException> = PaperAdventure::class.java.getProperty("NBT_CODEC", isStatic = true)!!
 
     override fun getRepairCost(item: ItemStack): Int {
-        return if (versionId >= 12005) {
-            NMSJ21.instance.getRepairCost(item)
-        } else {
-            (NMSItemTag.asNMSCopy(item) as NMSItemStack).baseRepairCost
-        }
+        return (NMSItemTag.asNMSCopy(item) as NMSItemStack).baseRepairCost
     }
 
     override fun setRepairCost(item: ItemStack, cost: Int): ItemStack {
-        return if (versionId >= 12005) {
-            NMSJ21.instance.setRepairCost(item, cost)
-        } else {
-            Aiyatsbus.api().getMinecraftAPI().getHelper().asCraftMirror(
-                (Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(item) as NMSItemStack).setRepairCost(cost)
-            )
-        }
+        return Aiyatsbus.api().getMinecraftAPI().getHelper().asCraftMirror(
+            (Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(item) as NMSItemStack).setRepairCost(cost)
+        )
     }
 
     override fun createItemStack(material: String, tag: String?): ItemStack {
@@ -77,10 +68,6 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
     }
 
     override fun adaptMerchantRecipe(merchantRecipeList: Any, player: Player) {
-
-        if (versionId >= 12005) {
-            return NMSJ21.instance.adaptMerchantRecipe(merchantRecipeList, player)
-        }
 
         fun adapt(item: Any, player: Player): Any {
             val bkItem = NMSItemTag.asBukkitCopy(item)
@@ -138,19 +125,12 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
         nmsStack as NMSItemStack
         // 1.20.4 -> hurtAndBreak(int, EntityLiving, Consumer<EntityLiving>)
         // 1.20.5, 1.21 -> hurtAndBreak(int, EntityLiving, EnumItemSlot), 自动广播事件
-        if (versionId >= 12005) {
-            NMSJ21.instance.hurtAndBreak(nmsStack, amount, entity)
-        } else {
-            nmsStack.hurtAndBreak(amount, (entity as CraftLivingEntity).handle) { entityLiving ->
-                (enumItemSlot as? EnumItemSlot)?.let { entityLiving.broadcastBreakEvent(it) }
-            }
+        nmsStack.hurtAndBreak(amount, (entity as CraftLivingEntity).handle) { entityLiving ->
+            (enumItemSlot as? EnumItemSlot)?.let { entityLiving.broadcastBreakEvent(it) }
         }
     }
 
     override fun getEnchants(item: ItemStack): Map<AiyatsbusEnchantment, Int> {
-        if (versionId >= 12005) {
-            return NMSJ21.instance.getEnchants(item)
-        }
         val handle = (if (item is CraftItemStack) Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(item) else CraftItemStack.asNMSCopy(item)) as NMSItemStack
         val enchantmentNBT = if (handle.item == Items.ENCHANTED_BOOK)
             ItemEnchantedBook.getEnchantments(handle)
@@ -173,9 +153,6 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
     }
 
     override fun getFastEnchants(item: ItemStack): Array<Array<Any>> {
-        if (versionId >= 12005) {
-            return NMSJ21.instance.getFastEnchants(item)
-        }
         val handle = (if (item is CraftItemStack) Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(item) else CraftItemStack.asNMSCopy(item)) as NMSItemStack
         val enchantmentNBT = if (handle.item == Items.ENCHANTED_BOOK)
             ItemEnchantedBook.getEnchantments(handle)
@@ -198,9 +175,6 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
     }
 
     override fun getEnchantLevel(item: ItemStack, enchant: AiyatsbusEnchantment): Int? {
-        if (versionId >= 12005) {
-            return NMSJ21.instance.getEnchantLevel(item, enchant)
-        }
         val handle = (if (item is CraftItemStack) Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(item) else CraftItemStack.asNMSCopy(item)) as NMSItemStack
         val enchantmentNBT = if (handle.item == Items.ENCHANTED_BOOK)
             ItemEnchantedBook.getEnchantments(handle)
@@ -218,9 +192,6 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
     }
 
     override fun isUnbreakable(item: ItemStack): Boolean {
-        if (versionId >= 12005) {
-            return NMSJ21.instance.isUnbreakable(item)
-        }
         val handle = (if (item is CraftItemStack) Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(item) else CraftItemStack.asNMSCopy(item)) as NMSItemStack
         return handle.tag?.getBoolean("Unbreakable") == true
     }

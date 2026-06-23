@@ -21,10 +21,14 @@ package cc.polarastrum.aiyatsbus.impl.registration.v12004_nms
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentManager
+import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.registration.modern.ModernEnchantmentRegisterer
 import cc.polarastrum.aiyatsbus.core.util.setStaticFinal
 import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.AiyatsbusCraftEnchantment
-import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.VanillaAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.BuiltinAiyatsbusCraftEnchantment
+import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.InternalAiyatsbusCraftEnchantment
+import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.NMSAiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.VanillaCraftEnchantment
 import net.minecraft.core.Holder
 import net.minecraft.core.IRegistry
@@ -95,6 +99,7 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
         val registry = CraftRegistry(
             Enchantment::class.java as Class<in Enchantment?>,
             // TabooLib NMSProxy 已知问题: 调用对象中「仅在父类」声明的方法或字段无法被 TabooLib NMSProxy 重定向
+            // TODO: java.lang.NoSuchMethodError: 'net.minecraft.server.dedicated.DedicatedServer net.minecraft.server.dedicated.DedicatedPlayerList.c()'
             ((server.handle.server as MinecraftServer).registryAccess() as IRegistryCustom).registryOrThrow(Registries.ENCHANTMENT)
         ) { key, registry ->
             val isVanilla = vanillaEnchantments.contains(key)
@@ -127,15 +132,20 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
             val nms = BuiltInRegistries.ENCHANTMENT[CraftNamespacedKey.toMinecraft(enchant.enchantmentKey)]
             if (nms != null) {
                  return if (enchant.alternativeData.isVanilla) {
+                     if (enchant !is cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantmentBase) throw IllegalArgumentException("Enchant ${enchant.id} must be an impl of VanillaAiyatsbusEnchantment!")
                      VanillaCraftEnchantment(enchant, nms)
                  } else {
-                     AiyatsbusCraftEnchantment(enchant, nms)
+                     when (enchant) {
+                         is BuiltinAiyatsbusEnchantmentBase -> BuiltinAiyatsbusCraftEnchantment(enchant, nms)
+                         is InternalAiyatsbusEnchantmentBase -> InternalAiyatsbusCraftEnchantment(enchant, nms)
+                         else -> AiyatsbusCraftEnchantment(enchant, nms)
+                     }
                  }
             } else {
                 throw IllegalStateException("Enchantment ${enchant.id} wasn't registered")
             }
         }
-        IRegistry.register(BuiltInRegistries.ENCHANTMENT, enchant.id, VanillaAiyatsbusEnchantment(enchant.id))
+        IRegistry.register(BuiltInRegistries.ENCHANTMENT, enchant.id, NMSAiyatsbusEnchantment(enchant.id))
         return register(enchant)
     }
 

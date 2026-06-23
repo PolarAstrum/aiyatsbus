@@ -36,7 +36,7 @@ object FnVariables {
 
     @Export
     fun ordinary(enchant: AiyatsbusEnchantment, name: String): Any? {
-        return enchant.variables.ordinary(name).also { println(it) }
+        return enchant.variables.ordinary(name)
     }
 
     @Export

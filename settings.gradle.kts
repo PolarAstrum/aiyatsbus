@@ -33,6 +33,9 @@ include(
     // 1.21.4 (1.21.5, 1.21.6, 1.21.7) 自定义附魔注册器
     "project:module-registration:registration-v12104-paper",
     "project:module-registration:registration-v12104-vanilla",
+    // 26.1 自定义附魔注册器
+    "project:module-registration:registration-v260100-paper",
+    "project:module-registration:registration-v260100-vanilla",
     // 脚本
     "project:module-script",
     // Fluxon 脚本实现

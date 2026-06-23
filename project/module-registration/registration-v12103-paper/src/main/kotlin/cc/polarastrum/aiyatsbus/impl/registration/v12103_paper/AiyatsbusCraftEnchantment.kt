@@ -22,6 +22,10 @@ package cc.polarastrum.aiyatsbus.impl.registration.v12103_paper
 
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.util.legacyToAdventure
 import net.kyori.adventure.text.Component
 import net.minecraft.world.item.enchantment.Enchantment
@@ -37,7 +41,7 @@ import org.bukkit.inventory.ItemStack
  * @author mical
  * @since 2024/2/17 17:15
  */
-class AiyatsbusCraftEnchantment(
+open class AiyatsbusCraftEnchantment(
     private val enchant: AiyatsbusEnchantmentBase,
     nmsEnchantment: Enchantment
 ) : CraftEnchantment(enchant.enchantmentKey, nmsEnchantment), AiyatsbusEnchantment by enchant {
@@ -50,6 +54,7 @@ class AiyatsbusCraftEnchantment(
     }
 
     private val hashCode = enchant.id.hashCode()
+    private val toString = javaClass.simpleName + "(key=$key)"
 
     override fun canEnchantItem(item: ItemStack): Boolean {
         return enchant.canEnchantItem(item)
@@ -114,6 +119,18 @@ class AiyatsbusCraftEnchantment(
     }
 
     override fun toString(): String {
-        return "AiyatsbusCraftEnchantment(key=$key)"
+        return toString
     }
 }
+
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
+class BuiltinAiyatsbusCraftEnchantment(
+    private val enchant: BuiltinAiyatsbusEnchantmentBase,
+    nmsEnchantment: Enchantment
+) : AiyatsbusCraftEnchantment(enchant, nmsEnchantment), BuiltinAiyatsbusEnchantment by enchant
+
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
+class InternalAiyatsbusCraftEnchantment(
+    private val enchant: InternalAiyatsbusEnchantmentBase,
+    nmsEnchantment: Enchantment
+) : AiyatsbusCraftEnchantment(enchant, nmsEnchantment), InternalAiyatsbusEnchantment by enchant

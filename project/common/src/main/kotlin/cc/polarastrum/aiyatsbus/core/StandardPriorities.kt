@@ -21,7 +21,9 @@ object StandardPriorities {
     /** 事件执行器优先级，用于处理附魔相关的事件 */
     const val EVENT_EXECUTORS = 2
     /** 技能触发器优先级，与事件执行器同级，用于处理附魔技能相关的事件 */
-    const val SKILL_HANDLER = 2
+    const val SKILL_HANDLER = EVENT_EXECUTORS
+    /** 粒子触发器优先级，与技能触发器同级，用于处理附魔粒子相关的事件 */
+    const val ARTIFACT_HANDLER = SKILL_HANDLER
     /** 内置触发器优先级，用于系统内置的触发机制 */
     const val INTERNAL_TRIGGERS = 3
     /** 定时器优先级，与内置触发器同级，用于定时执行的任务 */

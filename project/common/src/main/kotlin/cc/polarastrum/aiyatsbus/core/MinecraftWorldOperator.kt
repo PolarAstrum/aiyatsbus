@@ -1,6 +1,8 @@
 package cc.polarastrum.aiyatsbus.core
 
+import org.bukkit.ChatColor
 import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
 /**
@@ -24,4 +26,12 @@ interface MinecraftWorldOperator {
      * @return 是否成功破坏
      */
     fun breakBlock(player: Player, block: Block): Boolean
+
+    fun setEntityGlowing(entity: Entity, receiver: Player, color: ChatColor)
+
+    fun unsetEntityGlowing(entity: Entity, receiver: Player)
+
+    fun setBlockGlowing(block: Block, receiver: Player, color: ChatColor)
+
+    fun unsetBlockGlowing(block: Block, receiver: Player)
 }

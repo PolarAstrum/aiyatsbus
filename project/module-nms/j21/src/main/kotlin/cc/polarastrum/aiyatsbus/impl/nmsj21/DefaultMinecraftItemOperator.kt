@@ -1,13 +1,14 @@
 package cc.polarastrum.aiyatsbus.impl.nmsj21
 
-import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
-import cc.polarastrum.aiyatsbus.core.aiyatsbusEt
-import cc.polarastrum.aiyatsbus.core.toDisplayMode
+import cc.polarastrum.aiyatsbus.core.*
 import cc.polarastrum.aiyatsbus.core.util.isNull
+import cc.polarastrum.aiyatsbus.impl.nms.NMSItemStack
 import com.google.common.collect.Maps
 import net.minecraft.core.component.DataComponents
 import net.minecraft.resources.ResourceKey
+import net.minecraft.world.item.AirItem
 import net.minecraft.world.item.trading.MerchantOffers
+import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.enchantments.CraftEnchantment
 import org.bukkit.craftbukkit.entity.CraftLivingEntity
 import org.bukkit.craftbukkit.inventory.CraftItemStack
@@ -19,25 +20,33 @@ import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.MinecraftVersion.versionId
 import taboolib.module.nms.remap.DynamicOpcode
 import taboolib.module.nms.remap.dynamic
-import java.util.*
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
  * Aiyatsbus
- * com.mcstarrysky.aiyatsbus.impl.nms.v12005_nms.NMS12005Impl
+ * cc.polarastrum.aiyatsbus.impl.nms.nms.DefaultMinecraftItemOperator
  *
  * @author mical
- * @since 2024/5/5 20:26
+ * @since 2025/8/16 08:51
  */
-class NMSJ21Impl : NMSJ21() {
+class DefaultMinecraftItemOperator : MinecraftItemOperator {
 
     override fun getRepairCost(item: ItemStack): Int {
         return (item as CraftItemStack).handle[DataComponents.REPAIR_COST] ?: 0
     }
 
-    override fun setRepairCost(item: ItemStack, cost: Int) : ItemStack {
+    override fun setRepairCost(item: ItemStack, cost: Int): ItemStack {
         return item.apply {
             (this as CraftItemStack).handle[DataComponents.REPAIR_COST] = cost
+        }
+    }
+
+    override fun createItemStack(material: String, tag: String?): ItemStack {
+        return try {
+            Bukkit.getItemFactory().createItemStack(material + tag)
+        } catch (t: Throwable) {
+            throw IllegalStateException(t)
         }
     }
 
@@ -59,8 +68,29 @@ class NMSJ21Impl : NMSJ21() {
         }
     }
 
-    override fun hurtAndBreak(nmsItem: Any, amount: Int, entity: LivingEntity) {
-        return (nmsItem as NMSItemStack).hurtAndBreak(amount, (entity as CraftLivingEntity).handle, null)
+    override fun damageItemStack(item: ItemStack, amount: Int, entity: LivingEntity): ItemStack {
+        var stack = item
+        val nmsStack = if (stack is CraftItemStack) {
+            val handle = Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(stack) as NMSItemStack
+            if (handle == null || handle.isEmpty) {
+                return stack
+            }
+            handle
+        } else {
+            CraftItemStack.asNMSCopy(stack).also {
+                stack = CraftItemStack.asCraftMirror(it)
+            }
+        }
+        damageItemStack(nmsStack, amount, null, entity)
+        return stack
+    }
+
+    /**
+     * CraftLivingEntity#damageItemStack0
+     */
+    private fun damageItemStack(nmsStack: Any, amount: Int, enumItemSlot: Any?, entity: LivingEntity) {
+        // 1.20.5, 1.21 -> hurtAndBreak(int, EntityLiving, EnumItemSlot), 自动广播事件
+        return (nmsStack as NMSItemStack).hurtAndBreak(amount, (entity as CraftLivingEntity).handle, null)
     }
 
     private fun resourceLocationGetPath(resourceLocation: Any): String {
@@ -102,9 +132,9 @@ class NMSJ21Impl : NMSJ21() {
         }
         val map = Maps.newHashMapWithExpectedSize<AiyatsbusEnchantment, Int>(entries.size)
         for (entry in entries) {
-            map[aiyatsbusEt(
+            map[aiyatsbusEtOrThrow(
                 resourceLocationGetPath(nmsEnchNamespacedKey(entry.key.unwrapKey().get()))
-            )!!] = entry.value
+            )] = entry.value
         }
         return map
     }
@@ -118,9 +148,9 @@ class NMSJ21Impl : NMSJ21() {
         }
         val array = Array<Array<Any>>(entries.size) { arrayOf() }
         entries.forEachIndexed { i, entry ->
-            array[i] = arrayOf(aiyatsbusEt(
+            array[i] = arrayOf(aiyatsbusEtOrThrow(
                 resourceLocationGetPath(nmsEnchNamespacedKey(entry.key.unwrapKey().get()))
-            )!!, entry.value)
+            ), entry.value)
         }
         return array
     }
@@ -173,6 +203,11 @@ class NMSJ21Impl : NMSJ21() {
             unbreakable
         ) as Boolean
     }
-}
 
-typealias NMSItemStack = net.minecraft.world.item.ItemStack
+    override fun isAir(item: ItemStack?): Boolean {
+        if (item == null) return true
+        if (item.amount == 0) return true
+        val handle = (if (item is CraftItemStack) Aiyatsbus.api().getMinecraftAPI().getHelper().getCraftItemStackHandle(item) else CraftItemStack.asNMSCopy(item)) as NMSItemStack
+        return handle.item is AirItem
+    }
+}

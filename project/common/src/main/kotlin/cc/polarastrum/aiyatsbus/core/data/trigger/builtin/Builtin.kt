@@ -22,6 +22,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
 import taboolib.common5.Baffle
+import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
 import taboolib.platform.util.onlinePlayers
 import taboolib.platform.util.submit
@@ -35,7 +36,13 @@ import java.util.concurrent.TimeUnit
  * @author mical
  * @since 2026/3/8 23:59
  */
-open class Builtin : Trigger(Configuration.empty(), null, ScriptType.FLUXON, "", 0, TriggerType.BUILTIN), EventFunctions {
+open class Builtin internal constructor(
+    val enchant: AiyatsbusEnchantment,
+    section: ConfigurationSection = Configuration.empty(),
+    type: TriggerType = TriggerType.BUILTIN
+) : Trigger(section, enchant, ScriptType.FLUXON, "", 0, type), EventFunctions {
+
+    constructor(enchant: AiyatsbusEnchantment) : this(enchant, Configuration.empty(), TriggerType.BUILTIN)
 
     fun call(level: Int, type: EventType, entity: LivingEntity, event: Event) {
         executors[type]?.invoke(this, level, event)
@@ -43,8 +50,8 @@ open class Builtin : Trigger(Configuration.empty(), null, ScriptType.FLUXON, "",
     }
 
     fun call(level: Int, slot: EquipmentSlot, player: Player, type: EventType) {
-        executors.get(type)?.invoke(this, level, slot, player, stamp)
-        executors.get(EventType.TRIGGER)?.invoke(this, level, type, null, player)
+        executors[type]?.invoke(this, level, slot, player, stamp)
+        executors[EventType.TRIGGER]?.invoke(this, level, type, null, player)
     }
 
     override fun init() {

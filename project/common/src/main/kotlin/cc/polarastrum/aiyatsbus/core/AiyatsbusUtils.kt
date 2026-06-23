@@ -149,6 +149,8 @@ fun sendDebug(message: String) {
     }
 }
 
+fun aiyatsbusEtOrThrow(identifier: String) = aiyatsbusEt(identifier) ?: throw IllegalStateException("Enchantment $identifier not found. (Maybe it's a vanilla enchantment. Please ensure all of the vanilla enchantment's files are complete.)")
+
 /**
  * 根据名称或 Key 获取 AiyatsbusEnchantment 附魔对象
  *
@@ -401,7 +403,7 @@ val Material.capability: Int get() {
     return targets.mapNotNull { it.typesCapability[this] }.minOrNull() ?: targets.minOfOrNull { it.capability } ?: 32
 }
 
-val ItemStack.capability get() = itemMeta["aiyatsbus_item_capability", PersistentDataType.INTEGER] ?: type.capability
+val ItemStack.capability get() = if (hasItemMeta()) itemMeta["aiyatsbus_item_capability", PersistentDataType.INTEGER] ?: type.capability else type.capability
 
 /**
  * 检查附魔是否处于某个分组

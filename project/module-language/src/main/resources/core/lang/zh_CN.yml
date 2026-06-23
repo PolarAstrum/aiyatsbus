@@ -1,6 +1,6 @@
 
 
-#         Powered by TabooLib 6.2         #
+#         Powered by TabooLib 6.3         #
 
 
 prefix: '&8\[&{#D8D8FA}Aiyatsbus&8\]'
@@ -225,6 +225,12 @@ command-subCommands-book-usage: '&7\[&8附魔&7\] &7<&8等级&7> &7<&8玩家&7>'
 command-subCommands-book-sender: '{prefix} &7附魔书已经发送给 &e{name}'
 command-subCommands-book-receiver: '{prefix} &7你收到了附魔书 {enchantment}'
 command-subCommands-book-fail: '{prefix} &7控制台无法给予自己附魔书'
+
+command-subCommands-capability-description: '更新玩家手上物品的最大附魔词条数'
+command-subCommands-capability-usage: '&7\[&8操作&7\] &7\[&8数值&7\] &7<&8玩家&7>'
+command-subCommands-capability-sender: '{prefix} &e{name} &7手上物品的最大附魔词条数已被更新为 &e{amount}'
+command-subCommands-capability-receiver: '{prefix} &7你手上物品的最大附魔词条数已被更新为 &e{amount}'
+command-subCommands-capability-fail: '{prefix} &7控制台无法设置自己手上物品的最大附魔词条数'
 
 command-subCommands-dev-description: '开发者调试命令'
 command-subCommands-dev-usage: ''

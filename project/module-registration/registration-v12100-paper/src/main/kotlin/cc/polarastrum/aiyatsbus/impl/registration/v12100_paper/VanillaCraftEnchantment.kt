@@ -19,7 +19,7 @@
 package cc.polarastrum.aiyatsbus.impl.registration.v12100_paper
 
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
-import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantmentBase
 import net.minecraft.world.item.enchantment.Enchantment
 import org.bukkit.craftbukkit.enchantments.CraftEnchantment
 import org.bukkit.inventory.ItemStack
@@ -32,7 +32,7 @@ import org.bukkit.inventory.ItemStack
  * @since 2025/7/3
  */
 class VanillaCraftEnchantment(
-    private val enchant: AiyatsbusEnchantmentBase,
+    private val enchant: VanillaAiyatsbusEnchantmentBase,
     holder: Enchantment
 ) : CraftEnchantment(enchant.enchantmentKey, holder), AiyatsbusEnchantment by enchant {
 

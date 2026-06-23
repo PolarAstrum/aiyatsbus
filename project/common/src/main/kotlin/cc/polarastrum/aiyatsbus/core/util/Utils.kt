@@ -2,6 +2,7 @@ package cc.polarastrum.aiyatsbus.core.util
 
 import com.google.common.base.Enums
 import com.google.gson.Gson
+import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.function.severe
@@ -19,6 +20,10 @@ import java.lang.reflect.Field
  * @author mical
  * @since 2024/2/17 17:07
  */
+
+fun isStopping(): Boolean {
+    return TabooLib.isStopped() || Bukkit.getServer().isStopping
+}
 
 /**
  * 全局 GSON 实例
@@ -128,9 +133,9 @@ fun safeguard(cn: String, en: String, time: Long = 5000L, block: () -> Unit) {
         block()
     } catch (t: Throwable) {
         if (TabooLib.getCurrentLifeCycle() != LifeCycle.ACTIVE) {
-            severe("""
-                    无法初始化 $cn，为避免数据丢失，服务器将会被强制关闭！
-                    Failed to initialize $en. To avoid data loss, the server will be forced to shut down!
+            Bukkit.getLogger().severe("""
+                    [Aiyatsbus] 无法初始化 $cn，为避免数据丢失，服务器将会被强制关闭！
+                    [Aiyatsbus] Failed to initialize $en. To avoid data loss, the server will be forced to shut down!
                 """.t())
             t.printStackTrace()
             Thread.sleep(time)

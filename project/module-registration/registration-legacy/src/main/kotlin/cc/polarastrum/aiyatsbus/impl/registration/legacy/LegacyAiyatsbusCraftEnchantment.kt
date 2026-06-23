@@ -2,6 +2,10 @@ package cc.polarastrum.aiyatsbus.impl.registration.legacy
 
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.util.legacyToAdventure
 import io.papermc.paper.enchantments.EnchantmentRarity
 import net.kyori.adventure.text.Component
@@ -18,7 +22,7 @@ import org.bukkit.inventory.ItemStack
  * @author mical
  * @since 2024/2/17 15:01
  */
-class LegacyAiyatsbusCraftEnchantment(
+open class LegacyAiyatsbusCraftEnchantment(
     private val enchant: AiyatsbusEnchantmentBase
 ) : Enchantment(enchant.enchantmentKey), AiyatsbusEnchantment by enchant {
 
@@ -79,3 +83,13 @@ class LegacyAiyatsbusCraftEnchantment(
 
     override fun translationKey(): String = enchant.basicData.id
 }
+
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
+class LegacyBuiltinAiyatsbusCraftEnchantment(
+    private val enchant: BuiltinAiyatsbusEnchantmentBase
+) : LegacyAiyatsbusCraftEnchantment(enchant), BuiltinAiyatsbusEnchantment by enchant
+
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
+class LegacyInternalAiyatsbusCraftEnchantment(
+    private val enchant: InternalAiyatsbusEnchantmentBase
+) : LegacyAiyatsbusCraftEnchantment(enchant), InternalAiyatsbusEnchantment by enchant

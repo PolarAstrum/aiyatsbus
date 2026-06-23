@@ -73,7 +73,7 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
     override fun register(enchantment: AiyatsbusEnchantmentBase) {
         // 如果不是内置附魔, 就添加进待注册附魔
         // 不从列表中删除, 是为了防止重载丢失第三方附魔的情况出现
-        if (enchantment !is InternalAiyatsbusEnchantment) {
+        if (enchantment !is InternalAiyatsbusEnchantmentBase) {
             enchantmentsToRegister += enchantment
         }
         // 在 LOAD 生命周期后调用本函数, 就注册该附魔
@@ -132,13 +132,14 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
         val relativePath = file.path.substring(file.path.indexOf("enchants" + File.separator), file.path.length)
         val config = YamlUpdater.loadFromFile(relativePath, AiyatsbusSettings.enableUpdater, AiyatsbusSettings.updateContents)
         val id = config["basic.id"].toString()
+        val isVanilla = (config["alternative.is-vanilla"] ?: config["alternative.is_vanilla"]) == true
         val key = NamespacedKey.minecraft(id)
 
-        val enchant = InternalAiyatsbusEnchantment(id, file, config)
+        val enchant = if (isVanilla) VanillaAiyatsbusEnchantmentBase(id, file, config) else InternalAiyatsbusEnchantmentBase(id, file, config)
         if (!enchant.dependencies.checkAvailable()) return
 
         register(enchant)
-        enchant.mechanism.init()
+        enchant.mechanism?.init()
         setupFileWatcher(file, relativePath, key, id)
     }
 
@@ -212,7 +213,8 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
 
         if (file.exists()) {
             val config = Configuration.loadFromFile(file)
-            val newEnchant = InternalAiyatsbusEnchantment(id, file, config)
+            val isVanilla = (config["alternative.is-vanilla"] ?: config["alternative.is_vanilla"]) == true
+            val newEnchant = if (isVanilla) VanillaAiyatsbusEnchantmentBase(id, file, config) else InternalAiyatsbusEnchantmentBase(id, file, config)
             if (!newEnchant.dependencies.checkAvailable()) return
 
             register(newEnchant)
@@ -252,6 +254,7 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
             PlatformFactory.registerAPI<AiyatsbusEnchantmentManager>(DefaultAiyatsbusEnchantmentManager())
 
             val registerer = when {
+                versionId >= 260100 -> modern(260100)
                 versionId >= 12104 -> modern(12104)
                 versionId >= 12102 -> modern(12103)
                 versionId >= 12100 -> modern(12100)

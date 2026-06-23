@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    id("io.izzel.taboolib") version "2.0.36" apply false
+    id("io.izzel.taboolib") version "2.0.37" apply false
     id("org.jetbrains.kotlin.jvm") version "1.8.22" apply false
     id("org.jetbrains.dokka") version "1.8.20" apply false
 }
@@ -31,6 +31,7 @@ subprojects {
                 BukkitUI,
                 BukkitUtil,
                 I18n,
+                Incision,
                 MinecraftChat,
                 MinecraftEffect,
                 Metrics,
@@ -41,7 +42,7 @@ subprojects {
             enableLegacyDependencyResolver = true
         }
         version {
-            taboolib = "6.2.4-3d34097"
+            taboolib = "6.3.0-test-6-23-1"
         }
     }
 

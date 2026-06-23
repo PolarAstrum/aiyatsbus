@@ -257,9 +257,10 @@ object ChargeListener {
      */
     @SubscribeEvent
     private fun onReceive(e: PacketReceiveEvent) {
-        when (e.packet.nameInSpigot ?: e.packet.name) {
+        when (e.packet.nameInMojang) {
             // Prepare shoot
-            "PacketPlayInUseItem", "PacketPlayInUseEntity", "PacketPlayInBlockPlace" -> {
+            // "PacketPlayInUseItem", "PacketPlayInUseEntity", "PacketPlayInBlockPlace" -> {
+            "ServerboundUseItemOnPacket", "ServerboundInteractPacket", "ServerboundUseItemPacket" -> {
                 // 手持弓
                 val chargeHand = ChargeHandler.canCharge(e.player)
                 if (chargeHand != null) {
@@ -271,7 +272,8 @@ object ChargeListener {
                 }
             }
             // Release Item
-            "PacketPlayInBlockDig" -> {
+//            "PacketPlayInBlockDig" -> {
+            "ServerboundPlayerActionPacket" -> {
                 // 判定动作
                 if (e.packet.read<Any>("action").toString() == "RELEASE_USE_ITEM") {
                     val info = ChargeHandler.chargeInfo[e.player.name] ?: return

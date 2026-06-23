@@ -17,6 +17,8 @@ import java.util.concurrent.CompletableFuture
  */
 class DefaultAiyatsbusAPI : AiyatsbusAPI {
 
+    private val artifactHandler = PlatformFactory.getAPI<AiyatsbusArtifactHandler>()
+
     private val enchantmentFilter = PlatformFactory.getAPI<AiyatsbusEnchantmentFilter>()
 
     private val enchantmentManager = PlatformFactory.getAPI<AiyatsbusEnchantmentManager>()
@@ -40,6 +42,10 @@ class DefaultAiyatsbusAPI : AiyatsbusAPI {
     private val skillHandler = PlatformFactory.getAPI<AiyatsbusSkillHandler>()
 
     private val tickHandler = PlatformFactory.getAPI<AiyatsbusTickHandler>()
+
+    override fun getArtifactHandler(): AiyatsbusArtifactHandler {
+        return artifactHandler
+    }
 
     override fun getEnchantmentFilter(): AiyatsbusEnchantmentFilter {
         return enchantmentFilter

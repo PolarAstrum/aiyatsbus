@@ -2,16 +2,20 @@ package cc.polarastrum.aiyatsbus.core.util
 
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
+import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.metadata.Metadatable
 import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
+import taboolib.library.xseries.particles.XParticle
 import taboolib.platform.util.bukkitPlugin
 import taboolib.platform.util.removeMeta
 import taboolib.platform.util.setMeta
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * 世界工具类
@@ -30,7 +34,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * Minecraft 中一天为 24000 刻，白天约为 0-12300 刻。
  */
 val World.isDay: Boolean
-    get() = time < 12300 || time > 23850
+    get() = time !in 12300..23850
 
 /**
  * 世界是否为黑夜
@@ -236,3 +240,141 @@ fun Metadatable.unmark(key: String) {
  * ```
  */
 val Location.serialized get() = "${world.name},$blockX,$blockY,$blockZ"
+
+/**
+ * 生成 RNA 螺旋形粒子。
+ *
+ * 以 [loc] 为中心，沿 Y 轴从 `-height` 到 `height` 绕圈生成粒子。
+ * 默认每圈生成 10 个采样点，只生成 1 圈。
+ *
+ * @param T 粒子额外数据类型，例如 [org.bukkit.Particle.DustOptions]、[org.bukkit.block.data.BlockData] 等
+ * @param particle 粒子类型
+ * @param loc 粒子效果中心点
+ * @param amount 每个采样点生成的粒子数量
+ * @param option 粒子的额外数据；粒子不需要数据时可传入 null
+ * @param height 螺旋高度的一半，粒子会从 `-height` 生成到 `height`
+ * @param range 螺旋半径
+ */
+fun <T> XParticle.spawnRNAParticles(
+    loc: Location,
+    amount: Int,
+    option: T?,
+    height: Double,
+    range: Double,
+) {
+    spawnRNAParticles(loc, amount, option, height, range, 10, 1)
+}
+
+/**
+ * 生成 RNA 螺旋形粒子。
+ *
+ * [factor] 控制每圈采样数量，[circle] 控制总圈数。
+ * 例如 `factor = 20, circle = 2` 会在两圈螺旋上生成约 40 个采样点。
+ *
+ * @param T 粒子额外数据类型，例如 [org.bukkit.Particle.DustOptions]、[org.bukkit.block.data.BlockData] 等
+ * @param particle 粒子类型
+ * @param loc 粒子效果中心点
+ * @param amount 每个采样点生成的粒子数量
+ * @param option 粒子的额外数据；粒子不需要数据时可传入 null
+ * @param height 螺旋高度的一半，粒子会从 `-height` 生成到 `height`
+ * @param range 螺旋半径
+ * @param factor 每圈采样点数量
+ * @param circle 螺旋圈数
+ */
+fun <T> XParticle.spawnRNAParticles(
+    loc: Location,
+    amount: Int,
+    option: T?,
+    height: Double,
+    range: Double,
+    factor: Int,
+    circle: Int,
+) {
+    val particle = this.get() ?: return
+    val world = loc.world
+    var currentH = -height
+    var i = 0.0
+    while (i <= 360.0 * circle) {
+        val rad = Math.toRadians(i)
+        val sin = sin(rad) * range
+        val cos = cos(rad) * range
+        world.spawnParticle(particle, loc.clone().add(sin, currentH, cos), amount, option)
+        i += 360.0 / factor
+        currentH += 2.0 * height / factor / circle
+    }
+}
+
+/**
+ * 生成圆形粒子。
+ *
+ * 以 [loc] 为圆心，在当前水平面上生成一圈粒子。
+ * 默认采样点数量为 10。
+ *
+ * @param T 粒子额外数据类型，例如 [org.bukkit.Particle.DustOptions]、[org.bukkit.block.data.BlockData] 等
+ * @param particle 粒子类型
+ * @param loc 圆心位置
+ * @param amount 每个采样点生成的粒子数量
+ * @param option 粒子的额外数据；粒子不需要数据时可传入 null
+ * @param range 圆形半径
+ */
+fun <T> XParticle.spawnCircleParticles(
+    loc: Location,
+    amount: Int,
+    option: T?,
+    range: Double,
+) {
+    this.spawnCircleParticles(loc, amount, option, range, 10)
+}
+
+/**
+ * 生成圆形粒子。
+ *
+ * [factor] 控制圆周上的采样点数量，数值越大圆形越平滑。
+ *
+ * @param T 粒子额外数据类型，例如 [org.bukkit.Particle.DustOptions]、[org.bukkit.block.data.BlockData] 等
+ * @param particle 粒子类型
+ * @param loc 圆心位置
+ * @param amount 每个采样点生成的粒子数量
+ * @param option 粒子的额外数据；粒子不需要数据时可传入 null
+ * @param range 圆形半径
+ * @param factor 圆周采样点数量
+ */
+fun <T> XParticle.spawnCircleParticles(
+    loc: Location,
+    amount: Int,
+    option: T?,
+    range: Double,
+    factor: Int,
+) {
+    val particle = this.get() ?: return
+    val world = loc.world
+    var i = 0.0
+    while (i <= 360.0) {
+        val rad = Math.toRadians(i)
+        val sin = sin(rad) * range
+        val cos = cos(rad) * range
+        world.spawnParticle(particle, loc.clone().add(sin, 0.0, cos), amount, option)
+        i += 360.0 / factor
+    }
+}
+
+/**
+ * 生成单点粒子。
+ *
+ * 当 [option] 非空时，会先使用 [Particle.getDataType] 转换数据类型；
+ * 否则使用不带额外数据的粒子生成方式，避免给普通粒子传入无效数据。
+ *
+ * @param T 粒子额外数据类型，例如 [org.bukkit.Particle.DustOptions]、[org.bukkit.block.data.BlockData] 等
+ * @param particle 粒子类型
+ * @param loc 粒子生成位置
+ * @param amount 生成的粒子数量
+ * @param option 粒子的额外数据；粒子不需要数据时可传入 null
+ */
+fun <T> XParticle.spawnSimpleParticle(loc: Location, amount: Int, option: T?) {
+    val particle = this.get() ?: return
+    if (option != null) {
+        loc.world.spawnParticle(particle, loc, amount, particle.dataType.cast(option))
+    } else {
+        loc.world.spawnParticle(particle, loc, amount)
+    }
+}

@@ -36,7 +36,7 @@ import java.util.*
  * @author mical
  * @date 2024/8/21 01:32
  */
-class VanillaAiyatsbusEnchantment(val id: String) : net.minecraft.world.item.enchantment.Enchantment(
+class NMSAiyatsbusEnchantment(val id: String) : net.minecraft.world.item.enchantment.Enchantment(
     Rarity.d, // VERT_RARE
     EnchantmentSlotType.n, // VANISHABLE
     emptyArray()
@@ -95,11 +95,11 @@ class VanillaAiyatsbusEnchantment(val id: String) : net.minecraft.world.item.enc
     }
 
     override fun toString(): String {
-        return "VanillaAiyatsbusEnchantment(id='$id')"
+        return "NMSAiyatsbusEnchantment(id='$id')"
     }
 
     override fun equals(other: Any?): Boolean {
-        return other is VanillaAiyatsbusEnchantment && other.id == this.id
+        return other is NMSAiyatsbusEnchantment && other.id == this.id
     }
 
     override fun hashCode(): Int {

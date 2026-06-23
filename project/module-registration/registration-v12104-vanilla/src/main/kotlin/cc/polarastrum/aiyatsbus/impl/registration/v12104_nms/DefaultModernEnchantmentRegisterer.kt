@@ -18,11 +18,11 @@
  */
 package cc.polarastrum.aiyatsbus.impl.registration.v12104_nms
 
-import cc.polarastrum.aiyatsbus.core.Aiyatsbus
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentManager
 import cc.polarastrum.aiyatsbus.core.StandardPriorities
+import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.registration.modern.ModernEnchantmentRegisterer
 import cc.polarastrum.aiyatsbus.impl.registration.v12104_paper.EnchantmentHelper
 import io.papermc.paper.registry.entry.RegistryTypeMapper
@@ -52,7 +52,6 @@ import taboolib.module.chat.component
 import java.lang.reflect.Modifier
 import java.util.*
 import java.util.function.BiFunction
-import javax.annotation.Nullable
 import kotlin.collections.HashMap
 
 /**
@@ -191,6 +190,7 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
 
             if (nms.isPresent) {
                 return (if (enchant.alternativeData.isVanilla) {
+                    if (enchant !is VanillaAiyatsbusEnchantmentBase) throw IllegalArgumentException("Enchant ${enchant.id} must be an impl of VanillaAiyatsbusEnchantment!")
                     EnchantmentHelper.createVanillaCraftEnchantment(enchant, nms.get())
                 } else {
                     EnchantmentHelper.createAiyatsbusCraftEnchantment(enchant, nms.get())

@@ -5,26 +5,17 @@ package cc.polarastrum.aiyatsbus.module.ingame.command.subcommand
 import cc.polarastrum.aiyatsbus.core.Aiyatsbus
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
-import cc.polarastrum.aiyatsbus.core.fixedEnchants
+import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.toDisplayMode
-import cc.polarastrum.aiyatsbus.core.toRevertMode
-import cc.polarastrum.aiyatsbus.core.util.set
-import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.ItemMeta
-import org.bukkit.persistence.PersistentDataType
 import taboolib.common.platform.command.subCommand
-import taboolib.common.platform.function.submitAsync
 import taboolib.common5.util.createBar
-import taboolib.library.xseries.XEnchantment
 import taboolib.module.chat.colored
 import taboolib.module.nms.NMSItemTag
-import taboolib.platform.util.giveItem
-import taboolib.platform.util.modifyMeta
-import kotlin.jvm.optionals.getOrNull
 import kotlin.system.measureTimeMillis
 
 /**
@@ -45,10 +36,7 @@ val devSubCommand = subCommand {
 //        }
 
         (sender as Player).itemInHand.enchantments.keys.forEach { ench ->
-            println(ench)
-            ench as AiyatsbusEnchantment
-            println(ench.basicData)
-            println(ench.alternativeData)
+            println("Enchant(id=${ench.key.key},isInternal=${(ench as AiyatsbusEnchantment) is InternalAiyatsbusEnchantment},isVanilla=${(ench as AiyatsbusEnchantment) is VanillaAiyatsbusEnchantment},isBuiltin=${(ench as AiyatsbusEnchantment) is BuiltinAiyatsbusEnchantment},isBase=${(ench as AiyatsbusEnchantment) is AiyatsbusEnchantmentBase},isAiyatsbus=${(ench as AiyatsbusEnchantment) is AiyatsbusEnchantment})")
         }
 
     }

@@ -11,7 +11,6 @@ import org.tabooproject.fluxon.interpreter.bytecode.FluxonClassLoader
 import org.tabooproject.fluxon.runtime.FluxonRuntime
 import org.tabooproject.fluxon.runtime.RuntimeScriptBase
 import org.tabooproject.fluxon.runtime.error.FluxonRuntimeError
-import org.tabooproject.fluxon.util.exceptFluxonCompletableFutureError
 import org.tabooproject.fluxon.util.printError
 import taboolib.common.Requires
 import taboolib.common.io.newFile
@@ -21,6 +20,7 @@ import taboolib.common.platform.function.warning
 import taboolib.platform.BukkitPlugin
 import java.nio.file.Files
 import java.text.ParseException
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -85,6 +85,19 @@ object Fluxon : FluxonHandler {
             ex.printStackTrace()
         } catch (ex: Throwable) {
             ex.printStackTrace()
+        }
+    }
+
+    fun Any?.exceptFluxonCompletableFutureError(): Any? {
+        return if (this is CompletableFuture<*>) {
+            this.exceptionally { ex ->
+                if (ex is FluxonRuntimeError) {
+                    ex.printError()
+                }
+                null
+            }
+        } else {
+            this
         }
     }
 }

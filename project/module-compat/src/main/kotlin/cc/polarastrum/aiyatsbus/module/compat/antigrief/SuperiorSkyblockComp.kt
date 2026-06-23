@@ -29,12 +29,16 @@ import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin
 import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI
 import com.bgsoftware.superiorskyblock.api.island.Island
 import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege
+import com.bgsoftware.superiorskyblock.api.service.region.RegionManagerService
+import com.bgsoftware.superiorskyblock.service.region.ProtectionHelper
 import com.bgsoftware.superiorskyblock.world.BukkitEntities
 import org.bukkit.Location
 import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.util.unsafeLazy
 import java.util.*
 
 /**
@@ -45,6 +49,74 @@ import java.util.*
  * @since 2025/2/14 14:55
  */
 class SuperiorSkyblockComp : AntiGrief {
+
+    private var api: SuperiorSkyblockApi
+
+    init {
+        try {
+            BukkitEntities.getCategory(EntityType.ZOMBIE)
+            api = SuperiorSkyblockImpl23()
+        } catch (_: Throwable) {
+            api = SuperiorSkyblockImpl26()
+        }
+    }
+
+    private interface SuperiorSkyblockApi {
+
+        fun canDamage(player: Player, entity: Entity): Boolean
+    }
+
+    // 不太想改变以前 api 的调用方法
+    private class SuperiorSkyblockImpl23 : SuperiorSkyblockApi {
+
+        override fun canDamage(player: Player, entity: Entity): Boolean {
+            val category = BukkitEntities.getCategory(entity.type)
+            val plugin = SuperiorSkyblockPlugin.getPlugin(
+                SuperiorSkyblockPlugin::class.java
+            )
+            return Optional.ofNullable<Island>(SuperiorSkyblockAPI.getIslandAt(entity.location))
+                .map { island ->
+                    var banPvp = false
+                    if (entity is Player) {
+                        val targetPlayer = plugin.players.getSuperiorPlayer(entity)
+                        if (category == BukkitEntities.EntityCategory.UNKNOWN) {
+                            banPvp =
+                                if (island.isSpawn) (plugin.settings.spawn.isProtected && !plugin.settings.spawn.isPlayersDamage) else ((!plugin.settings.isVisitorsDamage && island.isVisitor(
+                                    targetPlayer,
+                                    false
+                                )) ||
+                                        (!plugin.settings.isCoopDamage && island.isCoop(targetPlayer)))
+                        }
+                    }
+                    if (entity is Player) !banPvp else island.hasPermission(
+                        SuperiorSkyblockAPI.getPlayer(
+                            player
+                        ), category.damagePrivilege
+                    )
+                }
+                .orElse(true)
+        }
+    }
+
+    // 这样调用应该是更优解
+    private class SuperiorSkyblockImpl26 : SuperiorSkyblockApi {
+
+        private val plugin by unsafeLazy {
+            SuperiorSkyblockPlugin.getPlugin(
+                SuperiorSkyblockPlugin::class.java
+            )
+        }
+
+        private val protectionManager by unsafeLazy { plugin.services.getService(RegionManagerService::class.java) }
+
+        override fun canDamage(player: Player, entity: Entity): Boolean {
+            // ProtectionListener
+            val damagerSource = BukkitEntities.getPlayerSource(player)
+                .map { plugin.players.getSuperiorPlayer(it) }.orElse(null)
+            val interactionResult = protectionManager.handleEntityDamage(player, entity)
+            return !ProtectionHelper.shouldPreventInteraction(interactionResult, damagerSource, false)
+        }
+    }
 
     override fun canPlace(player: Player, location: Location): Boolean {
         return SuperiorSkyblockAPI.getIslandAt(location)
@@ -67,31 +139,7 @@ class SuperiorSkyblockComp : AntiGrief {
     }
 
     override fun canDamage(player: Player, entity: Entity): Boolean {
-        val category = BukkitEntities.getCategory(entity.type)
-        val plugin = SuperiorSkyblockPlugin.getPlugin(
-            SuperiorSkyblockPlugin::class.java
-        )
-        return Optional.ofNullable<Island>(SuperiorSkyblockAPI.getIslandAt(entity.location))
-            .map { island ->
-                var banPvp = false
-                if (entity is Player) {
-                    val targetPlayer = plugin.players.getSuperiorPlayer(entity)
-                    if (category == BukkitEntities.EntityCategory.UNKNOWN) {
-                        banPvp =
-                            if (island.isSpawn) (plugin.settings.spawn.isProtected && !plugin.settings.spawn.isPlayersDamage) else ((!plugin.settings.isVisitorsDamage && island.isVisitor(
-                                targetPlayer,
-                                false
-                            )) ||
-                                    (!plugin.settings.isCoopDamage && island.isCoop(targetPlayer)))
-                    }
-                }
-                if (entity is Player) !banPvp else island.hasPermission(
-                    SuperiorSkyblockAPI.getPlayer(
-                        player
-                    ), category.damagePrivilege
-                )
-            }
-            .orElse(true)
+        return api.canDamage(player, entity)
     }
 
     override fun getAntiGriefPluginName(): String {

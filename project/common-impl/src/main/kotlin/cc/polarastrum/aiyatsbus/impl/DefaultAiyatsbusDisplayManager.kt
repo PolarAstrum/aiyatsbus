@@ -109,6 +109,8 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
 
 
     override fun display(item: ItemStack, player: Player): ItemStack {
+        // 如果服务器正在关闭或插件正在关闭，则不处理显示
+        if (isStopping()) return item
         val settings = getSettings()
         // 如果没有打开附魔显示模块就不显示了
         if (!settings.enable) return item
@@ -158,7 +160,7 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
                             add(
                                 componentFromRaw(
                                     settings.capabilityLine
-                                        .replace("capability" to item.type.capability - enchants.size)
+                                        .replace("capability" to item.capability - enchants.size)
                                         .component().buildColored().toRawMessage()
                                 )
                             )

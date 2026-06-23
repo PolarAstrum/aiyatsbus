@@ -37,6 +37,9 @@ object AiyatsbusCommand {
     @CommandBody(permission = "aiyatsbus.command.book")
     val book = bookSubCommand
 
+    @CommandBody(permission = "aiyatsbus.command.capability")
+    val capability = capabilitySubCommand
+
     @CommandBody(permission = "aiyatsbus.command.dev")
     val dev = devSubCommand
 
@@ -86,6 +89,8 @@ private fun commandAliases() {
                 }
             }
             register(AiyatsbusCommand.book, this)
+            register(AiyatsbusCommand.capability, this)
+            register(AiyatsbusCommand.dev, this)
             register(AiyatsbusCommand.enchant, this)
             register(AiyatsbusCommand.menu, this)
             register(AiyatsbusCommand.mode, this)

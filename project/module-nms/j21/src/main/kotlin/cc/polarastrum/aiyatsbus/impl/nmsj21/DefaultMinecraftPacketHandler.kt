@@ -26,10 +26,10 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps
 import net.minecraft.network.HashedPatchMap
 import net.minecraft.network.HashedStack
-import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata
-import net.minecraft.network.syncher.DataWatcher
-import net.minecraft.network.syncher.DataWatcherObject
-import net.minecraft.network.syncher.DataWatcherRegistry
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl
 import net.minecraft.world.item.ItemStack
@@ -94,16 +94,16 @@ class DefaultMinecraftPacketHandler : MinecraftPacketHandler {
     override fun setHandActive(player: Player, isHandActive: Boolean) {
         val byte = (if (isHandActive) 0x01 else 0).toByte()
         player.sendPacket(
-            PacketPlayOutEntityMetadata::class.java.invokeConstructor(
+            ClientboundSetEntityDataPacket::class.java.invokeConstructor(
                 player.entityId,
-                listOf((createByteMeta(8, byte) as DataWatcher.Item<*>).invokeMethod<Any>("value"))
+                listOf((createByteMeta(8, byte) as SynchedEntityData.DataItem<*>).invokeMethod<Any>("value"))
             )
         )
     }
 
     @Suppress("SameParameterValue")
     private fun createByteMeta(index: Int, value: Byte): Any {
-        return DataWatcher.Item(DataWatcherObject(index, DataWatcherRegistry.BYTE), value)
+        return SynchedEntityData.DataItem(EntityDataAccessor(index, EntityDataSerializers.BYTE), value)
     }
 
     /**
@@ -149,9 +149,9 @@ class DefaultMinecraftPacketHandler : MinecraftPacketHandler {
      */
     class ProxyHashedStack(val hashedStack: HashedStack, val player: Player) : HashedStack {
 
-        override fun matches(serverItem: ItemStack, hashGenerator: HashedPatchMap.a): Boolean {
+        override fun matches(serverItem: ItemStack, hashGenerator: HashedPatchMap.HashGenerator): Boolean {
             // 数量不一样必须同步 (材料不要求)
-            if (hashedStack is HashedStack.a && hashedStack.count != serverItem.count) return false
+            if (hashedStack is HashedStack.ActualItem && hashedStack.count != serverItem.count) return false
             var itemToMatch = serverItem
 
             // 判断是不是本插件的物品

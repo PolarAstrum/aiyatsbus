@@ -1,0 +1,68 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+# 普通粒子附魔粒子形态
+normal:
+  # 不同体型 RNA 或环形粒子的半径
+  range:
+    - 0.5
+    - 1
+    - 2
+  # 不同体型 RNA 粒子的高度
+  height:
+    - -0.5
+    - -0.8
+    - -1
+
+# 专精粒子附魔每个装备槽的粒子形态
+specialized:
+  HEAD:
+    # 粒子形状类型
+    # 支持 CIRCLE (环形)、RNA (双螺旋)、SIMPLE (简单)
+    type: CIRCLE
+    # 半径
+    range: 0.75
+    # 高度
+    height: 0.25
+  CHEST:
+    type: RNA
+    range: 0.75
+    height: 0.6
+  LEGS:
+    type: RNA
+    range: 0.75
+    height: 0.8
+  FEET:
+    type: CIRCLE
+    range: 1
+    height: 0.3
+  HAND:
+    type: SIMPLE
+  OFF_HAND:
+    type: SIMPLE
+
+# 所有粒子附魔在破坏哪些方块时触发粒子
+# 星号 * 则代表全部方块
+blocks:
+  - coal_ore
+  - deepslate_coal_ore
+  - iron_ore
+  - deepslate_iron_ore
+  - copper_ore
+  - deepslate_copper_ore
+  - redstone_ore
+  - deepslate_redstone_ore
+  - lapis_ore
+  - deepslate_lapis_ore
+  - gold_ore
+  - deepslate_gold_ore
+  - nether_gold_ore
+  - diamond_ore
+  - deepslate_diamond_ore
+  - emerald_ore
+  - deepslate_emerald_ore
+  - ancient_debris
+  - nether_quartz_ore
+  - obsidian

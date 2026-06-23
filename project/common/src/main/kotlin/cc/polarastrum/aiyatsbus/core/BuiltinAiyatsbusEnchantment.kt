@@ -14,13 +14,7 @@ import taboolib.module.configuration.Configuration
  * @author mical
  * @since 2026/3/5 22:04
  */
-class BuiltinAiyatsbusEnchantment(
-    id: String,
-    config: Configuration,
-    eventExecutor: EventFunctions
-) : AiyatsbusEnchantmentBase(id, null, config), EventFunctions by eventExecutor {
-
-    override val mechanism: Mechanism = Mechanism(null, this)
+interface BuiltinAiyatsbusEnchantment : AiyatsbusEnchantment {
 
     class Builder {
 
@@ -112,7 +106,7 @@ class BuiltinAiyatsbusEnchantment(
             return this
         }
 
-        fun build(): BuiltinAiyatsbusEnchantment {
+        fun build(): BuiltinAiyatsbusEnchantmentBase {
             val config = Configuration.Companion.empty()
             config["basic"] = basicData!!.serialize()
             if (alternativeData != null) {
@@ -127,15 +121,15 @@ class BuiltinAiyatsbusEnchantment(
                     config["variables.${type.name.lowercase()}.${name}"] = value
                 }
             }
-            return BuiltinAiyatsbusEnchantment(basicData!!.id, config, eventExecutor).apply {
-                mechanism.addTrigger(TriggerType.BUILTIN, object : Builtin(), EventFunctions by eventExecutor { })
+            return BuiltinAiyatsbusEnchantmentBase(basicData!!.id, config, eventExecutor).apply ench@{
+                mechanism.addTrigger(TriggerType.BUILTIN, object : Builtin(this@ench), EventFunctions by eventExecutor { })
             }
         }
 
         /**
          * 生成并注册
          */
-        fun register(): BuiltinAiyatsbusEnchantment {
+        fun register(): BuiltinAiyatsbusEnchantmentBase {
             return build().also { Aiyatsbus.api().getEnchantmentManager().register(it) }
         }
     }
@@ -146,4 +140,13 @@ class BuiltinAiyatsbusEnchantment(
         @JvmStatic
         fun builder() = Builder()
     }
+}
+
+class BuiltinAiyatsbusEnchantmentBase(
+    id: String,
+    config: Configuration,
+    eventExecutor: EventFunctions
+) : AiyatsbusEnchantmentBase(id, null, config), BuiltinAiyatsbusEnchantment, EventFunctions by eventExecutor {
+
+    override val mechanism: Mechanism = Mechanism(null, this)
 }

@@ -18,11 +18,11 @@
  */
 package cc.polarastrum.aiyatsbus.impl.registration.v12103_nms
 
-import cc.polarastrum.aiyatsbus.core.Aiyatsbus
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentManager
 import cc.polarastrum.aiyatsbus.core.StandardPriorities
+import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.registration.modern.ModernEnchantmentRegisterer
 import cc.polarastrum.aiyatsbus.impl.registration.v12103_paper.EnchantmentHelper
 import net.minecraft.core.*
@@ -191,6 +191,7 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
 
             if (nms.isPresent) {
                 return (if (enchant.alternativeData.isVanilla) {
+                    if (enchant !is VanillaAiyatsbusEnchantmentBase) throw IllegalArgumentException("Enchant ${enchant.id} must be an impl of VanillaAiyatsbusEnchantment!")
                     EnchantmentHelper.createVanillaCraftEnchantment(enchant, nms.get().value())
                 } else {
                     EnchantmentHelper.createAiyatsbusCraftEnchantment(enchant, nms.get().value())

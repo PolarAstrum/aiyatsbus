@@ -2,6 +2,10 @@ package cc.polarastrum.aiyatsbus.impl.registration.legacy
 
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.registration.AiyatsbusEnchantmentRegisterer
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.LifeCycle
@@ -39,6 +43,7 @@ object DefaultLegacyEnchantmentRegisterer : AiyatsbusEnchantmentRegisterer {
 
     override fun register(enchant: AiyatsbusEnchantmentBase): Enchantment {
         val enchantment = if (enchant.alternativeData.isVanilla) {
+            if (enchant !is VanillaAiyatsbusEnchantmentBase) throw IllegalArgumentException("Enchant ${enchant.id} must be an impl of VanillaAiyatsbusEnchantment!")
             val bukkitEnchantment = Enchantment.getByKey(enchant.enchantmentKey)!!
             clazzLegacyVanillaCraftEnchantment
                 .getConstructor(AiyatsbusEnchantmentBase::class.java, Enchantment::class.java)
@@ -47,7 +52,11 @@ object DefaultLegacyEnchantmentRegisterer : AiyatsbusEnchantmentRegisterer {
                     Enchantment::class.java.getProperty<HashMap<*, *>>("byName", true)!!.remove(bukkitEnchantment.name)
                 }
         } else {
-            LegacyAiyatsbusCraftEnchantment(enchant)
+            when (enchant) {
+                is BuiltinAiyatsbusEnchantmentBase -> LegacyBuiltinAiyatsbusCraftEnchantment(enchant)
+                is InternalAiyatsbusEnchantmentBase -> LegacyInternalAiyatsbusCraftEnchantment(enchant)
+                else -> LegacyAiyatsbusCraftEnchantment(enchant)
+            }
         }
         Enchantment.registerEnchantment(enchantment)
         return enchantment
@@ -58,6 +67,11 @@ object DefaultLegacyEnchantmentRegisterer : AiyatsbusEnchantmentRegisterer {
         if (!enchant.alternativeData.isVanilla) {
             Enchantment::class.java.getProperty<HashMap<*, *>>("byKey", true)!!.remove(enchant.enchantmentKey)
             Enchantment::class.java.getProperty<HashMap<*, *>>("byName", true)!!.remove(enchant.id.uppercase())
+        } else {
+            // 强兼低版本
+            // 高版本的任何附魔都已经不能卸载了，所以没必要做支持
+            // 理论上也可以通过在注册时缓存原来的附魔实例，然后卸载时再替换回去来解决
+            (enchant as? VanillaAiyatsbusEnchantment)?.injector?.enable = false
         }
     }
 }

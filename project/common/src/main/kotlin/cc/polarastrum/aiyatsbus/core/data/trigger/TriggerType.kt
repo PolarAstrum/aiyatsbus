@@ -11,7 +11,12 @@ package cc.polarastrum.aiyatsbus.core.data.trigger
  * @author mical
  * @since 2026/2/8 21:19
  */
-enum class TriggerType {
+enum class TriggerType(
+    val isUnique: Boolean = false
+) {
+
+    /** 粒子效果 */
+    ARTIFACT(true),
 
     /** 事件监听器触发 */
     LISTENER,
@@ -23,5 +28,5 @@ enum class TriggerType {
     SKILL,
 
     /** 内置触发器触发，可用代码编写，包含了事件触发和定时触发 */
-    BUILTIN
+    BUILTIN(true)
 }

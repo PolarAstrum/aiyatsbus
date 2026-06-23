@@ -1,7 +1,8 @@
 package cc.polarastrum.aiyatsbus.impl.registration.legacy
 
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
-import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.util.legacyToAdventure
 import io.papermc.paper.enchantments.EnchantmentRarity
 import net.kyori.adventure.text.Component
@@ -19,9 +20,9 @@ import org.bukkit.inventory.ItemStack
  * @since 2025/8/23 01:21
  */
 class LegacyVanillaCraftEnchantment(
-    private val enchant: AiyatsbusEnchantmentBase,
+    private val enchant: VanillaAiyatsbusEnchantmentBase,
     private val vanilla: Enchantment
-) : CraftEnchantment(getRaw(vanilla)), AiyatsbusEnchantment by enchant {
+) : CraftEnchantment(getRaw(vanilla)), VanillaAiyatsbusEnchantment by enchant {
 
     init {
         enchant.enchantment = this

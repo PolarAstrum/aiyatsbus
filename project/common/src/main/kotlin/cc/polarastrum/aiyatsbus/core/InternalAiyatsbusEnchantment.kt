@@ -12,14 +12,16 @@ import java.io.File
  * @author mical
  * @date 2024/8/21 17:43
  */
-open class InternalAiyatsbusEnchantment(
+interface InternalAiyatsbusEnchantment : AiyatsbusEnchantment
+
+open class InternalAiyatsbusEnchantmentBase(
     id: String,
     file: File?,
     config: Configuration
-) : AiyatsbusEnchantmentBase(id, file, config) {
+) : AiyatsbusEnchantmentBase(id, file, config), InternalAiyatsbusEnchantment {
 
     /**
      * 附魔机制
      */
-    override val mechanism: Mechanism = Mechanism(config.getConfigurationSection("mechanisms"), this)
+    override val mechanism: Mechanism? = Mechanism(config.getConfigurationSection("mechanisms"), this)
 }
