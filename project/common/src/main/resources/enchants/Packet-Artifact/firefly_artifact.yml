@@ -10,6 +10,9 @@ basic:
   name: "&c&o萤火"
   max-level: 1
 
+dependencies:
+  supports: 12105
+
 rarity: 皮肤
 targets:
   - 镐
