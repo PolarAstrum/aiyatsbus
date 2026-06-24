@@ -298,7 +298,12 @@ fun <T> XParticle.spawnRNAParticles(
         val rad = Math.toRadians(i)
         val sin = sin(rad) * range
         val cos = cos(rad) * range
-        world.spawnParticle(particle, loc.clone().add(sin, currentH, cos), amount, option)
+        val point = loc.clone().add(sin, currentH, cos)
+        if (option != null) {
+            world.spawnParticle(particle, point, amount, option)
+        } else {
+            world.spawnParticle(particle, point, amount)
+        }
         i += 360.0 / factor
         currentH += 2.0 * height / factor / circle
     }
@@ -353,7 +358,12 @@ fun <T> XParticle.spawnCircleParticles(
         val rad = Math.toRadians(i)
         val sin = sin(rad) * range
         val cos = cos(rad) * range
-        world.spawnParticle(particle, loc.clone().add(sin, 0.0, cos), amount, option)
+        val point = loc.clone().add(sin, 0.0, cos)
+        if (option != null) {
+            world.spawnParticle(particle, point, amount, option)
+        } else {
+            world.spawnParticle(particle, point, amount)
+        }
         i += 360.0 / factor
     }
 }

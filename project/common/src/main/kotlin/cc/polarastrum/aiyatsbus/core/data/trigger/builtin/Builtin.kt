@@ -122,7 +122,10 @@ open class Builtin internal constructor(
             for ((enchant, level) in item.fastFixedEnchants) {
                 enchant as AiyatsbusEnchantment
                 level as Int
-                val builtin = enchant.mechanism?.triggersOfType<Builtin>(TriggerType.BUILTIN)?.firstOrNull() ?: continue
+                val mechanism = enchant.mechanism ?: continue
+                val builtins = mechanism.triggersOfType<Builtin>(TriggerType.BUILTIN) +
+                    mechanism.triggersOfType<Builtin>(TriggerType.ARTIFACT)
+                if (builtins.isEmpty()) continue
                 val chance = when {
                     enchant.variables.leveled.contains("chance") -> enchant.variables.leveled("chance", level, false) as Double
                     enchant.variables.leveled.contains("概率") -> enchant.variables.leveled("概率", level, false) as Double
@@ -132,10 +135,12 @@ open class Builtin internal constructor(
                     random(chance) &&
                     enchant.limitations.checkAvailable(CheckType.USE, item, entity, slot).isSuccess
                 ) {
-                    if (event != null) {
-                        builtin.call(level, type, entity, event)
-                    } else {
-                        builtin.call(level, slot, entity as Player, type)
+                    for (builtin in builtins) {
+                        if (event != null) {
+                            builtin.call(level, type, entity, event)
+                        } else {
+                            builtin.call(level, slot, entity as Player, type)
+                        }
                     }
                 }
             }

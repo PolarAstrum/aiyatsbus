@@ -1,0 +1,43 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: zap_artifact_specialized
+  name: "&c&oEx-闪电"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+  - 头盔
+  - 胸甲
+  - 护腿
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生闪电粒子"
+    specific: "&7产生闪电粒子"
+
+mechanisms:
+  artifact:
+    particle: DUST
+    amount: 1
+    options:
+      red: 255
+      green: 255
+      blue: 0
+      size: 1.0
+    specialized: true

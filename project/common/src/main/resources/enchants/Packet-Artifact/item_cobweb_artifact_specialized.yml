@@ -1,0 +1,38 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: item_cobweb_artifact_specialized
+  name: "&c&oEx-蛛网"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+  - 头盔
+  - 胸甲
+  - 护腿
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生蛛网粒子"
+    specific: "&7产生蛛网粒子"
+
+mechanisms:
+  artifact:
+    particle: ITEM_COBWEB
+    amount: 1
+    specialized: true

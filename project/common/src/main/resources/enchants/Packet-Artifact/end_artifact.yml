@@ -1,0 +1,34 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: end_artifact
+  name: "&c&o末影"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生末影粒子"
+    specific: "&7产生末影粒子"
+
+mechanisms:
+  artifact:
+    particle: END_ROD
+    amount: 1

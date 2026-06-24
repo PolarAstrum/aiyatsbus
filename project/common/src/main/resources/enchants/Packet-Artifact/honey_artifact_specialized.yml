@@ -1,0 +1,38 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: honey_artifact_specialized
+  name: "&c&oEx-蜂蜜"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+  - 头盔
+  - 胸甲
+  - 护腿
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生滴落的蜂蜜粒子"
+    specific: "&7产生滴落的蜂蜜粒子"
+
+mechanisms:
+  artifact:
+    particle: FALLING_HONEY
+    amount: 1
+    specialized: true

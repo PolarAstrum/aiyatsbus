@@ -1,0 +1,38 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: firefly_artifact_specialized
+  name: "&c&oEx-萤火"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+  - 头盔
+  - 胸甲
+  - 护腿
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生萤火粒子"
+    specific: "&7产生萤火粒子"
+
+mechanisms:
+  artifact:
+    particle: FIREFLY
+    amount: 1
+    specialized: true

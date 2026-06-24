@@ -1,0 +1,40 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: light_artifact_specialized
+  name: "&c&oEx-光芒"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+  - 头盔
+  - 胸甲
+  - 护腿
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生光芒粒子"
+    specific: "&7产生光芒粒子"
+
+mechanisms:
+  artifact:
+    particle: BLOCK_MARKER
+    amount: 1
+    options:
+      type: LIGHT
+    specialized: true

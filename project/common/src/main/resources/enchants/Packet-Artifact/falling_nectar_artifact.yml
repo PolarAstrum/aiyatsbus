@@ -1,0 +1,34 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: falling_nectar_artifact
+  name: "&c&o花粉"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生花粉粒子"
+    specific: "&7产生花粉粒子"
+
+mechanisms:
+  artifact:
+    particle: FALLING_NECTAR
+    amount: 1

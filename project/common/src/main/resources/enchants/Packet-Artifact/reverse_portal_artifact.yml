@@ -1,0 +1,34 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: reverse_portal_artifact
+  name: "&c&o逆门"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生逆门粒子"
+    specific: "&7产生逆门粒子"
+
+mechanisms:
+  artifact:
+    particle: REVERSE_PORTAL
+    amount: 1

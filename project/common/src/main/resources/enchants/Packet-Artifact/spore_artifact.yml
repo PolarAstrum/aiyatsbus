@@ -1,0 +1,34 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: spore_artifact
+  name: "&c&o苔藓"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生苔藓粒子"
+    specific: "&7产生苔藓粒子"
+
+mechanisms:
+  artifact:
+    particle: SPORE_BLOSSOM_AIR
+    amount: 1

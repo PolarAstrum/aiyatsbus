@@ -1,0 +1,38 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: falling_water_artifact_specialized
+  name: "&c&oEx-落滴"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+  - 头盔
+  - 胸甲
+  - 护腿
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生落滴粒子"
+    specific: "&7产生落滴粒子"
+
+mechanisms:
+  artifact:
+    particle: FALLING_WATER
+    amount: 1
+    specialized: true

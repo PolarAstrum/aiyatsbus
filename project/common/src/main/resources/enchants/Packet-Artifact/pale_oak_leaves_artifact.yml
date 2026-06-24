@@ -1,0 +1,34 @@
+
+
+#         Powered by TabooLib 6.3         #
+
+
+basic:
+  enable: true
+  disable_worlds: [ ]
+  id: pale_oak_leaves_artifact
+  name: "&c&o苍叶"
+  max-level: 1
+
+rarity: 皮肤
+targets:
+  - 镐
+  - 剑
+  - 斧
+  - 鞘翅
+  - 弓
+  - 弩
+  - 三叉戟
+  - 靴子
+
+limitations: [ ]
+
+display:
+  description:
+    general: "产生苍叶粒子"
+    specific: "&7产生苍叶粒子"
+
+mechanisms:
+  artifact:
+    particle: PALE_OAK_LEAVES
+    amount: 1
