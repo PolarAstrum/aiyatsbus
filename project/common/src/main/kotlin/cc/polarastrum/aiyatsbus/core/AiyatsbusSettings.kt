@@ -76,10 +76,18 @@ object AiyatsbusSettings {
     /**
      * 是否开启 ItemsAdder 支持
      * 启用对 ItemsAdder 插件的兼容支持
-     * 默认值：false
+     * 默认值：true
      */
     @ConfigNode("Settings.support-items-adder")
-    var supportItemsAdder = false
+    var supportItemsAdder = true
+
+    /**
+     * 是否开启 ItemsAdder 支持
+     * 启用对 ItemsAdder 插件的兼容支持
+     * 默认值：true
+     */
+    @ConfigNode("Settings.support-craft-engine")
+    var supportCraftEngine = true
 
     /**
      * 是否开启脚本预热

@@ -152,3 +152,12 @@ fun safeguard(cn: String, en: String, time: Long = 5000L, block: () -> Unit) {
 internal val itemsAdderEnabled = runCatching { 
     Class.forName("dev.lone.itemsadder.api.ItemsAdder") 
 }.isSuccess
+
+/**
+ * CraftEngine 插件是否启用
+ *
+ * 检查 CraftEngine 插件是否在类路径中存在。
+ */
+internal val craftEngineEnabled = runCatching {
+    Class.forName("net.momirealms.craftengine.bukkit.plugin.BukkitCraftEngine")
+}.isSuccess

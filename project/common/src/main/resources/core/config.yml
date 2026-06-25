@@ -26,6 +26,8 @@ Settings:
     - nereusopus
   # 是否开启 ItemsAdder 支持
   support-items-adder: true
+  # 是否开启 CraftEngine 支持
+  support-craft-engine: true
   # 是否开启脚本预热, 会在附魔加载/重载时编译一次脚本
   # 可以略微提升一点点第一次触发附魔的速度
   enable-kether-preheat: true

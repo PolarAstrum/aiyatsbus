@@ -4,6 +4,7 @@ import cc.polarastrum.aiyatsbus.core.Aiyatsbus
 import cc.polarastrum.aiyatsbus.core.AiyatsbusSettings
 import cc.polarastrum.aiyatsbus.core.compat.NPCChecker
 import dev.lone.itemsadder.api.CustomBlock
+import net.momirealms.craftengine.bukkit.api.CraftEngineBlocks
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
@@ -202,7 +203,7 @@ fun LivingEntity.realDamage(amount: Double, who: Entity? = null) {
  */
 fun Player.placeBlock(placedBlock: Block, itemInHand: ItemStack = this.itemInHand): Boolean {
     val blockAgainst = placedBlock.getRelative(0, 1, 0)
-    val event = BlockPlaceEvent(placedBlock, placedBlock.state, blockAgainst, itemInHand, this, true)
+    val event = BlockPlaceEvent(placedBlock, placedBlock.state, blockAgainst, itemInHand, this, true, EquipmentSlot.HAND)
     return event.callEvent()
 }
 
@@ -253,8 +254,12 @@ fun Player.doBreakBlock(block: Block) {
                 } else {
                     block.breakNaturally(inventory.itemInMainHand)
                 }
-            } else {
-                block.breakNaturally(inventory.itemInMainHand)
+            } else if (AiyatsbusSettings.supportCraftEngine && craftEngineEnabled) {
+                if (CraftEngineBlocks.isCustomBlock(block)) {
+                    CraftEngineBlocks.remove(block, this, false, true, true)
+                } else {
+                    block.breakNaturally(inventory.itemInMainHand)
+                }
             }
         }
         block.unmark("block-ignored")
