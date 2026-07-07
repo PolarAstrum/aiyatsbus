@@ -21,6 +21,7 @@ import java.io.File
  */
 object FluxonChecker {
 
+    private const val CORE_PACKAGE = "cc.polarastrum.aiyatsbus.module.script.fluxon.core"
     private const val FLUXON_VERSION = "1.6.17"
     private const val FP_VERSION = "1.1.8"
 
@@ -64,11 +65,26 @@ object FluxonChecker {
     @Awake(LifeCycle.INIT)
     fun init() {
         if (isCentral) return
-        runningClassMap.filter { it.key.startsWith("cc.polarastrum.aiyatsbus.module.script.fluxon.core") }
+        runningClassMap.filter { isSupportedRuntimeClass(it.key) && it.key.startsWith(CORE_PACKAGE) }
             .forEach { (_, clazz) ->
                 if (ClassVisitorHandler.checkPlatform(clazz) && ClassVisitorHandler.checkRequires(clazz)) {
                     ClassVisitorHandler.injectAll(clazz)
                 }
             }
+    }
+
+    private fun isSupportedRuntimeClass(name: String): Boolean {
+        val requiredClass = when (name) {
+            "$CORE_PACKAGE.platform.bukkit.function.bukkit.block.data.type.FnPointedDripstone" -> "org.bukkit.block.data.type.PointedDripstone\$Thickness"
+            "$CORE_PACKAGE.platform.bukkit.function.bukkit.event.world.FnTimeSkipEvent" -> "org.bukkit.event.world.TimeSkipEvent\$SkipReason"
+            else -> return true
+        }
+        return classExists(requiredClass)
+    }
+
+    private fun classExists(name: String): Boolean {
+        return runCatching {
+            Class.forName(name, false, ClassVisitorHandler::class.java.classLoader)
+        }.isSuccess
     }
 }

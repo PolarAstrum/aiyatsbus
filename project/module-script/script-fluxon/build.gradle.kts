@@ -6,10 +6,10 @@ dependencies {
     // 引入 API
     compileOnly(project(":project:common"))
     compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
-    compileOnly("org.tabooproject.fluxon:core:1.6.15")
-    compileOnly("org.tabooproject.fluxon.plugin:core:1.1.4")
-    compileOnly("org.tabooproject.fluxon.plugin:common:1.1.4")
-    compileOnly("org.tabooproject.fluxon.plugin:platform-bukkit:1.1.4")
+    compileOnly("org.tabooproject.fluxon:core:1.6.17")
+    compileOnly("org.tabooproject.fluxon.plugin:core:1.1.8")
+    compileOnly("org.tabooproject.fluxon.plugin:common:1.1.8")
+    compileOnly("org.tabooproject.fluxon.plugin:platform-bukkit:1.1.8")
     // Reflex Remapper
     compileOnly("org.ow2.asm:asm:9.8")
     compileOnly("org.ow2.asm:asm-util:9.8")

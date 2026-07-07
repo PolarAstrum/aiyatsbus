@@ -145,6 +145,7 @@ val Enchantment.aiyatsbusEt: AiyatsbusEnchantment
  */
 fun sendDebug(message: String) {
     if (AiyatsbusSettings.debug) {
+        println(message)
         AiyatsbusSettings.debugUsers.mapNotNull(::getProxyPlayer).forEach { t -> t.sendMessage(message) }
     }
 }

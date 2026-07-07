@@ -24,7 +24,7 @@ object FluxonRelocateLoader {
     private var propertySetted = false
     var needToTranslate = false
 
-    @Awake(LifeCycle.CONST)
+    @Awake(LifeCycle.INIT)
     fun init() {
         if (!propertySetted) {
             if (Bukkit.getServer().pluginManager.getPlugin("FluxonPlugin") != null) {

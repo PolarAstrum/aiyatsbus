@@ -1,5 +1,6 @@
 package cc.polarastrum.aiyatsbus.module.script.fluxon.handler
 
+import cc.polarastrum.aiyatsbus.core.sendDebug
 import cc.polarastrum.aiyatsbus.module.script.fluxon.FluxonScriptHandler
 import cc.polarastrum.aiyatsbus.module.script.fluxon.relocate.FluxonRelocate
 import org.bukkit.command.CommandSender
@@ -62,9 +63,11 @@ object Fluxon : FluxonHandler {
         return try {
             scriptBase.eval(environment)?.exceptFluxonCompletableFutureError()
         } catch (ex: FluxonRuntimeError) {
+            warning("编译脚本 $id 时发生错误:")
             ex.printError()
             null
         } catch (ex: Throwable) {
+            warning("编译脚本 $id 时发生错误:")
             ex.printStackTrace()
             null
         }
@@ -72,6 +75,7 @@ object Fluxon : FluxonHandler {
 
     override fun preheat(source: String, id: String) {
         try {
+            sendDebug("正在预编译脚本 $id")
             val result = Fluxon.compile(
                 environment,
                 CompilationContext(source).apply { packageAutoImport += FluxonScriptHandler.DEFAULT_PACKAGE_AUTO_IMPORT },
@@ -81,9 +85,10 @@ object Fluxon : FluxonHandler {
             Files.write(newFile(newFolder(getDataFolder(), "classes"), "${id}.class").toPath(), result.mainClass)
             compiledScripts[id] = result.createInstance(classLoader) as RuntimeScriptBase
         } catch (ex: ParseException) {
-            warning("编译脚本 $source 时发生错误:")
+            warning("编译脚本 $id 时发生错误:")
             ex.printStackTrace()
         } catch (ex: Throwable) {
+            warning("编译脚本 $id 时发生错误:")
             ex.printStackTrace()
         }
     }
