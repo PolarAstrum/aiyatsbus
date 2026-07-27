@@ -4,8 +4,11 @@ import cc.polarastrum.aiyatsbus.core.*
 import cc.polarastrum.aiyatsbus.core.data.CheckType
 import cc.polarastrum.aiyatsbus.core.event.AiyatsbusPrepareAnvilEvent
 import cc.polarastrum.aiyatsbus.core.util.*
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.inventory.PrepareAnvilEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
@@ -16,6 +19,7 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.registerLifeCycleTask
+import taboolib.common.platform.function.submit
 import taboolib.common5.cdouble
 import taboolib.common5.cint
 import taboolib.module.chat.uncolored
@@ -23,7 +27,11 @@ import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.conversion
+import taboolib.module.nms.PacketSendEvent
+import taboolib.module.ui.InventoryViewProxy
 import taboolib.platform.util.modifyMeta
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -98,11 +106,14 @@ object AnvilSupport {
         }
     }
 
+    private val tooExpensive = ConcurrentHashMap<UUID, Int>()
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onAnvil(e: PrepareAnvilEvent) {
         e.inventory.maximumRepairCost = maxCost
         val renameText = e.inventory.renameText ?: ""
         val viewer = e.viewers.getOrNull(0) as? Player ?: return
+        val isCreativeMode = viewer.gameMode == GameMode.CREATIVE
 
         val result = doMerge(e.inventory.firstItem ?: return, e.inventory.secondItem, renameText, viewer)
 
@@ -117,10 +128,50 @@ object AnvilSupport {
         if (useReworkPenalty && !result.onlyEditName && resultItem != null) {
             resultItem = resultItem.setRepairCost(reworkPenalty.calcToInt("repairCost" to resultItem.getRepairCost()))
         }
+        if (result.experience in 40..maxCost) {
+            tooExpensive[viewer.uniqueId] = result.experience
+        }
         e.inventory.repairCost = result.experience
+        // 这里不能直接用 result.isTooExpensive 判断，因为存在原版 39 级的限制
+        if (result.experience in 0..39) {
+            if (tooExpensive.remove(viewer.uniqueId) != null) {
+                Aiyatsbus.api().getMinecraftAPI().getPacketHandler().sendPlayerAbilities(viewer, isCreativeMode)
+            }
+        } else if (result.experience in 40..maxCost) {
+            Aiyatsbus.api().getMinecraftAPI().getPacketHandler().sendPlayerAbilities(viewer, true)
+        }
         e.inventory.repairCostAmount = result.costItemAmount
-        e.result = resultItem
-        e.inventory.result = resultItem
+        // 如果过于昂贵，则不能显示物品
+        if (result.isTooExpensive && !isCreativeMode) {
+            e.result = null
+            e.inventory.result = null
+        } else {
+            e.result = resultItem
+            e.inventory.result = resultItem
+        }
+    }
+
+    @SubscribeEvent
+    fun onPacketSend(e: PacketSendEvent) {
+        if (e.packet.name == "PacketPlayOutSetSlot" || e.packet.name == "ClientboundContainerSetSlotPacket") {
+            val cost = tooExpensive[e.player.uniqueId]
+            if (cost != null) {
+                submit {
+                    Aiyatsbus.api().getMinecraftAPI().getPacketHandler().sendAnvilWindowProperty(e.player, e.packet.read("containerId")!!, cost)
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    fun e(e: InventoryCloseEvent) {
+        if (e.player !is Player) return
+        val isCreativeMode = e.player.gameMode == GameMode.CREATIVE
+        if (InventoryViewProxy.getTopInventory(e.view).type == InventoryType.ANVIL) {
+            if (tooExpensive.remove(e.player.uniqueId) != null) {
+                Aiyatsbus.api().getMinecraftAPI().getPacketHandler().sendPlayerAbilities(e.player as Player, isCreativeMode)
+            }
+        }
     }
 
     fun doMerge(left: ItemStack, right: ItemStack?, name: String?, player: Player): AnvilResult {
@@ -150,7 +201,7 @@ object AnvilSupport {
             result.modifyMeta<ItemMeta> {
                 displayName(null)
             }
-            return AnvilResult.Successful(result, experience.cint, 0, true)
+            return AnvilResult.Successful(result, experience.cint, 0, true, experience.cint > maxCost)
         }
 
         // 改名, 用了自己写的一个扩展属性
@@ -164,7 +215,7 @@ object AnvilSupport {
         if (right.isNull) {
             // 如果没改名, 改名框内的名字和原物品是一样的
             if (nameIsEqual) return AnvilResult.Failed
-            return AnvilResult.Successful(result, experience.cint, 0, true)
+            return AnvilResult.Successful(result, experience.cint, 0, true, experience.cint > maxCost)
         }
 
         // 如果右面物品存在, 就是物品合成 or 物品修补
@@ -291,18 +342,19 @@ object AnvilSupport {
         // 如果最后产出的物品跟原来的一模一样, 且没有合并附魔, 就是压根没改
         if (left == result && !mergedEnchants) return AnvilResult.Failed
 
-        return AnvilResult.Successful(result, finalCost(experience, player), costItemAmount, false)
+        val finalCost = finalCost(experience, player)
+        return AnvilResult.Successful(result, finalCost, costItemAmount, false, finalCost > maxCost)
     }
 
     private fun finalCost(origin: Double, player: Player): Int = privilege.minOf { (perm, expression) ->
         if (player.hasPermission(perm)) expression.calcToInt("expCost" to origin)
         else origin.roundToInt()
-    }.coerceAtMost(maxCost).coerceAtLeast(1)
+    }.coerceAtLeast(1)
 }
 
-sealed class AnvilResult(val item: ItemStack?, val experience: Int, val costItemAmount: Int, val onlyEditName: Boolean) {
+sealed class AnvilResult(val item: ItemStack?, val experience: Int, val costItemAmount: Int, val onlyEditName: Boolean, val isTooExpensive: Boolean) {
 
-    class Successful(item: ItemStack?, experience: Int, costItemAmount: Int, onlyEditName: Boolean) : AnvilResult(item, experience, costItemAmount, onlyEditName)
+    class Successful(item: ItemStack?, experience: Int, costItemAmount: Int, onlyEditName: Boolean, isTooExpensive: Boolean) : AnvilResult(item, experience, costItemAmount, onlyEditName, isTooExpensive)
 
-    object Failed : AnvilResult(null, 0, 0, false)
+    object Failed : AnvilResult(null, 0, 0, false, false)
 }

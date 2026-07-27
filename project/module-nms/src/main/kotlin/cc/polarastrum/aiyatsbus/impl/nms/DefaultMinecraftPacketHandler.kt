@@ -21,10 +21,13 @@ package cc.polarastrum.aiyatsbus.impl.nms
 import cc.polarastrum.aiyatsbus.core.MinecraftPacketHandler
 import cc.polarastrum.aiyatsbus.core.toRevertMode
 import cc.polarastrum.aiyatsbus.core.util.isNull
+import net.minecraft.network.protocol.game.PacketPlayOutAbilities
 import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata
+import net.minecraft.network.protocol.game.PacketPlayOutWindowData
 import net.minecraft.network.syncher.DataWatcher
 import net.minecraft.network.syncher.DataWatcherObject
 import net.minecraft.network.syncher.DataWatcherRegistry
+import net.minecraft.world.entity.player.PlayerAbilities
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import taboolib.library.reflex.Reflex.Companion.getProperty
@@ -60,6 +63,21 @@ class DefaultMinecraftPacketHandler : MinecraftPacketHandler {
 //                ?.packetListener as? ServerConfigurationPacketListenerImpl)
 //                ?.startConfiguration()
 //        }
+    }
+
+    override fun sendPlayerAbilities(player: Player, isCreativeMode: Boolean) {
+        player.sendPacket(PacketPlayOutAbilities(PlayerAbilities().apply {
+            this.invulnerable = player.isInvulnerable
+            this.flying = player.isFlying
+            this.mayfly = player.allowFlight
+            this.instabuild = isCreativeMode
+            this.flyingSpeed = player.flySpeed / 2
+            this.walkingSpeed = player.walkSpeed / 2
+        }))
+    }
+
+    override fun sendAnvilWindowProperty(player: Player, windowId: Int, cost: Int) {
+        player.sendPacket(PacketPlayOutWindowData(windowId, 0, cost))
     }
 
     override fun setHandActive(player: Player, isHandActive: Boolean) {

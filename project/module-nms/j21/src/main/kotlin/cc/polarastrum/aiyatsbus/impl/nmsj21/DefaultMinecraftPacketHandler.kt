@@ -26,12 +26,15 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps
 import net.minecraft.network.HashedPatchMap
 import net.minecraft.network.HashedStack
+import net.minecraft.network.protocol.game.ClientboundContainerSetDataPacket
+import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl
+import net.minecraft.world.entity.player.Abilities
 import net.minecraft.world.item.ItemStack
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
@@ -72,6 +75,21 @@ class DefaultMinecraftPacketHandler : MinecraftPacketHandler {
                 ?.packetListener as? ServerConfigurationPacketListenerImpl)
                 ?.startConfiguration()
         }
+    }
+
+    override fun sendPlayerAbilities(player: Player, isCreativeMode: Boolean) {
+        player.sendPacket(ClientboundPlayerAbilitiesPacket(Abilities().apply {
+            this.invulnerable = player.isInvulnerable
+            this.flying = player.isFlying
+            this.mayfly = player.allowFlight
+            this.instabuild = isCreativeMode
+            this.flyingSpeed = player.flySpeed / 2
+            this.walkingSpeed = player.walkSpeed / 2
+        }))
+    }
+
+    override fun sendAnvilWindowProperty(player: Player, windowId: Int, cost: Int) {
+        player.sendPacket(ClientboundContainerSetDataPacket(windowId, 0, cost))
     }
 
     private fun getGameProfileId(gameProfile: GameProfile): UUID {

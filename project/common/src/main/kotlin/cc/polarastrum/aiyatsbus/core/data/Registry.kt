@@ -65,6 +65,7 @@ abstract class Registry<T : RegistryItem>(
     abstract val config: Configuration
 
     /** 标记是否已经完成初始化加载 */
+    @Volatile
     private var isLoaded: Boolean = false
 
     init {

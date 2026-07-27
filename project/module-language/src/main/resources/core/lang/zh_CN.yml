@@ -30,7 +30,7 @@ thanks:
 limitations-not-enabled: '附魔未启用'
 
 limitations-typename-target: '附魔对象'
-limitations-typename-capability: '词条个数'
+limitations-typename-max_capability: '词条个数'
 limitations-typename-papi_expression: '表达式'
 limitations-typename-permission: '权限'
 limitations-typename-conflict_enchant: '冲突'
@@ -41,6 +41,7 @@ limitations-typename-disable_world: '禁用世界'
 limitations-typename-slot: '可用位置'
 
 limitations-check-failed: '{typename}错误'
+anvil-too-expensive: '过于昂贵'
 
 filter-type-rarity: '品质'
 filter-type-target: '物品类别'

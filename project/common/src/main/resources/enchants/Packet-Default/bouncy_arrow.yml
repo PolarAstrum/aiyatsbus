@@ -37,6 +37,7 @@ mechanisms:
             newArrow = &world.spawnArrow(&location, &velocity, &speed, &spread)
             &newArrow::setMeta("bouncedTime", &bouncedTime)
             &newArrow::setShooter(&oldArrow::shooter())
+            &newArrow::setPickupStatus(static org.bukkit.entity.AbstractArrow$PickupStatus.CREATIVE_ONLY)
 
             // 1.20.4+
             try {

@@ -81,7 +81,7 @@ class LandlordComp : AntiGrief {
 
         @Awake(LifeCycle.ACTIVE)
         fun init() {
-            AntiGriefChecker.registerNewCompatibility(LandlordComp())
+//            AntiGriefChecker.registerNewCompatibility(LandlordComp())
         }
     }
 } 

@@ -137,13 +137,13 @@ object ListenerEntity {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onKill(e: EntityDeathEvent) {
-        val event = e.entity.lastDamageCause
-        if (event is EntityDamageByEntityEvent) {
-            if (event.damager is LivingEntity) {
-                Builtin.execute(event.damager, EventType.KILL, event, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND)
+        val damageEvent = e.entity.lastDamageCause
+        if (damageEvent is EntityDamageByEntityEvent) {
+            if (damageEvent.damager is LivingEntity) {
+                Builtin.execute(damageEvent.damager, EventType.KILL, e, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND)
             }
-            if (event.damager is Projectile) {
-                Builtin.execute((event.damager as Projectile).shooter as? LivingEntity ?: return, EventType.KILL, event, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND)
+            if (damageEvent.damager is Projectile) {
+                Builtin.execute((damageEvent.damager as Projectile).shooter as? LivingEntity ?: return, EventType.KILL, e, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND)
             }
         }
     }

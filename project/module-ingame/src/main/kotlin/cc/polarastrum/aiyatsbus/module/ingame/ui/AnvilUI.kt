@@ -9,6 +9,7 @@ import cc.polarastrum.aiyatsbus.module.ingame.mechanics.AnvilSupport
 import cc.polarastrum.aiyatsbus.module.ingame.ui.internal.*
 import cc.polarastrum.aiyatsbus.module.ingame.ui.internal.config.MenuConfiguration
 import cc.polarastrum.aiyatsbus.module.ingame.ui.internal.feature.util.MenuFunctionBuilder
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -58,9 +59,12 @@ object AnvilUI {
                 val doMerge = AnvilSupport.doMerge(a!!, b!!, null, player)
                 result = doMerge.item
                 val cost = doMerge.experience
+                val isCreativeMode = player.gameMode == GameMode.CREATIVE
 
-                val canCombine = if (result == null || cost <= 0) false
+                val canCombine = if (result == null || cost <= 0 || (doMerge.isTooExpensive && !isCreativeMode)) false
                 else !result.isSimilar(a)
+
+                if (doMerge.isTooExpensive && !isCreativeMode) result = null
 
                 if (canCombine) {
                     info["allowed"] = player.asLang("ui-anvil-info-allow")
@@ -71,6 +75,9 @@ object AnvilUI {
                         val check = (enchant as AiyatsbusEnchantment).limitations.checkAvailable(CheckType.ANVIL, a, player)
                         if (check.isFailure) check.reason
                         else null
+                    }.toMutableList()
+                    if (doMerge.isTooExpensive && !isCreativeMode) {
+                        bugs += player.asLang("anvil-too-expensive")
                     }
                     info["allowed"] = player.asLang("ui-anvil-info-disallow")
                     info["level"] = player.asLang("ui-anvil-info-level-disallow")

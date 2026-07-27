@@ -26,6 +26,7 @@ package cc.polarastrum.aiyatsbus.module.ingame.ui.internal.feature
 import cc.polarastrum.aiyatsbus.module.ingame.ui.internal.MenuFeature
 import cc.polarastrum.aiyatsbus.module.ingame.ui.internal.data.ActionContext
 import taboolib.common.platform.function.submit
+import taboolib.platform.util.submit
 
 @Suppress("unused")
 object CloseFeature : MenuFeature() {
@@ -33,7 +34,7 @@ object CloseFeature : MenuFeature() {
     override val name: String = "Close"
 
     override fun handle(context: ActionContext) {
-        submit {
+        context.event.clicker.submit(useScheduler = true) {
             context.event.clicker.closeInventory()
         }
     }

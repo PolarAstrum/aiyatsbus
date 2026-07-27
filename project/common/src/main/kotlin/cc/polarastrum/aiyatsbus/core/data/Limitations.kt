@@ -406,27 +406,31 @@ data class Limitations(
          *
          * 处理附魔冲突关系，将单向冲突转换为双向冲突。
          */
+        fun synchronizeConflicts() {
+            // 处理附魔组冲突
+            conflictGroups.forEach { (enchant, group) ->
+                aiyatsbusEt(enchant) ?: return@forEach
+                aiyatsbusGroup(group)?.enchantments?.forEach {
+                    it.limitations.limitations.add(CONFLICT_ENCHANT to enchant)
+                }
+            }
+            conflictGroups.clear()
+
+            // 处理附魔冲突
+            conflicts.forEach { (a, b) ->
+                val etA = aiyatsbusEt(a) ?: return@forEach
+                val etB = aiyatsbusEt(b) ?: return@forEach
+                etA.limitations.limitations.add(CONFLICT_ENCHANT to b)
+                etB.limitations.limitations.add(CONFLICT_ENCHANT to a)
+            }
+            conflicts.clear()
+        }
+
         @Awake(LifeCycle.LOAD)
         fun onEnable() {
             reloadable {
-                registerLifeCycleTask(LifeCycle.ENABLE, StandardPriorities.LIMITATIONS) {
-                    // 处理附魔组冲突
-                    conflictGroups.forEach { (enchant, group) ->
-                        aiyatsbusEt(enchant) ?: return@forEach
-                        aiyatsbusGroup(group)?.enchantments?.forEach {
-                            it.limitations.limitations.add(CONFLICT_ENCHANT to enchant)
-                        }
-                    }
-                    conflictGroups.clear()
-
-                    // 处理附魔冲突
-                    conflicts.forEach { (a, b) ->
-                        val etA = aiyatsbusEt(a) ?: return@forEach
-                        val etB = aiyatsbusEt(b) ?: return@forEach
-                        etA.limitations.limitations.add(CONFLICT_ENCHANT to b)
-                        etB.limitations.limitations.add(CONFLICT_ENCHANT to a)
-                    }
-                    conflicts.clear()
+                registerLifeCycleTask(LifeCycle.ACTIVE) {
+                    synchronizeConflicts()
                 }
             }
         }

@@ -106,6 +106,9 @@ mechanisms:
               if !(&oe is org.bukkit.entity.LivingEntity) then {
                   continue
               }
+              if entity::isNPC(&oe) then {
+                  continue
+              }
               if &oe is org.bukkit.entity.Player then {
                   &viewers::add(&oe)
               }
@@ -141,6 +144,9 @@ mechanisms:
                 if &counter >= 10 then {
                     for oe in &player::getNearbyEntities(40.0, 40.0, 40.0) then {
                         if !(&oe is org.bukkit.entity.LivingEntity) then {
+                            continue
+                        }
+                        if entity::isNPC(&oe) then {
                             continue
                         }
                         if &oe::boundingBox::overlaps(&area) then {

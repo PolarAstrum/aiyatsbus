@@ -47,6 +47,7 @@ class DefaultAiyatsbusSkillHandler : AiyatsbusSkillHandler {
     }
 
     override fun registerEvents() {
+        unregisterEvents()
         listeners.add(registerBukkitListener(PlayerInteractEvent::class.java, priority = EventPriority.HIGHEST, ignoreCancelled = false) {
             if (!it.isMainhand()) return@registerBukkitListener
             val type = when {
@@ -63,6 +64,7 @@ class DefaultAiyatsbusSkillHandler : AiyatsbusSkillHandler {
 
     override fun unregisterEvents() {
         listeners.forEach { unregisterListener(it) }
+        listeners.clear()
     }
 
     override fun handleEvent(e: PlayerEvent, type: ActionType) {

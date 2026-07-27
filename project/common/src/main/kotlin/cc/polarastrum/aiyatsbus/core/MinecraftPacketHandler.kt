@@ -35,4 +35,10 @@ interface MinecraftPacketHandler {
 
     /** 发送手部活动数据 */
     fun setHandActive(player: Player, isHandActive: Boolean)
+
+    /** 发送玩家能力数据包 */
+    fun sendPlayerAbilities(player: Player, isCreativeMode: Boolean)
+
+    /** 发送铁砧窗口数据包 */
+    fun sendAnvilWindowProperty(player: Player, windowId: Int, cost: Int)
 }

@@ -57,7 +57,7 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
 
     override fun sortEnchants(enchants: List<Array<Any>>): LinkedHashMap<AiyatsbusEnchantment, Int> {
         return linkedMapOf(*enchants.sortedBy { (enchant, level) ->
-            getSettings().rarityOrder.indexOf((enchant as AiyatsbusEnchantment).id) * 100000 + (if (getSettings().sortByLevel) level as Int else 0)
+            getSettings().rarityOrder.indexOf((enchant as AiyatsbusEnchantment).rarity.id) * 100000 + (if (getSettings().sortByLevel) level as Int else 0)
         }.map { (it[0] as AiyatsbusEnchantment to it[1] as Int) }.toTypedArray())
     }
 

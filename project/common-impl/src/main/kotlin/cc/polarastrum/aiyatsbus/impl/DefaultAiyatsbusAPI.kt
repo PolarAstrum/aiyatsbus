@@ -33,8 +33,6 @@ class DefaultAiyatsbusAPI : AiyatsbusAPI {
 
     private val scriptHandler = PlatformFactory.getAPI<AiyatsbusScriptHandler>()
 
-    private lateinit var enchantmentRegisterer: AiyatsbusEnchantmentRegisterer
-
     private val minecraftAPI0 by lazy {
         proxy<AiyatsbusMinecraftAPI>("cc.polarastrum.aiyatsbus.impl.DefaultAiyatsbusMinecraftAPI")
     }
@@ -56,9 +54,6 @@ class DefaultAiyatsbusAPI : AiyatsbusAPI {
     }
 
     override fun getEnchantmentRegisterer(): AiyatsbusEnchantmentRegisterer {
-        if (::enchantmentRegisterer.isInitialized) {
-            enchantmentRegisterer = registerer
-        }
         return registerer
     }
 

@@ -60,7 +60,7 @@ data class Mechanism(
             for (skill in skillSection.getKeys(false)) {
                 val trigger = Skill(skillSection.getConfigurationSection(skill)!!, enchant)
                 trigger.init()
-                addTrigger(TriggerType.BUILTIN, trigger)
+                addTrigger(TriggerType.SKILL, trigger)
             }
         }
         // 初始化内置触发器

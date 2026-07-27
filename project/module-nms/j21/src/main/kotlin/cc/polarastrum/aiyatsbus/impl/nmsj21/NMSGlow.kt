@@ -75,7 +75,7 @@ class NMSGlowImpl : NMSGlow() {
     private val invisibleFlag: Byte = (1 shl 5).toByte()
     private val glowingFlag: Byte = (1 shl 6).toByte()
     /** 发光方块缓存 玩家 -> (方块 -> 发光方块数据) **/
-    private val glowingBlocks: ConcurrentHashMap<UUID, ConcurrentHashMap<Block, GlowingBlockData>> = ConcurrentHashMap()
+    private val glowingBlocks: ConcurrentHashMap<UUID, ConcurrentHashMap<BlockKey, GlowingBlockData>> = ConcurrentHashMap()
 
     private val entitySharedFlagsId: Any by unsafeLazy { net.minecraft.world.entity.Entity::class.java.getProperty("DATA_SHARED_FLAGS_ID", isStatic = true)!! }
 
@@ -101,7 +101,7 @@ class NMSGlowImpl : NMSGlow() {
             glowingBlocks.remove(event.player.uniqueId)
         }
         registerBukkitListener(BlockBreakEvent::class.java, EventPriority.MONITOR) { event ->
-            if (glowingBlocks[event.player.uniqueId]?.get(event.block) == null) return@registerBukkitListener
+            if (glowingBlocks[event.player.uniqueId]?.get(event.block.key()) == null) return@registerBukkitListener
             unsetBlockGlowing(event.block, event.player)
         }
         registerBukkitListener(PlayerDeathEvent::class.java) { event ->
@@ -126,6 +126,7 @@ class NMSGlowImpl : NMSGlow() {
     override fun setBlockGlowing(block: Block, receiver: Player, color: ChatColor) {
         // 目前不支持空气方块发光
         if (block.type == Material.AIR) return
+        val blockKey = block.key()
         val spawnLocation = Location(block.location.world, block.location.blockX.toDouble() + 0.5, block.location.blockY.toDouble(), block.location.blockZ.toDouble() + 0.5)
 
         // 如果不存在玩家数据
@@ -134,19 +135,19 @@ class NMSGlowImpl : NMSGlow() {
             val entityId = nextEntityId()
             val entityUUID = UUID.randomUUID()
             receiver.sendPacket(createDummyEntityShulkerPacket(entityId, entityUUID, spawnLocation))
-            glowingBlocks.computeIfAbsent(receiver.uniqueId) { ConcurrentHashMap() }[block] =
+            glowingBlocks.computeIfAbsent(receiver.uniqueId) { ConcurrentHashMap() }[blockKey] =
                 GlowingBlockData(entityId, entityUUID.toString(), color)
             setEntityGlowing0(entityId, entityUUID.toString(), receiver, color, invisibleFlag)
         } else {
             // 如果存在方块数据
-            if (glowingBlocks[receiver.uniqueId]!!.containsKey(block)) {
+            if (glowingBlocks[receiver.uniqueId]!!.containsKey(blockKey)) {
                 // 若发光颜色相同，不做任何处理
-                if (glowingBlocks[receiver.uniqueId]!![block]!!.color == color) return
+                if (glowingBlocks[receiver.uniqueId]!![blockKey]!!.color == color) return
 
                 // 否则更新颜色
-                glowingBlocks[receiver.uniqueId]!![block]!!.color = color
-                val entityID = glowingBlocks[receiver.uniqueId]!![block]!!.entityId
-                val entityUUID = glowingBlocks[receiver.uniqueId]!![block]!!.entityUUID
+                glowingBlocks[receiver.uniqueId]!![blockKey]!!.color = color
+                val entityID = glowingBlocks[receiver.uniqueId]!![blockKey]!!.entityId
+                val entityUUID = glowingBlocks[receiver.uniqueId]!![blockKey]!!.entityUUID
                 setEntityGlowing0(entityID, entityUUID, receiver, color, invisibleFlag)
             } else {
                 // 若不存在方块数据，则注册并更新发光
@@ -154,21 +155,18 @@ class NMSGlowImpl : NMSGlow() {
                 val entityId = nextEntityId()
                 val entityUUID = UUID.randomUUID()
                 receiver.sendPacket(createDummyEntityShulkerPacket(entityId, entityUUID, spawnLocation))
-                glowingBlocks[receiver.uniqueId]!![block] = GlowingBlockData(entityId, entityUUID.toString(), color)
+                glowingBlocks[receiver.uniqueId]!![blockKey] = GlowingBlockData(entityId, entityUUID.toString(), color)
                 setEntityGlowing0(entityId, entityUUID.toString(), receiver, color, invisibleFlag)
             }
         }
     }
 
     override fun unsetBlockGlowing(block: Block, receiver: Player) {
-        if (!glowingBlocks.containsKey(receiver.uniqueId) || !glowingBlocks[receiver.uniqueId]!!.containsKey(block)) {
-            return
-        }
-        if (glowingBlocks[receiver.uniqueId]!!.containsKey(block)) {
-            val data = glowingBlocks[receiver.uniqueId]!![block]!!
+        val data = glowingBlocks[receiver.uniqueId]?.remove(block.key()) ?: return
+        try {
             setEntityGlowing0(data.entityId, data.entityUUID, receiver, null, invisibleFlag)
+        } finally {
             receiver.sendPacket(createRemoveDummyEntityShulkerPacket(data.entityId))
-            glowingBlocks[receiver.uniqueId]!!.remove(block)
         }
     }
 
@@ -230,11 +228,14 @@ class NMSGlowImpl : NMSGlow() {
     fun unsetGlowingColor(player: Player, entityId: Int) {
         val data = glowingEntities[player.uniqueId]!![entityId]!!
         player.sendPacket(createRemoveEntityColorBasedTeamPacket(data.color, data.teamId))
-        teams[player.uniqueId]!![data.color]!!.remove(data.teamId)
-        val destroy = if (!teams.containsKey(player.uniqueId)) true else teams[player.uniqueId]?.get(data.color)?.isEmpty() == true
+        teams[player.uniqueId]?.get(data.color)?.remove(data.teamId)
+        val destroy = teams[player.uniqueId]?.get(data.color)?.isEmpty() != false
         if (destroy) {
             player.sendPacket(createDestroyColorBasedTeamPacket(data.color))
-            teams.remove(player.uniqueId)
+            teams[player.uniqueId]?.remove(data.color)
+            if (teams[player.uniqueId]?.isEmpty() != false) {
+                teams.remove(player.uniqueId)
+            }
         }
     }
 
@@ -252,7 +253,7 @@ class NMSGlowImpl : NMSGlow() {
     }
 
     fun createDestroyGlowingPacket(entityId: Int, data: GlowingEntityData): ClientboundSetEntityDataPacket {
-        return ClientboundSetEntityDataPacket(entityId, listOf(createByteMeta(0, data.otherSharedFlags and glowingFlag)))
+        return ClientboundSetEntityDataPacket(entityId, listOf(createByteMeta(0, data.otherSharedFlags)))
     }
 
     fun createColorBasedTeamPacket(color: ChatColor): ClientboundSetPlayerTeamPacket {
@@ -349,6 +350,17 @@ class NMSGlowImpl : NMSGlow() {
         val entityUUID: String,
         var color: ChatColor
     )
+
+    data class BlockKey(
+        val world: UUID,
+        val x: Int,
+        val y: Int,
+        val z: Int,
+    )
+
+    private fun Block.key(): BlockKey {
+        return BlockKey(world.uid, x, y, z)
+    }
 
     class GlowingEntityData(
         val teamId: String,
