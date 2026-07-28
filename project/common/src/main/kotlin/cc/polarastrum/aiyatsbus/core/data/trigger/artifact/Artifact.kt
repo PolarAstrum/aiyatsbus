@@ -52,7 +52,7 @@ class Artifact(
      * 专精附魔每两秒产生粒子效果
      * 普通附魔在鞘翅滑翔或装备鞋子时产生环形粒子效果
      */
-    override fun tickTask(level: Int, slot: EquipmentSlot, player: Player, stamp: Int) {
+    override fun tickTask(enchant: AiyatsbusEnchantment, level: Int, slot: EquipmentSlot, player: Player, stamp: Int) {
         if (specialized) {
             spawnSpecializedParticle(player.location, slot)
             return
@@ -69,7 +69,7 @@ class Artifact(
     /**
      * 专精/普通粒子附魔都在挖掘方块时产生简单粒子效果
      */
-    override fun blockBreak(level: Int, event: BlockBreakEvent) {
+    override fun blockBreak(enchant: AiyatsbusEnchantment, level: Int, event: BlockBreakEvent) {
         val triggers = Aiyatsbus.api().getArtifactHandler().getSettings().blocks
         if (triggers.contains("*") || triggers.contains(event.block.type.name)) {
             spawnSimpleParticle(event.block.location.clone().add(0.5, 0.5, 0.5))
@@ -79,7 +79,7 @@ class Artifact(
     /**
      * 专精/普通粒子附魔都在攻击实体时产生双螺旋粒子效果
      */
-    override fun attackEntity(level: Int, event: EntityDamageByEntityEvent) {
+    override fun attackEntity(enchant: AiyatsbusEnchantment, level: Int, event: EntityDamageByEntityEvent) {
         if (((event.damager as? Player)?.attackCooldown ?: 1.0f) < 0.9f) {
             return
         }

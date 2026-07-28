@@ -45,13 +45,13 @@ open class Builtin internal constructor(
     constructor(enchant: AiyatsbusEnchantment) : this(enchant, Configuration.empty(), TriggerType.BUILTIN)
 
     fun call(level: Int, type: EventType, entity: LivingEntity, event: Event) {
-        executors[type]?.invoke(this, level, event)
-        executors[EventType.TRIGGER]?.invoke(this, level, type, event, entity)
+        executors[type]?.invoke(this, enchant, level, event)
+        executors[EventType.TRIGGER]?.invoke(this, enchant, level, type, event, entity)
     }
 
     fun call(level: Int, slot: EquipmentSlot, player: Player, type: EventType) {
-        executors[type]?.invoke(this, level, slot, player, stamp)
-        executors[EventType.TRIGGER]?.invoke(this, level, type, null, player)
+        executors[type]?.invoke(this, enchant, level, slot, player, stamp)
+        executors[EventType.TRIGGER]?.invoke(this, enchant, level, type, null, player)
     }
 
     override fun init() {

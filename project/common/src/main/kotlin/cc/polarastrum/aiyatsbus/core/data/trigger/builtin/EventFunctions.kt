@@ -1,5 +1,6 @@
 package cc.polarastrum.aiyatsbus.core.data.trigger.builtin
 
+import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
@@ -23,204 +24,204 @@ import org.bukkit.inventory.EquipmentSlot
 @Suppress("unused")
 interface EventFunctions {
 
-    fun trigger(level: Int, type: EventType, event: Event?, who: LivingEntity) {
+    fun trigger(enchant: AiyatsbusEnchantment, level: Int, type: EventType, event: Event?, who: LivingEntity) {
     }
 
-    fun attackEntity(level: Int, event: EntityDamageByEntityEvent) {
+    fun attackEntity(enchant: AiyatsbusEnchantment, level: Int, event: EntityDamageByEntityEvent) {
     }
 
-    fun damagedByEntity(level: Int, event: EntityDamageByEntityEvent) {
+    fun damagedByEntity(enchant: AiyatsbusEnchantment, level: Int, event: EntityDamageByEntityEvent) {
     }
 
-    fun damagedByBlock(level: Int, event: EntityDamageByBlockEvent) {
+    fun damagedByBlock(enchant: AiyatsbusEnchantment, level: Int, event: EntityDamageByBlockEvent) {
     }
 
-    fun damaged(level: Int, event: EntityDamageEvent) {
+    fun damaged(enchant: AiyatsbusEnchantment, level: Int, event: EntityDamageEvent) {
     }
 
-    fun advancementDone(level: Int, event: PlayerAdvancementDoneEvent) {
+    fun advancementDone(enchant: AiyatsbusEnchantment, level: Int, event: PlayerAdvancementDoneEvent) {
     }
 
-    fun armorstandManipulate(level: Int, event: PlayerArmorStandManipulateEvent) {
+    fun armorstandManipulate(enchant: AiyatsbusEnchantment, level: Int, event: PlayerArmorStandManipulateEvent) {
     }
 
-    fun bedEnter(level: Int, event: PlayerBedEnterEvent) {
+    fun bedEnter(enchant: AiyatsbusEnchantment, level: Int, event: PlayerBedEnterEvent) {
     }
 
-    fun bedLeave(level: Int, event: PlayerBedLeaveEvent) {
+    fun bedLeave(enchant: AiyatsbusEnchantment, level: Int, event: PlayerBedLeaveEvent) {
     }
 
-    fun bucketEmpty(level: Int, event: PlayerBucketEmptyEvent) {
+    fun bucketEmpty(enchant: AiyatsbusEnchantment, level: Int, event: PlayerBucketEmptyEvent) {
     }
 
-    fun bucketFill(level: Int, event: PlayerBucketFillEvent) {
+    fun bucketFill(enchant: AiyatsbusEnchantment, level: Int, event: PlayerBucketFillEvent) {
     }
 
-    fun bucketEntity(level: Int, event: PlayerBucketEntityEvent) {
+    fun bucketEntity(enchant: AiyatsbusEnchantment, level: Int, event: PlayerBucketEntityEvent) {
     }
 
-    fun dropItem(level: Int, event: PlayerDropItemEvent) {
+    fun dropItem(enchant: AiyatsbusEnchantment, level: Int, event: PlayerDropItemEvent) {
     }
 
-    fun expChange(level: Int, event: PlayerExpChangeEvent) {
+    fun expChange(enchant: AiyatsbusEnchantment, level: Int, event: PlayerExpChangeEvent) {
     }
 
-    fun fish(level: Int, event: PlayerFishEvent) {
+    fun fish(enchant: AiyatsbusEnchantment, level: Int, event: PlayerFishEvent) {
     }
 
-    fun harvestBlock(level: Int, event: PlayerHarvestBlockEvent) {
+    fun harvestBlock(enchant: AiyatsbusEnchantment, level: Int, event: PlayerHarvestBlockEvent) {
     }
 
-    fun interactEntity(level: Int, event: PlayerInteractAtEntityEvent) {
+    fun interactEntity(enchant: AiyatsbusEnchantment, level: Int, event: PlayerInteractAtEntityEvent) {
     }
 
-    fun interactLeftBlock(level: Int, event: PlayerInteractEvent) {
+    fun interactLeftBlock(enchant: AiyatsbusEnchantment, level: Int, event: PlayerInteractEvent) {
     }
 
-    fun interactLeftAir(level: Int, event: PlayerInteractEvent) {
+    fun interactLeftAir(enchant: AiyatsbusEnchantment, level: Int, event: PlayerInteractEvent) {
     }
 
-    fun interactLeft(level: Int, event: PlayerInteractEvent) {
+    fun interactLeft(enchant: AiyatsbusEnchantment, level: Int, event: PlayerInteractEvent) {
     }
 
-    fun interactRightBlock(level: Int, event: PlayerInteractEvent) {
+    fun interactRightBlock(enchant: AiyatsbusEnchantment, level: Int, event: PlayerInteractEvent) {
     }
 
-    fun interactRightAir(level: Int, event: PlayerInteractEvent) {
+    fun interactRightAir(enchant: AiyatsbusEnchantment, level: Int, event: PlayerInteractEvent) {
     }
 
-    fun interactRight(level: Int, event: PlayerInteractEvent) {
+    fun interactRight(enchant: AiyatsbusEnchantment, level: Int, event: PlayerInteractEvent) {
     }
 
-    fun itemBreak(level: Int, event: PlayerItemBreakEvent) {
+    fun itemBreak(enchant: AiyatsbusEnchantment, level: Int, event: PlayerItemBreakEvent) {
     }
 
-    fun itemConsume(level: Int, event: PlayerItemConsumeEvent) {
+    fun itemConsume(enchant: AiyatsbusEnchantment, level: Int, event: PlayerItemConsumeEvent) {
     }
 
-    fun itemDamage(level: Int, event: PlayerItemDamageEvent) {
+    fun itemDamage(enchant: AiyatsbusEnchantment, level: Int, event: PlayerItemDamageEvent) {
     }
 
-    fun itemHeld(level: Int, event: PlayerItemHeldEvent) {
+    fun itemHeld(enchant: AiyatsbusEnchantment, level: Int, event: PlayerItemHeldEvent) {
     }
 
-    fun itemMend(level: Int, event: PlayerItemMendEvent) {
+    fun itemMend(enchant: AiyatsbusEnchantment, level: Int, event: PlayerItemMendEvent) {
     }
 
-    fun levelChange(level: Int, event: PlayerLevelChangeEvent) {
+    fun levelChange(enchant: AiyatsbusEnchantment, level: Int, event: PlayerLevelChangeEvent) {
     }
 
-    fun move(level: Int, event: PlayerMoveEvent) {
+    fun move(enchant: AiyatsbusEnchantment, level: Int, event: PlayerMoveEvent) {
     }
 
-    fun pickUpArrow(level: Int, event: PlayerPickupArrowEvent) {
+    fun pickUpArrow(enchant: AiyatsbusEnchantment, level: Int, event: PlayerPickupArrowEvent) {
     }
 
-    fun portal(level: Int, event: PlayerPortalEvent) {
+    fun portal(enchant: AiyatsbusEnchantment, level: Int, event: PlayerPortalEvent) {
     }
 
-    fun recipeDiscover(level: Int, event: PlayerRecipeDiscoverEvent) {
+    fun recipeDiscover(enchant: AiyatsbusEnchantment, level: Int, event: PlayerRecipeDiscoverEvent) {
     }
 
-    fun respawn(level: Int, event: PlayerRespawnEvent) {
+    fun respawn(enchant: AiyatsbusEnchantment, level: Int, event: PlayerRespawnEvent) {
     }
 
-    fun riptide(level: Int, event: PlayerRiptideEvent) {
+    fun riptide(enchant: AiyatsbusEnchantment, level: Int, event: PlayerRiptideEvent) {
     }
 
-    fun shearEntity(level: Int, event: PlayerShearEntityEvent) {
+    fun shearEntity(enchant: AiyatsbusEnchantment, level: Int, event: PlayerShearEntityEvent) {
     }
 
-    fun swapHandItems(level: Int, event: PlayerSwapHandItemsEvent) {
+    fun swapHandItems(enchant: AiyatsbusEnchantment, level: Int, event: PlayerSwapHandItemsEvent) {
     }
 
-    fun takeLecternBook(level: Int, event: PlayerTakeLecternBookEvent) {
+    fun takeLecternBook(enchant: AiyatsbusEnchantment, level: Int, event: PlayerTakeLecternBookEvent) {
     }
 
-    fun teleport(level: Int, event: PlayerTeleportEvent) {
+    fun teleport(enchant: AiyatsbusEnchantment, level: Int, event: PlayerTeleportEvent) {
     }
 
-    fun toggleSneak(level: Int, event: PlayerToggleSneakEvent) {
+    fun toggleSneak(enchant: AiyatsbusEnchantment, level: Int, event: PlayerToggleSneakEvent) {
     }
 
-    fun toggleSprint(level: Int, event: PlayerToggleSprintEvent) {
+    fun toggleSprint(enchant: AiyatsbusEnchantment, level: Int, event: PlayerToggleSprintEvent) {
     }
 
-    fun toggleFlight(level: Int, event: PlayerToggleFlightEvent) {
+    fun toggleFlight(enchant: AiyatsbusEnchantment, level: Int, event: PlayerToggleFlightEvent) {
     }
 
-    fun unleashEntity(level: Int, event: PlayerUnleashEntityEvent) {
+    fun unleashEntity(enchant: AiyatsbusEnchantment, level: Int, event: PlayerUnleashEntityEvent) {
     }
 
-    fun blockBreak(level: Int, event: BlockBreakEvent) {
+    fun blockBreak(enchant: AiyatsbusEnchantment, level: Int, event: BlockBreakEvent) {
     }
 
-    fun blockDamageAbort(level: Int, event: BlockDamageEvent) {
+    fun blockDamageAbort(enchant: AiyatsbusEnchantment, level: Int, event: BlockDamageEvent) {
     }
 
-    fun blockDamage(level: Int, event: BlockDamageEvent) {
+    fun blockDamage(enchant: AiyatsbusEnchantment, level: Int, event: BlockDamageEvent) {
     }
 
-    fun blockDispenseArmor(level: Int, event: BlockDispenseArmorEvent) {
+    fun blockDispenseArmor(enchant: AiyatsbusEnchantment, level: Int, event: BlockDispenseArmorEvent) {
     }
 
-    fun blockDispense(level: Int, event: BlockDispenseEvent) {
+    fun blockDispense(enchant: AiyatsbusEnchantment, level: Int, event: BlockDispenseEvent) {
     }
 
-    fun blockDropItem(level: Int, event: BlockDropItemEvent) {
+    fun blockDropItem(enchant: AiyatsbusEnchantment, level: Int, event: BlockDropItemEvent) {
     }
 
-    fun blockFertilize(level: Int, event: BlockFertilizeEvent) {
+    fun blockFertilize(enchant: AiyatsbusEnchantment, level: Int, event: BlockFertilizeEvent) {
     }
 
-    fun blockMultiPlace(level: Int, event: BlockMultiPlaceEvent) {
+    fun blockMultiPlace(enchant: AiyatsbusEnchantment, level: Int, event: BlockMultiPlaceEvent) {
     }
 
-    fun blockPlace(level: Int, event: BlockPlaceEvent) {
+    fun blockPlace(enchant: AiyatsbusEnchantment, level: Int, event: BlockPlaceEvent) {
     }
 
-    fun signChange(level: Int, event: SignChangeEvent) {
+    fun signChange(enchant: AiyatsbusEnchantment, level: Int, event: SignChangeEvent) {
     }
 
-    fun notePlay(level: Int, event: NotePlayEvent) {
+    fun notePlay(enchant: AiyatsbusEnchantment, level: Int, event: NotePlayEvent) {
     }
 
-    fun enchantItem(level: Int, event: EnchantItemEvent) {
+    fun enchantItem(enchant: AiyatsbusEnchantment, level: Int, event: EnchantItemEvent) {
     }
 
-    fun prepareItemEnchant(level: Int, event: PrepareItemEnchantEvent) {
+    fun prepareItemEnchant(enchant: AiyatsbusEnchantment, level: Int, event: PrepareItemEnchantEvent) {
     }
 
-    fun lightningStrike(level: Int, event: LightningStrikeEvent) {
+    fun lightningStrike(enchant: AiyatsbusEnchantment, level: Int, event: LightningStrikeEvent) {
     }
 
-    fun tickTask(level: Int, slot: EquipmentSlot, player: Player, stamp: Int) {
+    fun tickTask(enchant: AiyatsbusEnchantment, level: Int, slot: EquipmentSlot, player: Player, stamp: Int) {
     }
 
-    fun shootBow(level: Int, event: EntityShootBowEvent) {
+    fun shootBow(enchant: AiyatsbusEnchantment, level: Int, event: EntityShootBowEvent) {
     }
 
-    fun death(level: Int, event: EntityDeathEvent) {
+    fun death(enchant: AiyatsbusEnchantment, level: Int, event: EntityDeathEvent) {
     }
 
-    fun projectileLaunch(level: Int, event: ProjectileLaunchEvent) {
+    fun projectileLaunch(enchant: AiyatsbusEnchantment, level: Int, event: ProjectileLaunchEvent) {
     }
 
-    fun projectileHitBlock(level: Int, event: ProjectileHitEvent) {
+    fun projectileHitBlock(enchant: AiyatsbusEnchantment, level: Int, event: ProjectileHitEvent) {
     }
 
-    fun projectileHitEntity(level: Int, event: ProjectileHitEvent) {
+    fun projectileHitEntity(enchant: AiyatsbusEnchantment, level: Int, event: ProjectileHitEvent) {
     }
 
-    fun kill(level: Int, event: EntityDeathEvent) {
+    fun kill(enchant: AiyatsbusEnchantment, level: Int, event: EntityDeathEvent) {
     }
 
-    fun hunger(level: Int, event: FoodLevelChangeEvent) {
+    fun hunger(enchant: AiyatsbusEnchantment, level: Int, event: FoodLevelChangeEvent) {
     }
 
-    fun regainHealth(level: Int, event: EntityRegainHealthEvent) {
+    fun regainHealth(enchant: AiyatsbusEnchantment, level: Int, event: EntityRegainHealthEvent) {
     }
 
-    fun beTargeted(level: Int, event: EntityTargetLivingEntityEvent) {
+    fun beTargeted(enchant: AiyatsbusEnchantment, level: Int, event: EntityTargetLivingEntityEvent) {
     }
 }

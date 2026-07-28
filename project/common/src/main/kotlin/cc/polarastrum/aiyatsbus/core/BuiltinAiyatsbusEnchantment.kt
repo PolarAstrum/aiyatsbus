@@ -84,7 +84,7 @@ interface BuiltinAiyatsbusEnchantment : AiyatsbusEnchantment {
             return this
         }
 
-        fun addVariable (type: VariableType, name: String, value: String, unit: String = ""): Builder {
+        fun addVariable(type: VariableType, name: String, value: String, unit: String = ""): Builder {
             val map = this.variables.getOrPut(type) { mutableMapOf() }
             map[name] = "$unit:$value"
             return this
