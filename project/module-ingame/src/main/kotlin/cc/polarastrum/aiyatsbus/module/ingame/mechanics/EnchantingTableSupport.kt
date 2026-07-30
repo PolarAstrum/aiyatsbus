@@ -73,6 +73,12 @@ object EnchantingTableSupport {
     var enable = true
 
     /**
+     * 是否使用 1.7.10 级以下的等级扣除机制
+     */
+    @ConfigNode("legacy-exp-cost-mode")
+    var legacyExpCostMode = false
+
+    /**
      * 开启悬停显示, 必出悬停原版附魔
      * 关闭时则关闭悬停显示, 一切附魔按权重随机
      *
@@ -242,6 +248,11 @@ object EnchantingTableSupport {
         // 添加随机出来的附魔
         event.enchantsToAdd.putAll(result.first.mapKeys { it.key as Enchantment })
 
+        // 旧版等级扣除机制
+        if (legacyExpCostMode) {
+            player.giveExpLevels(event.whichButton() + 1 - enchantmentOfferHint.cost)
+        }
+
         // 对书的附魔，必须手动进行，因为原版处理会掉特殊附魔
         // 也许可以用更好的方法兼容，submit 有一定风险 FIXME
         if (item.type == Material.ENCHANTED_BOOK) {
@@ -353,7 +364,7 @@ object EnchantingTableSupport {
 
             // 如果不与现有附魔冲突就添加
             if (enchant.limitations.checkAvailable(CheckType.ATTAIN, result, player).isSuccess) {
-                result.addEt(enchant)
+                result.addEt(enchant, level)
                 enchantsToAdd[enchant] = level
             }
         }
