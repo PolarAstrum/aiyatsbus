@@ -78,16 +78,24 @@ object AiyatsbusSettings {
      * 启用对 ItemsAdder 插件的兼容支持
      * 默认值：true
      */
-    @ConfigNode("Settings.support-items-adder")
+    @ConfigNode("Settings.support.ItemsAdder")
     var supportItemsAdder = true
 
     /**
-     * 是否开启 ItemsAdder 支持
-     * 启用对 ItemsAdder 插件的兼容支持
+     * 是否开启 CraftEngine 支持
+     * 启用对 CraftEngine 插件的兼容支持
      * 默认值：true
      */
-    @ConfigNode("Settings.support-craft-engine")
+    @ConfigNode("Settings.support.CraftEngine")
     var supportCraftEngine = true
+
+    /**
+     * EcoEnchants 支持
+     * 颜色变量设定
+     * 默认值：&r
+     */
+    @ConfigNode("Settings.support.EcoEnchants.color-code")
+    var ecoEnchantsColorCode = "&r"
 
     /**
      * 是否开启脚本预热
@@ -128,6 +136,12 @@ object AiyatsbusSettings {
      */
     @delegate:ConfigNode("Settings.variable-rounding-mode")
     val variableRoundingMode by conversion<String, RoundingMode> { RoundingMode.valueOf(this) }
+
+    /**
+     * 禁用所有更多附魔的世界列表
+     */
+    @ConfigNode("Settings.disable-worlds")
+    var disableWorlds = listOf<String>()
 
     /**
      * 是否启用平衡性自动更新的功能

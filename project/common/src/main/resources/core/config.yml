@@ -24,10 +24,20 @@ Settings:
     - nerous
     - nos
     - nereusopus
-  # 是否开启 ItemsAdder 支持
-  support-items-adder: true
-  # 是否开启 CraftEngine 支持
-  support-craft-engine: true
+  # 插件兼容设置
+  support:
+    # 是否开启 CraftEngine 支持
+    CraftEngine: true
+    # 是否开启 ItemsAdder 支持
+    ItemsAdder: true
+    # EcoEnchants 支持相关设定
+    EcoEnchants:
+      # 颜色变量
+      # Aiyatsbus 的附魔描述默认是灰色
+      # 但 EcoEnchants 的附魔描述是白色
+      # 通过这个选项控制附魔描述开头的颜色
+      # 来防止变量前是灰色, 变量后是白色的情况出现
+      color-code: "&r"
   # 是否开启脚本预热, 会在附魔加载/重载时编译一次脚本
   # 可以略微提升一点点第一次触发附魔的速度
   enable-kether-preheat: true
@@ -47,6 +57,8 @@ Settings:
   # HALF_EVEN 整数位若为奇数则四舍五入, 若为偶数则五舍六入
   # UNNECESSARY 不舍入, 但超出表示范围会报错, 不建议使用
   variable-rounding-mode: HALF_UP
+  # 禁用所有更多附魔的世界列表
+  disable-worlds: [ ]
   # 自动更新
   updater:
     # 是否启用平衡性自动更新的功能

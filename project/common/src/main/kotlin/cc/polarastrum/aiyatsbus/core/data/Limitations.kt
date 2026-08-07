@@ -199,7 +199,8 @@ data class Limitations(
      * @return 检查结果
      */
     private fun checkDisableWorld(creature: LivingEntity?): Boolean {
-        return creature?.world?.name !in belonging.basicData.disableWorlds
+        val world = creature?.world?.name
+        return world !in AiyatsbusSettings.disableWorlds && world !in belonging.basicData.disableWorlds
     }
 
     /**

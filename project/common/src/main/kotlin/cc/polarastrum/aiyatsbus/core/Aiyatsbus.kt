@@ -14,12 +14,16 @@ object Aiyatsbus {
     /** API 实例 */
     private var api: AiyatsbusAPI? = null
 
+    /** 是否正在重载 */
+    var isRestarting: Boolean = false
+
     /**
      * 获取 API 实例
      *
      * @return AiyatsbusAPI 实例
      * @throws IllegalStateException 如果 API 未加载或加载失败
      */
+    @JvmStatic
     fun api(): AiyatsbusAPI {
         return api ?: error("AiyatsbusAPI has not finished loading, or failed to load!")
     }

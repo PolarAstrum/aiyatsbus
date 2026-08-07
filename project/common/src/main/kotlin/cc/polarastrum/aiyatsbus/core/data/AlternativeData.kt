@@ -44,7 +44,10 @@ data class AlternativeData(
     val lootMaxLevel: Int = (root?.getInt("loot-max-level", -1) ?: root?.getInt("loot_max_level", -1)).coerceInt(-1),
 
     /** 是否不可获得，为 true 时玩家无法获得该附魔，默认为 false */
-    val inaccessible: Boolean = root?.getBoolean("inaccessible", false).coerceBoolean(false)
+    val inaccessible: Boolean = root?.getBoolean("inaccessible", false).coerceBoolean(false),
+
+    /** 是否是 EcoEnchants 触发器形式的附魔 */
+    val isEco: Boolean = root?.getBoolean("is-eco", false).coerceBoolean(false)
 ) {
 
     /**
@@ -117,6 +120,7 @@ data class AlternativeData(
             set("enchant-max-level", enchantMaxLevel)
             set("loot-max-level", lootMaxLevel)
             set("inaccessible", inaccessible)
+            set("is-eco", isEco)
         }
     }
 
@@ -134,6 +138,7 @@ data class AlternativeData(
         private var lootMaxLevel: Int = -1
         private var inaccessible: Boolean = false
         private var hardcoded: Boolean = false
+        private var isEco: Boolean = false
 
         fun weight(weight: Int): Builder {
             this.weight = weight
@@ -190,6 +195,11 @@ data class AlternativeData(
             return this
         }
 
+        fun isEco(isEco: Boolean): Builder {
+            this.isEco = isEco
+            return this
+        }
+
         fun hardcoded(hardcoded: Boolean): Builder {
             this.hardcoded = hardcoded
             return this
@@ -208,7 +218,8 @@ data class AlternativeData(
                 tradeMaxLevel,
                 enchantMaxLevel,
                 lootMaxLevel,
-                inaccessible
+                inaccessible,
+                isEco
             )
         }
     }

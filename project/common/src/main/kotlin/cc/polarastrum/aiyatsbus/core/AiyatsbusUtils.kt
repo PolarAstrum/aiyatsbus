@@ -251,7 +251,6 @@ fun Rarity.drawEt(): AiyatsbusEnchantment? = RandomList(*aiyatsbusEts(this).asso
  * 获取物品上的所有附魔，并自动转换为 AiyatsbusEnchantment 格式。
  * 支持附魔书和普通物品。
  */
-@Deprecated("Use AiyatsbusItemStack#getEnchants() instead")
 var ItemMeta.fixedEnchants: Map<AiyatsbusEnchantment, Int>
     get() = (if (this is EnchantmentStorageMeta) storedEnchants else enchants).map { (enchant, level) -> enchant.aiyatsbusEt to level }.toMap()
     set(value) {
@@ -284,7 +283,6 @@ val ItemStack?.isUnbreakable: Boolean
  * @param enchant 要查询的附魔
  * @return 附魔等级，如果不存在则返回 -1
  */
-@Deprecated("Use AiyatsbusItemStack#getEnchants() instead")
 fun ItemMeta.etLevel(enchant: AiyatsbusEnchantment): Int {
     return fixedEnchants[enchant.enchantment as AiyatsbusEnchantment] ?: -1
 }

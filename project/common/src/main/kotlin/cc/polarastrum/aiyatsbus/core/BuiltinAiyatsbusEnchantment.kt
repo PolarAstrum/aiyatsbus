@@ -84,6 +84,7 @@ interface BuiltinAiyatsbusEnchantment : AiyatsbusEnchantment {
             return this
         }
 
+        @JvmOverloads
         fun addVariable(type: VariableType, name: String, value: String, unit: String = ""): Builder {
             val map = this.variables.getOrPut(type) { mutableMapOf() }
             map[name] = "$unit:$value"

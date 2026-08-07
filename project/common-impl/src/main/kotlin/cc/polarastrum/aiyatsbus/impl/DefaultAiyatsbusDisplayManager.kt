@@ -111,6 +111,8 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
     override fun display(item: ItemStack, player: Player): ItemStack {
         // 如果服务器正在关闭或插件正在关闭，则不处理显示
         if (isStopping()) return item
+        // 如果正在重载, 则不处理显示
+        if (Aiyatsbus.isRestarting) return item
         val settings = getSettings()
         // 如果没有打开附魔显示模块就不显示了
         if (!settings.enable) return item

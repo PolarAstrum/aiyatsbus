@@ -28,8 +28,10 @@ import cc.polarastrum.aiyatsbus.core.util.setStaticFinal
 import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.AiyatsbusCraftEnchantment
 import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.BuiltinAiyatsbusCraftEnchantment
 import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.InternalAiyatsbusCraftEnchantment
+import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.LibreforgeAiyatsbusCraftEnchantment
 import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.NMSAiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.impl.registration.v12004_paper.VanillaCraftEnchantment
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.LibreforgeAiyatsbusEnchantBase
 import net.minecraft.core.Holder
 import net.minecraft.core.IRegistry
 import net.minecraft.core.IRegistryCustom
@@ -136,6 +138,7 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
                      VanillaCraftEnchantment(enchant, nms)
                  } else {
                      when (enchant) {
+                         is LibreforgeAiyatsbusEnchantBase -> LibreforgeAiyatsbusCraftEnchantment(enchant, nms)
                          is BuiltinAiyatsbusEnchantmentBase -> BuiltinAiyatsbusCraftEnchantment(enchant, nms)
                          is InternalAiyatsbusEnchantmentBase -> InternalAiyatsbusCraftEnchantment(enchant, nms)
                          else -> AiyatsbusCraftEnchantment(enchant, nms)

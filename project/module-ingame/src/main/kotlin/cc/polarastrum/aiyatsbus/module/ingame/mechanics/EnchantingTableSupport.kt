@@ -204,6 +204,10 @@ object EnchantingTableSupport {
         if (dataDrivenEnchantment) {
             // 预先为所有附魔项生成一个附魔
             val enchants = doPrepareEnchant(event.enchanter, event.item, bonus)
+            // 防止物品没有可用附魔，出现死循环
+            if (enchants.isEmpty()) {
+                event.isCancelled = true
+            }
             for (i in 0..2) {
                 val entry = enchants[i] ?: continue
                 event.offers[i]?.enchantment = entry.first.enchantment
@@ -248,11 +252,6 @@ object EnchantingTableSupport {
         // 添加随机出来的附魔
         event.enchantsToAdd.putAll(result.first.mapKeys { it.key as Enchantment })
 
-        // 旧版等级扣除机制
-        if (legacyExpCostMode) {
-            player.giveExpLevels(event.whichButton() + 1 - enchantmentOfferHint.cost)
-        }
-
         // 对书的附魔，必须手动进行，因为原版处理会掉特殊附魔
         // 也许可以用更好的方法兼容，submit 有一定风险 FIXME
         if (item.type == Material.ENCHANTED_BOOK) {
@@ -280,6 +279,13 @@ object EnchantingTableSupport {
                 }
             }
         }
+
+        player.submit(useScheduler = true) {
+            // 旧版等级扣除机制
+            if (legacyExpCostMode) {
+                player.giveExpLevels(event.whichButton() + 1 - enchantmentOfferHint.cost)
+            }
+        }
     }
 
     /**
@@ -304,9 +310,15 @@ object EnchantingTableSupport {
         val random = Random(item.serializeToByteArray().sum() + player.world.seed + player.enchantmentSeed)
         val pool = item.etsAvailable(CheckType.ATTAIN, player).filterNot { it.alternativeData.isTreasure }
         val result = LinkedHashMap<Int, Pair<AiyatsbusEnchantment, Int>>()
+        // FIXME 2026/8/3: 防止死循环
+        if (pool.isEmpty()) {
+            return result
+        }
         for (i in 0..2) {
             // 从特定附魔列表中根据品质和附魔的权重抽取一个附魔
             // FIXME: 有死循环的风险，等待优化
+            //        2026/8/3: 已优化 pool 为空时的情况，不产出任何附魔
+            //                  权重之和小于 0 导致死循环的情况是用户配置错误导致，不修复
             while (true) {
                 val enchant = pool.drawEt(random) ?: continue
                 val maxLevel = enchant.basicData.maxLevel
@@ -350,6 +362,7 @@ object EnchantingTableSupport {
         // 选取的附魔范围
         val pool = result.etsAvailable(CheckType.ATTAIN, player).filterNot { it.alternativeData.isTreasure }
 
+        // FIXME 2026/8/3: 还没考虑物品没有任何可用附魔的情况 1.21-
         repeat(amount) {
             // 从特定附魔列表中根据品质和附魔的权重抽取一个附魔
             val enchant = pool.drawEt() ?: return@repeat

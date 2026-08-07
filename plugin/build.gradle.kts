@@ -19,6 +19,7 @@ taboolib {
             name("QuickShop-Hikari").optional(true)
             name("Citizens").optional(true)
             name("FluxonPlugin").optional(true)
+            name("eco").optional(true)
         }
 
         desc("Aiyatsbus is a powerful enchantment framework for Paper servers.")

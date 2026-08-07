@@ -7,6 +7,8 @@ import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.util.legacyToAdventure
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.LibreforgeAiyatsbusEnchantBase
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.LibreforgeAiyatsbusEnchantment
 import io.papermc.paper.enchantments.EnchantmentRarity
 import net.kyori.adventure.text.Component
 import org.bukkit.enchantments.Enchantment
@@ -83,6 +85,11 @@ open class LegacyAiyatsbusCraftEnchantment(
 
     override fun translationKey(): String = enchant.basicData.id
 }
+
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
+class LegacyLibreforgeAiyatsbusCraftEnchantment(
+    private val enchant: LibreforgeAiyatsbusEnchantBase
+) : LegacyAiyatsbusCraftEnchantment(enchant), LibreforgeAiyatsbusEnchantment by enchant
 
 @Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class LegacyBuiltinAiyatsbusCraftEnchantment(

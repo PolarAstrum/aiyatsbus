@@ -8,10 +8,15 @@ import cc.polarastrum.aiyatsbus.core.util.FileWatcher.unwatch
 import cc.polarastrum.aiyatsbus.core.util.FileWatcher.watch
 import cc.polarastrum.aiyatsbus.core.util.YamlUpdater
 import cc.polarastrum.aiyatsbus.core.util.deepRead
+import cc.polarastrum.aiyatsbus.core.util.libreforgeEnabled
 import cc.polarastrum.aiyatsbus.core.util.reloadable
 import cc.polarastrum.aiyatsbus.core.util.safeguard
 import cc.polarastrum.aiyatsbus.impl.DefaultAiyatsbusAPI.Companion.proxy
 import cc.polarastrum.aiyatsbus.impl.registration.legacy.DefaultLegacyEnchantmentRegisterer
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.LibreforgeAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.LibreforgeEnchants
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.impl.HardcodedLibreforgeAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.feature.MigrateEcoEnchants
 import org.bukkit.NamespacedKey
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
@@ -82,6 +87,9 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
             byKeyMap[enchantment.enchantmentKey] = ench
             byKeyStringMap[enchantment.basicData.id] = ench
             byNameMap[enchantment.basicData.originName] = ench
+            if (ench is LibreforgeAiyatsbusEnchantment) {
+                LibreforgeEnchants[enchantment.enchantmentKey] = ench
+            }
         }
         EnchantRegistrationHooks.registerHooks()
     }
@@ -93,6 +101,12 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
         byKeyMap -= enchantment.enchantmentKey
         byKeyStringMap -= enchantment.basicData.id
         byNameMap -= enchantment.basicData.originName
+        if (enchantment is LibreforgeAiyatsbusEnchantment) {
+            LibreforgeEnchants -= enchantment.enchantmentKey
+            if (enchantment is HardcodedLibreforgeAiyatsbusEnchantment) {
+                enchantment.remove()
+            }
+        }
     }
 
     override fun loadEnchantments() {
@@ -131,16 +145,46 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
     override fun loadFromFile(file: File) {
         val relativePath = file.path.substring(file.path.indexOf("enchants" + File.separator), file.path.length)
         val config = YamlUpdater.loadFromFile(relativePath, AiyatsbusSettings.enableUpdater, AiyatsbusSettings.updateContents)
-        val id = config["basic.id"].toString()
-        val isVanilla = (config["alternative.is-vanilla"] ?: config["alternative.is_vanilla"]) == true
-        val key = NamespacedKey.minecraft(id)
 
-        val enchant = if (isVanilla) VanillaAiyatsbusEnchantmentBase(id, file, config) else InternalAiyatsbusEnchantmentBase(id, file, config)
+        val enchant = loadEnchant(file, config) ?: return
         if (!enchant.dependencies.checkAvailable()) return
 
         register(enchant)
+        if (enchant is HardcodedLibreforgeAiyatsbusEnchantment) {
+            enchant.register()
+        }
         enchant.mechanism?.init()
-        setupFileWatcher(file, relativePath, key, id)
+        setupFileWatcher(file, relativePath, NamespacedKey.minecraft(enchant.id), enchant.id)
+    }
+
+    fun loadEnchant(file: File, originalConfig: Configuration): AiyatsbusEnchantmentBase? {
+        var config = originalConfig
+        // 迁移 libreforge 附魔
+        if (!config.contains("basic") && config.contains("max-level")) {
+            if (!libreforgeEnabled) return null
+            MigrateEcoEnchants.migrate(file, file.nameWithoutExtension, config)
+            config = Configuration.loadFromFile(file)
+        }
+
+        val id = config["basic.id"].toString()
+        val isVanilla = (config["alternative.is-vanilla"] ?: config["alternative.is_vanilla"]) == true
+        val isEco = (config["alternative.is-eco"] ?: config["alternative.is_eco"]) == true
+
+        if (file.name.startsWith("_")) return null // 在这里判断是为了让 _ 开头的附魔也能正常迁移
+
+        return when {
+            isVanilla -> VanillaAiyatsbusEnchantmentBase(id, file, config)
+            // 必须要同时判断
+            // 如果不存在 libreforge，需要把其当成普通附魔加载
+            // 否则会丢附魔
+            isEco && libreforgeEnabled -> {
+                if (MigrateEcoEnchants.isMissingPlugins(file)) {
+                    return null
+                }
+                LibreforgeAiyatsbusEnchantment.newEnchant(id, file, config)
+            }
+            else -> InternalAiyatsbusEnchantmentBase(id, file, config)
+        }
     }
 
     /**
@@ -213,11 +257,13 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
 
         if (file.exists()) {
             val config = Configuration.loadFromFile(file)
-            val isVanilla = (config["alternative.is-vanilla"] ?: config["alternative.is_vanilla"]) == true
-            val newEnchant = if (isVanilla) VanillaAiyatsbusEnchantmentBase(id, file, config) else InternalAiyatsbusEnchantmentBase(id, file, config)
+            val newEnchant = loadEnchant(file, config) ?: return
             if (!newEnchant.dependencies.checkAvailable()) return
 
             register(newEnchant)
+            if (newEnchant is HardcodedLibreforgeAiyatsbusEnchantment) {
+                newEnchant.register()
+            }
             getEnchant(key)!!.mechanism?.init()
         }
         

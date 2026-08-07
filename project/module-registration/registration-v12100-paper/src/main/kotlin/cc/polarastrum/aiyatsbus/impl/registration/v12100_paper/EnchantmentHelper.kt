@@ -22,6 +22,7 @@ import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantmentBase
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.LibreforgeAiyatsbusEnchantBase
 import net.minecraft.world.item.enchantment.Enchantment
 import org.bukkit.NamespacedKey
 import org.bukkit.craftbukkit.enchantments.CraftEnchantment
@@ -45,6 +46,7 @@ object EnchantmentHelper {
 
     fun createAiyatsbusCraftEnchantment(enchant: AiyatsbusEnchantmentBase, nms: Enchantment): Any {
         return when (enchant) {
+            is LibreforgeAiyatsbusEnchantBase -> LibreforgeAiyatsbusCraftEnchantment(enchant, nms)
             is BuiltinAiyatsbusEnchantmentBase -> BuiltinAiyatsbusCraftEnchantment(enchant, nms)
             is InternalAiyatsbusEnchantmentBase -> InternalAiyatsbusCraftEnchantment(enchant, nms)
             else -> AiyatsbusCraftEnchantment(enchant, nms)

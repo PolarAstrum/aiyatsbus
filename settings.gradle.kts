@@ -10,6 +10,8 @@ include(
     "project:module-bukkit",
     // 与其他插件兼容模块
     "project:module-compat",
+    // libreforge 附魔触发器兼容模块
+    "project:module-compat:compat-libreforge",
     // 玩家交互代码
     "project:module-ingame",
     // 语言系统

@@ -23,6 +23,7 @@ import taboolib.platform.util.onlinePlayers
  */
 val reloadSubCommand = subCommand {
     execute<CommandSender> { sender, _, _ ->
+        Aiyatsbus.isRestarting = true
         val time = System.currentTimeMillis()
         (Aiyatsbus.api().getEnchantmentRegisterer() as? ModernEnchantmentRegisterer)?.unfreezeRegistry()
         Language.reload()
@@ -46,5 +47,6 @@ val reloadSubCommand = subCommand {
         sender.sendLang("plugin-reload", System.currentTimeMillis() - time)
         EnchantRegistrationHooks.unregisterHooks()
         EnchantRegistrationHooks.registerHooks()
+        Aiyatsbus.isRestarting = false
     }
 }

@@ -5,7 +5,6 @@ import com.google.gson.Gson
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
-import taboolib.common.platform.function.severe
 import taboolib.common.util.t
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
@@ -161,3 +160,5 @@ internal val itemsAdderEnabled = runCatching {
 internal val craftEngineEnabled = runCatching {
     Class.forName("net.momirealms.craftengine.bukkit.plugin.BukkitCraftEngine")
 }.isSuccess
+
+var libreforgeEnabled: Boolean = false

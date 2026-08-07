@@ -7,6 +7,7 @@ import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.registration.AiyatsbusEnchantmentRegisterer
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.LibreforgeAiyatsbusEnchantBase
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -53,6 +54,7 @@ object DefaultLegacyEnchantmentRegisterer : AiyatsbusEnchantmentRegisterer {
                 }
         } else {
             when (enchant) {
+                is LibreforgeAiyatsbusEnchantBase -> LegacyLibreforgeAiyatsbusCraftEnchantment(enchant)
                 is BuiltinAiyatsbusEnchantmentBase -> LegacyBuiltinAiyatsbusCraftEnchantment(enchant)
                 is InternalAiyatsbusEnchantmentBase -> LegacyInternalAiyatsbusCraftEnchantment(enchant)
                 else -> LegacyAiyatsbusCraftEnchantment(enchant)

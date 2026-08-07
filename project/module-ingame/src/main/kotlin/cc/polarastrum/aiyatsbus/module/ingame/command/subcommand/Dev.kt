@@ -36,6 +36,7 @@ val devSubCommand = subCommand {
 //        }
 
         (sender as Player).itemInHand.enchantments.keys.forEach { ench ->
+            println(ench::class.java.name)
             println("Enchant(id=${ench.key.key},isInternal=${(ench as AiyatsbusEnchantment) is InternalAiyatsbusEnchantment},isVanilla=${(ench as AiyatsbusEnchantment) is VanillaAiyatsbusEnchantment},isBuiltin=${(ench as AiyatsbusEnchantment) is BuiltinAiyatsbusEnchantment},isBase=${(ench as AiyatsbusEnchantment) is AiyatsbusEnchantmentBase},isAiyatsbus=${(ench as AiyatsbusEnchantment) is AiyatsbusEnchantment})")
         }
 

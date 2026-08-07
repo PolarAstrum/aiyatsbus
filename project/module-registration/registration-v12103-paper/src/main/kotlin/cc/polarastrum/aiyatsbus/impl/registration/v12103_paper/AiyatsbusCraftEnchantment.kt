@@ -27,6 +27,8 @@ import cc.polarastrum.aiyatsbus.core.BuiltinAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.InternalAiyatsbusEnchantmentBase
 import cc.polarastrum.aiyatsbus.core.util.legacyToAdventure
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.LibreforgeAiyatsbusEnchantBase
+import cc.polarastrum.aiyatsbus.module.compat.libreforge.enchant.LibreforgeAiyatsbusEnchantment
 import net.kyori.adventure.text.Component
 import net.minecraft.world.item.enchantment.Enchantment
 import org.bukkit.craftbukkit.enchantments.CraftEnchantment
@@ -122,6 +124,12 @@ open class AiyatsbusCraftEnchantment(
         return toString
     }
 }
+
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
+class LibreforgeAiyatsbusCraftEnchantment(
+    private val enchant: LibreforgeAiyatsbusEnchantBase,
+    nmsEnchantment: Enchantment
+) : AiyatsbusCraftEnchantment(enchant, nmsEnchantment), LibreforgeAiyatsbusEnchantment by enchant
 
 @Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class BuiltinAiyatsbusCraftEnchantment(
