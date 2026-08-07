@@ -163,6 +163,7 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
 
             // Freeze NMS Enchantment Registry
             allTags.set(enchantmentRegistry, unboundTagSet)
+            enchantmentRegistry.freeze()
 
             // Freeze NMS Item Registry
             val itemTagSet = allTags.get(itemRegistry)
