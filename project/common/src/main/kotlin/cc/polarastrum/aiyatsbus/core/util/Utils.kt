@@ -6,6 +6,7 @@ import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.util.t
+import taboolib.common.util.unsafeLazy
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
 import taboolib.library.reflex.UnsafeAccess
@@ -148,17 +149,41 @@ fun safeguard(cn: String, en: String, time: Long = 5000L, block: () -> Unit) {
  * 
  * 检查 ItemsAdder 插件是否在类路径中存在。
  */
-internal val itemsAdderEnabled = runCatching { 
-    Class.forName("dev.lone.itemsadder.api.ItemsAdder") 
-}.isSuccess
+val itemsAdderEnabled by unsafeLazy {
+    try {
+        Class.forName("dev.lone.itemsadder.api.ItemsAdder")
+        true
+    } catch (t: Throwable) {
+        false
+    }
+}
 
 /**
  * CraftEngine 插件是否启用
  *
  * 检查 CraftEngine 插件是否在类路径中存在。
  */
-internal val craftEngineEnabled = runCatching {
-    Class.forName("net.momirealms.craftengine.bukkit.plugin.BukkitCraftEngine")
-}.isSuccess
+val craftEngineEnabled by unsafeLazy {
+    try {
+        Class.forName("net.momirealms.craftengine.bukkit.plugin.BukkitCraftEngine")
+        true
+    } catch (t: Throwable) {
+        false
+    }
+}
+
+/**
+ * AiyatsbusLibreforge 插件是否启用
+ *
+ * 检查 AiyatsbusLibreforge 插件是否在类路径中存在。
+ */
+val aiyatsbusLibreforgeEnabled by unsafeLazy {
+    try {
+        Class.forName("cc.polarastrum.aiyatsbus.libreforge.feature.MigrateEcoEnchants")
+        true
+    } catch (t: Throwable) {
+        false
+    }
+}
 
 var libreforgeEnabled: Boolean = false

@@ -1,10 +1,14 @@
+@file:Suppress("UnstableApiUsage")
+
 package cc.polarastrum.aiyatsbus.module.compat.libreforge
 
 import cc.polarastrum.aiyatsbus.core.util.libreforgeEnabled
 import com.google.gson.JsonParser
+import io.papermc.paper.plugin.entrypoint.LaunchEntryPointHandler
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.platform.function.registerLifeCycleTask
+import taboolib.common.platform.function.severe
 import taboolib.common.util.unsafeLazy
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
@@ -34,11 +38,26 @@ object LibreforgeDependencyLoader {
     private const val DOWNLOAD_CONNECT_TIMEOUT = 2_000
     private const val DOWNLOAD_READ_TIMEOUT = 10_000
 
+    /**
+     * 从 Paper PluginInitializerManager 检查插件
+     * 这个一定会存在，因为在开服的一瞬间就会提示存在的插件列表，例如：
+     *
+     * [01:14:06 INFO]: [PluginInitializerManager] Initializing plugins...
+     * [01:14:06 INFO]: [PluginInitializerManager] Initialized 3 plugins
+     * [01:14:06 INFO]: [PluginInitializerManager] Bukkit plugins (3):
+     *  - Aiyatsbus (1.4.0), eco (2026.31), libreforge (2026.31)
+     */
+    private val plugins: List<String> = LaunchEntryPointHandler.INSTANCE.storage.values.flatMap { it.registeredProviders }.map { it.meta.name }
+
     private val relocation by unsafeLazy {
-        Class.forName("me.lucko.jarrelocator15.Relocation")
+        Class.forName("!me.lucko.jarrelocator15.Relocation".substring(1))
     }
     private val jarRelocator by unsafeLazy {
-        Class.forName("me.lucko.jarrelocator15.JarRelocator")
+        Class.forName("!me.lucko.jarrelocator15.JarRelocator".substring(1))
+    }
+
+    private fun checkPluginExist(name: String): Boolean {
+        return name in plugins
     }
 
     /**
@@ -46,13 +65,32 @@ object LibreforgeDependencyLoader {
      */
     @JvmStatic
     fun load() {
-        try {
-            Class.forName("com.willfp.eco.core.Eco")
-        } catch (e: ClassNotFoundException) {
+        // 拦截一下忘记删除 AiyatsbusLibreforge 的用户
+        if (checkPluginExist("AiyatsbusLibreforge")) {
+            """
+                ——————————————————————————————————————————————————————————————————————
+                自 Aiyatsbus 1.4.0 起，内置 EcoEnchants 附魔兼容，
+                所以，AiyatsbusLibreforge 已停止维护。
+                
+                目前 EcoEnchants 附魔仍由 AiyatsbusLibreforge 驱动，
+                但这并非长久之计，我们建议您迁移全部附魔到 Aiyatsbus 1.4.0。
+                
+                迁移方式：
+                - 关闭服务器
+                - 保留 AiyatsbusLibreforge 插件文件夹
+                - 删除 AiyatsbusLibreforge 插件 (jar)
+                - 保留 eco
+                - 启动服务器
+                
+                迁移后的附魔在 plugins/Aiyatsbus/enchants/Packet-EcoEnchants/ 目录下。
+                ——————————————————————————————————————————————————————————————————————
+            """.trimIndent().lines().forEach { severe(it) }
+            libreforgeEnabled = true
             return
         }
 
-        if (isAvailable()) {
+        if (!checkPluginExist("eco")) return
+        if (checkPluginExist("libreforge")) {
             log("检测到 Libreforge 已经存在，不需要重复加载。")
             libreforgeEnabled = true
             return
@@ -94,23 +132,17 @@ object LibreforgeDependencyLoader {
         loadPlugin(file)
     }
 
-    @JvmStatic
-    fun isAvailable(): Boolean {
-        return try {
-            Class.forName(HOLDER_CLASS, false, javaClass.classLoader)
-            true
-        } catch (_: ClassNotFoundException) {
-            false
-        } catch (_: LinkageError) {
-            false
-        }
-    }
-
+    /**
+     * 这个是检测插件里是否包含 libreforge 的
+     */
     private fun isStandaloneLibreforge(file: File): Boolean {
         return file.name.startsWith("libreforge", ignoreCase = true) &&
             file.name.endsWith(".jar", ignoreCase = true)
     }
 
+    /**
+     * 这个是检测插件里是否包含 libreforge 的
+     */
     private fun findNestedLibreforge(files: List<File>): Pair<File, JarEntry>? {
         for (file in files) {
             val entry = runCatching {
@@ -252,7 +284,7 @@ object LibreforgeDependencyLoader {
                 log("Bukkit 加载 Libreforge 失败：${ex.message}。")
                 throw ex
             }
-            check(isAvailable()) {
+            check(Bukkit.getPluginManager().getPlugin("libreforge") != null) {
                 "Bukkit 已加载 ${file.name}，但仍然无法找到 $HOLDER_CLASS。"
             }
             log("Libreforge 加载成功，Holder 已可用。")

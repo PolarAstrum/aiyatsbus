@@ -7,6 +7,7 @@ import cc.polarastrum.aiyatsbus.core.util.FileWatcher.isProcessingByWatcher
 import cc.polarastrum.aiyatsbus.core.util.FileWatcher.unwatch
 import cc.polarastrum.aiyatsbus.core.util.FileWatcher.watch
 import cc.polarastrum.aiyatsbus.core.util.YamlUpdater
+import cc.polarastrum.aiyatsbus.core.util.aiyatsbusLibreforgeEnabled
 import cc.polarastrum.aiyatsbus.core.util.deepRead
 import cc.polarastrum.aiyatsbus.core.util.libreforgeEnabled
 import cc.polarastrum.aiyatsbus.core.util.reloadable
@@ -178,6 +179,7 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
             // 如果不存在 libreforge，需要把其当成普通附魔加载
             // 否则会丢附魔
             isEco && libreforgeEnabled -> {
+                if (aiyatsbusLibreforgeEnabled) return null
                 if (MigrateEcoEnchants.isMissingPlugins(file)) {
                     return null
                 }

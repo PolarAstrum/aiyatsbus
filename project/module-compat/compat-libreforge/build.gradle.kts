@@ -10,6 +10,7 @@ dependencies {
 
     // 服务端
     compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
+    compileOnly("paper:v12111:12111:core")
     compileOnly("ink.ptms.core:v11605:11605")
 
     // eco, libreforge
