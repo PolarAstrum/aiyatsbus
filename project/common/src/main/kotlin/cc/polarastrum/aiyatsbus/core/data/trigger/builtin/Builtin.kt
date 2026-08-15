@@ -107,7 +107,7 @@ open class Builtin internal constructor(
         }
 
         fun execute(entity: Entity, item: ItemStack, type: EventType, event: Event?, slot: EquipmentSlot) {
-            entity as LivingEntity
+            if (entity !is LivingEntity) return
             if (item.fastFixedEnchants.isEmpty()) return
 //            if (checkEvents.contains(event)) return
             if (entity is Player) {

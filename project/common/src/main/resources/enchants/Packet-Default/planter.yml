@@ -49,7 +49,7 @@ mechanisms:
             }
             try {
                 type = material(&seed) ?: return null
-                if &player::inventory::containsAtLeast(static org.bukkit.inventory.ItemStack(&type, 1)) then {
+                if &player::inventory::containsAtLeast(new org.bukkit.inventory.ItemStack(&type, 1)) then {
                     return &type
                 }
             } catch (e) {
@@ -78,7 +78,7 @@ mechanisms:
                         else -> null
                     }
                     if &seed == null then {
-                        continue;
+                        continue
                     }
                     planted = &current::clone::add(0.0, 1.0, 0.0)::block()
                     if !guard::canBreak(&player, &planted::location()) then {

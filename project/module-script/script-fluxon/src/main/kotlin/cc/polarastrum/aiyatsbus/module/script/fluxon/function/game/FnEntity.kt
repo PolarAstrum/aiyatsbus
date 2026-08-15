@@ -104,7 +104,7 @@ object FnEntity {
 
     @Export
     fun removePotionEffect(entity: LivingEntity, type: String) {
-        entity.hasPotionEffect(XPotion.of(type).orElseThrow().potionEffectType ?: return)
+        entity.removePotionEffect(XPotion.of(type).orElseThrow().potionEffectType ?: return)
     }
 
     @Export
@@ -119,5 +119,6 @@ object FnEntity {
     /**
      * 较为常用
      */
+    @Export
     fun isPlayer(entity: Entity?): Boolean = entity is Player
 }

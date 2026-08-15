@@ -78,7 +78,9 @@ class DefaultAiyatsbusTickHandler : AiyatsbusTickHandler {
                         val variables = hashMapOf(
                             "player" to player,
                             "enchant" to ench,
-                            "maxLevel" to ench.basicData.maxLevel
+                            "maxLevel" to ench.basicData.maxLevel,
+                            "container" to AiyatsbusContainer.getContainer(ench),
+                            "globalContainer" to AiyatsbusContainer.globalContainer
                         )
 
                         variables += ench.variables.ordinary

@@ -47,7 +47,7 @@ object DefaultLegacyEnchantmentRegisterer : AiyatsbusEnchantmentRegisterer {
             if (enchant !is VanillaAiyatsbusEnchantmentBase) throw IllegalArgumentException("Enchant ${enchant.id} must be an impl of VanillaAiyatsbusEnchantment!")
             val bukkitEnchantment = Enchantment.getByKey(enchant.enchantmentKey)!!
             clazzLegacyVanillaCraftEnchantment
-                .getConstructor(AiyatsbusEnchantmentBase::class.java, Enchantment::class.java)
+                .getConstructor(VanillaAiyatsbusEnchantmentBase::class.java, Enchantment::class.java)
                 .newInstance(enchant, bukkitEnchantment).also {
                     Enchantment::class.java.getProperty<HashMap<*, *>>("byKey", true)!!.remove(bukkitEnchantment.key)
                     Enchantment::class.java.getProperty<HashMap<*, *>>("byName", true)!!.remove(bukkitEnchantment.name)

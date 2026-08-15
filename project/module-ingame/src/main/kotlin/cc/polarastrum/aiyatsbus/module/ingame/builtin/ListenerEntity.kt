@@ -57,21 +57,19 @@ object ListenerEntity {
         // if (e.cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK) return
         // if (e.cause == EntityDamageEvent.DamageCause.THORNS) return
 
-        var damager = e.damager
+        val damager = e.damager
         val damagee = e.entity
         if (damager is Projectile) {
             val projectile = damager
-            if (projectile.shooter is LivingEntity) {
-                damager = damager.shooter as LivingEntity
-            }
+            val shooter = projectile.shooter as? LivingEntity
             if (projectile is AbstractArrow || projectile is FishHook) {
                 val item = projectiles[projectile.uniqueId]
-                if (!item.isNull) {
-                    Builtin.execute(damager, item!!, EventType.ATTACK_ENTITY, e, EquipmentSlot.HAND)
+                if (shooter != null && !item.isNull) {
+                    Builtin.execute(shooter, item!!, EventType.ATTACK_ENTITY, e, EquipmentSlot.HAND)
                 }
             }
-            if (projectile is Trident) {
-                Builtin.execute(damager, projectile.item, EventType.ATTACK_ENTITY, e,
+            if (shooter != null && projectile is Trident) {
+                Builtin.execute(shooter, projectile.item, EventType.ATTACK_ENTITY, e,
                     EquipmentSlot.HAND)
             }
         } else {

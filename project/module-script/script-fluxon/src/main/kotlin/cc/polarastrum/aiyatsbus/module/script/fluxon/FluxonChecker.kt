@@ -22,8 +22,8 @@ import java.io.File
 object FluxonChecker {
 
     private const val CORE_PACKAGE = "cc.polarastrum.aiyatsbus.module.script.fluxon.core"
-    private const val FLUXON_VERSION = "1.6.17"
-    private const val FP_VERSION = "1.1.8"
+    private const val FLUXON_VERSION = "1.7.1"
+    private const val FP_VERSION = "1.1.11"
 
     private var isCentral = false
 

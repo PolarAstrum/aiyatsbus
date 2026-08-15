@@ -207,7 +207,7 @@ class Variables(
         val usingNBT = v.first.startsWith("(NBT)")
         if (usingNBT) {
             val tag = item.getItemTag()
-            tag.putDeep(v.first.removePrefix("(NBT)"), v.second)
+            tag.putDeep(v.first.removePrefix("(NBT)"), value)
             item.setItemTag(tag)
             return item
         }

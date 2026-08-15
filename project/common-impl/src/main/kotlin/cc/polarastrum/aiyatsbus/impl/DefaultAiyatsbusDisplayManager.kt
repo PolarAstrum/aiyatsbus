@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import taboolib.common.LifeCycle
+import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.console
@@ -256,6 +257,7 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
         )
     }
 
+    @RuntimeDependency(value = "!net.kyori:adventure-text-serializer-bungeecord:4.4.1", test = "!net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer")
     companion object {
 
         @Awake(LifeCycle.CONST)

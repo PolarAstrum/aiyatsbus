@@ -105,7 +105,9 @@ class DefaultAiyatsbusSkillHandler : AiyatsbusSkillHandler {
                         "enchant" to enchant,
                         "level" to level,
                         "cooldown" to cooldown,
-                        "maxLevel" to enchant.basicData.maxLevel
+                        "maxLevel" to enchant.basicData.maxLevel,
+                        "container" to AiyatsbusContainer.getContainer(enchant),
+                        "globalContainer" to AiyatsbusContainer.globalContainer
                     ).apply { putAll(enchant.variables.variables(level, item, false)) })
                 }
         }

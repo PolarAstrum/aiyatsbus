@@ -285,7 +285,9 @@ class DefaultAiyatsbusEventExecutor : AiyatsbusEventExecutor {
                         "item" to this,
                         "enchant" to enchant,
                         "level" to level,
-                        "maxLevel" to enchant.basicData.maxLevel
+                        "maxLevel" to enchant.basicData.maxLevel,
+                        "container" to AiyatsbusContainer.getContainer(enchant),
+                        "globalContainer" to AiyatsbusContainer.globalContainer
                     )
 
                     vars += enchant.variables.variables(level, this, false)

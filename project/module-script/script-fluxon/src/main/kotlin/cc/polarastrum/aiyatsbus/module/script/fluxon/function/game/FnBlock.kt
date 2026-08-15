@@ -27,7 +27,7 @@ import taboolib.common.platform.Awake
 @FluxonRelocate
 object FnBlock {
 
-    val TYPE = Type.fromClass(Block::class.java)!!
+    val TYPE = Type.fromClass(FnBlock::class.java)!!
 
     @Awake(LifeCycle.LOAD)
     fun init() {
