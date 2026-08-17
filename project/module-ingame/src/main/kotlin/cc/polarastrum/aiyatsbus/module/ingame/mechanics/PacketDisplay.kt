@@ -1,6 +1,8 @@
 package cc.polarastrum.aiyatsbus.module.ingame.mechanics
 
 import cc.polarastrum.aiyatsbus.core.Aiyatsbus
+import cc.polarastrum.aiyatsbus.core.AiyatsbusDisplayManager
+import cc.polarastrum.aiyatsbus.core.AiyatsbusSettings
 import cc.polarastrum.aiyatsbus.core.toDisplayMode
 import cc.polarastrum.aiyatsbus.core.toRevertMode
 import cc.polarastrum.aiyatsbus.core.util.isNull
@@ -18,8 +20,16 @@ import taboolib.module.nms.PacketSendEvent
  */
 object PacketDisplay {
 
+    private fun check(): Boolean {
+        val config = AiyatsbusSettings
+        if (!config.enablePacketSystem) return false
+        if (config.packetSystem != AiyatsbusDisplayManager.PacketSystem.TABOOLIB) return false
+        return true
+    }
+
     @SubscribeEvent
     fun e(e: PacketSendEvent) {
+        if (!check()) return
         when (e.packet.name) {
             "PacketPlayOutOpenWindowMerchant", "ClientboundMerchantOffersPacket" -> handlePacketPlayOutOpenWindowMerchant(e)
             "ClientboundSetPlayerInventoryPacket" -> handlePacketClientboundSetPlayerInventory(e)
@@ -31,8 +41,13 @@ object PacketDisplay {
 
     @SubscribeEvent
     fun e(e: PacketReceiveEvent) {
+        // 临时使用逻辑
+        // 因为暂时还要靠这个处理 ServerboundContainerClickPacket
+        val config = AiyatsbusSettings
+        if (!config.enablePacketSystem) return
+        val useTB = config.packetSystem == AiyatsbusDisplayManager.PacketSystem.TABOOLIB
         when (e.packet.name) {
-            "PacketPlayInSetCreativeSlot", "ServerboundSetCreativeModeSlotPacket" -> handlePacketPlayInSetCreativeSlot(e)
+            "PacketPlayInSetCreativeSlot", "ServerboundSetCreativeModeSlotPacket" -> if (useTB) handlePacketPlayInSetCreativeSlot(e)
             "PacketPlayInWindowClick", "ServerboundContainerClickPacket" -> Aiyatsbus.api().getMinecraftAPI().getPacketHandler().handleContainerClick(e)
         }
     }

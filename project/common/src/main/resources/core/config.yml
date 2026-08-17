@@ -24,6 +24,17 @@ Settings:
     - nerous
     - nos
     - nereusopus
+  # 数据包系统设置
+  packet:
+    # 是否打开数据包系统
+    # 关系到附魔展示, 尤其是在 1.21 以下版本中尤为重要
+    # 1.21 及以上版本关掉后, 更多附魔还可依赖原版展示
+    # 但是, 1.21 以下版本关掉后, 更多附魔无法展示
+    enable: true
+    # 数据包处理系统
+    # - PACKET_EVENTS 使用 packetevents 系统, 未安装则会回退到 TabooLib 数据包系统
+    # - TABOOLIB 使用 TabooLib 自带的数据包处理系统
+    system: PACKET_EVENTS
   # 插件兼容设置
   support:
     # 是否开启 CraftEngine 支持

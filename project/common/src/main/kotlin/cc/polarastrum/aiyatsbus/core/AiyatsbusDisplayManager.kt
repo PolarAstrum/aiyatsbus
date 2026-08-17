@@ -2,6 +2,7 @@ package cc.polarastrum.aiyatsbus.core
 
 import cc.polarastrum.aiyatsbus.core.data.LevelDisplayType
 import cc.polarastrum.aiyatsbus.core.data.registry.Rarity
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.module.configuration.Configuration
@@ -51,6 +52,24 @@ interface AiyatsbusDisplayManager {
      * @return 取消展示后的物品
      */
     fun undisplay(item: ItemStack, player: Player): ItemStack
+
+    /**
+     * 数据包处理系统
+     */
+    enum class PacketSystem(val plugin: String?) {
+
+        /**
+         * PacketEvents
+         */
+        PACKET_EVENTS("packetevents"),
+
+        /**
+         * TabooLib
+         */
+        TABOOLIB(null);
+
+        val isAvailable: Boolean = plugin == null || Bukkit.getPluginManager().getPlugin(plugin) != null
+    }
 
     /**
      * 显示设置接口

@@ -11,6 +11,7 @@ taboolib {
         }
 
         dependencies {
+            name("packetevents").optional(true)
             name("PlaceholderAPI").optional(true)
             name("ItemsAdder").optional(true)
             name("BentoBox").optional(true)

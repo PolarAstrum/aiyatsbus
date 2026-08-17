@@ -73,6 +73,18 @@ object AiyatsbusSettings {
     @ConfigNode("Settings.command-aliases")
     var commandAliases = listOf("spe", "splendidenchants", "nerous", "nos", "nereusopus")
 
+    @ConfigNode("Settings.packet.enable")
+    var enablePacketSystem = true
+
+    @delegate:ConfigNode("Settings.packet.system")
+    val packetSystem by conversion<String, AiyatsbusDisplayManager.PacketSystem> {
+        try {
+            AiyatsbusDisplayManager.PacketSystem.valueOf(this.uppercase())
+        } catch (_: Throwable) {
+            AiyatsbusDisplayManager.PacketSystem.TABOOLIB
+        }
+    }
+
     /**
      * 是否开启 ItemsAdder 支持
      * 启用对 ItemsAdder 插件的兼容支持
