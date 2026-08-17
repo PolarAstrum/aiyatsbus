@@ -8,7 +8,7 @@ import cc.polarastrum.aiyatsbus.core.data.registry.Rarity
 import cc.polarastrum.aiyatsbus.core.util.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -17,13 +17,11 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import taboolib.common.LifeCycle
-import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.console
 import taboolib.common.util.resettableLazy
 import taboolib.library.configuration.ConfigurationSection
-import taboolib.module.chat.ComponentText
 import taboolib.module.chat.component
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
@@ -66,7 +64,7 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
     /**
      * 生成展示物品的 Lore
      */
-    private fun generateLore(item: ItemStack, player: Player, enchants: Array<Array<Any>>): List<String> {
+    private fun generateLore(item: ItemStack? = null, player: Player? = null): List<String> {
         val settings = getSettings()
 
         /** 判断附魔是否需要在最后单独显示 */
@@ -74,6 +72,9 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
             return settings.separateSpecial && !enchant.displayer.isDefaultDisplay()
         }
 
+        // 首先确保物品必须存在
+        if (item == null) return emptyList()
+        val enchants = item.fastFixedEnchants
         // 整理附魔
         val sortedEnchants = enchants.ifEmpty { return emptyList() }.filter { (it[0] as AiyatsbusEnchantment).displayer.display }.let(::sortEnchants)
         return buildList {
@@ -118,11 +119,16 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
         // 首先确保物品必须存在
         if (item.isNull) return item
 
-        val enchants = item.fastFixedEnchants
-        if (enchants.isEmpty()) return item
+        var enchants = item.fastFixedEnchants
+
+        if (LevelFixer.fix(item, enchants)) {
+            enchants = item.fastFixedEnchants
+        }
 
         // 必须 **克隆** 物品, 不得修改原物品
         return item.clone().modifyMeta<ItemMeta> {
+            // 如果没有任何附魔则不进行任何处理
+            enchants.ifEmpty { return@modifyMeta }
             // 已经展示过了就不再展示 (不是重新展示)
             // NOTICE 从 0.7 版本, 我遵循白熊的嘱托, 废除了 display_mark, 以节省性能
             val loreIndex = this["lore_index", PersistentDataType.INTEGER_ARRAY]
@@ -140,7 +146,7 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
             var firstIndex = 0
             var lastIndex = 0
             // 生成附魔展示 Lore
-            val generatedLore = generateLore(item, player, enchants)
+            val generatedLore = generateLore(item, player)
             // 物品的原始 Lore
             val originLore = lore() ?: emptyList()
             // 获取附魔显示格式
@@ -151,13 +157,13 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
                 loreFormation.forEach { line ->
                     when (line) {
                         "{enchant_lore}" -> addAll(
-                            generatedLore.toBuiltComponent().map(::componentTextToAdventure))
+                            generatedLore.toBuiltComponent().map { componentFromRaw(it.toRawMessage()) })
                         "{capability_line}" ->
                             add(
-                                componentTextToAdventure(
+                                componentFromRaw(
                                     settings.capabilityLine
                                         .replace("capability" to item.capability - enchants.size)
-                                        .component().buildColored()
+                                        .component().buildColored().toRawMessage()
                                 )
                             )
                         "{item_lore}" -> {
@@ -166,7 +172,7 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
                             addAll(originLore)
                             lastIndex = size
                         }
-                        else -> add(componentTextToAdventure(line.component().buildColored()))
+                        else -> add(componentFromRaw(line.component().buildColored().toRawMessage()))
                     }
                 }
             }
@@ -185,12 +191,6 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
             this["enchants_serialized", PersistentDataType.STRING] =
                 enchants.map { (enchant, level) -> "${(enchant as AiyatsbusEnchantment).basicData.id}:$level" }.joinToString("|")
         }
-    }
-
-    private fun componentTextToAdventure(source: ComponentText): Component {
-        return BungeeComponentSerializer.get()
-            .deserialize(arrayOf(source.toSpigotObject()))
-            .decoration(TextDecoration.ITALIC, false)
     }
 
     override fun undisplay(item: ItemStack, player: Player): ItemStack {
@@ -257,7 +257,10 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
         )
     }
 
-    @RuntimeDependency(value = "!net.kyori:adventure-text-serializer-bungeecord:4.4.1", test = "!net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer")
+    private fun componentFromRaw(raw: String) : Component {
+        return GsonComponentSerializer.gson().deserialize(raw).decoration(TextDecoration.ITALIC, false)
+    }
+
     companion object {
 
         @Awake(LifeCycle.CONST)
