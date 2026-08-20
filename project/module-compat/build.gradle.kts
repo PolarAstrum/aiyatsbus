@@ -1,4 +1,5 @@
 repositories {
+    maven("https://repo.momirealms.net/releases/")                           // CraftEngine 仓库
     maven("https://repo.papermc.io/repository/maven-public/")                 // Paper, PlotSquared
     maven("https://maven.enginehub.org/repo/")                                // WorldGuard
     maven("https://jitpack.io/")                                              // Lands, GriefPrevention, NoBuildPlus
@@ -64,6 +65,8 @@ dependencies {
     compileOnly("io.github.fabiozumbi12.RedProtect:RedProtect-Core:8.1.1") { exclude(group = "*") }        // RedProtect
     compileOnly("io.github.fabiozumbi12.RedProtect:RedProtect-Spigot:8.1.1") { exclude(group = "*") }      // RedProtect
     compileOnly("ink.ptms:um:1.0.9")                                              // universe-mythic
+    compileOnly("net.momirealms:craft-engine-core:26.6")                          // CraftEngine 核心 API
+    compileOnly("net.momirealms:craft-engine-bukkit:26.6")                        // CraftEngine Bukkit API
 }
 
 // 子模块

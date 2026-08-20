@@ -383,7 +383,9 @@ fun Collection<AiyatsbusEnchantment>.drawEt(): AiyatsbusEnchantment? {
  * @param target 目标类型
  * @return 如果物品属于该目标类型则返回 true
  */
-fun Material.isInTarget(target: Target?): Boolean = target?.types?.contains(this) ?: false
+fun Material.isInTarget(target: Target?): Boolean = target?.vanillaTypes?.contains(this) ?: false
+
+fun ItemStack.isInTarget(target: Target?): Boolean = target?.types?.any { it.matches(this) } ?: false
 
 /**
  * 获取这个物品所属类别
@@ -392,6 +394,8 @@ fun Material.isInTarget(target: Target?): Boolean = target?.types?.contains(this
  */
 val Material.belongedTargets get() = Target.values.filter(::isInTarget)
 
+val ItemStack.belongedTargets get() = Target.values.filter { isInTarget(it) }
+
 /**
  * 获取这个物品所能附魔的最大附魔词条数
  *
@@ -399,10 +403,18 @@ val Material.belongedTargets get() = Target.values.filter(::isInTarget)
  */
 val Material.capability: Int get() {
     val targets = belongedTargets
-    return targets.mapNotNull { it.typesCapability[this] }.minOrNull() ?: targets.minOfOrNull { it.capability } ?: 32
+    return targets.flatMap { target -> target.types.filter { it.vanillaMaterial == this }.mapNotNull { it.capability } }
+        .minOrNull() ?: targets.minOfOrNull { it.capability } ?: 32
 }
 
-val ItemStack.capability get() = if (hasItemMeta()) itemMeta["aiyatsbus_item_capability", PersistentDataType.INTEGER] ?: type.capability else type.capability
+val ItemStack.capability get() = if (hasItemMeta()) {
+    itemMeta["aiyatsbus_item_capability", PersistentDataType.INTEGER] ?: belongedTargets
+        .flatMap { target -> target.types.filter { it.matches(this) }.mapNotNull { it.capability } }
+        .minOrNull() ?: type.capability
+} else {
+    belongedTargets.flatMap { target -> target.types.filter { it.matches(this) }.mapNotNull { it.capability } }
+        .minOrNull() ?: type.capability
+}
 
 /**
  * 检查附魔是否处于某个分组

@@ -17,8 +17,8 @@ swords:
     - WOODEN_SWORD
     - NETHERITE_SWORD
     - COPPER_SWORD
-#  max-types:
-#    - DIAMOND_SWORD:12
+# 在物品 ID 后追加 ~<最大数量>，可以覆盖目标的默认最大附魔数量：
+# - craftengine:weapons:diamond_sword~8
 axes:
   max: 12
   name: 斧

@@ -219,7 +219,7 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
     }
 
     private fun vanillaEnchantment(enchant: AiyatsbusEnchantment): NMSEnchantment {
-        val supportedItems = createItemsSet("enchant_supported", enchant.id, enchant.targets.flatMap { it.types })
+        val supportedItems = createItemsSet("enchant_supported", enchant.id, enchant.targets.flatMap { it.vanillaTypes })
 
         val enchantment = NMSEnchantment.enchantment(
             NMSEnchantment.definition(

@@ -226,12 +226,11 @@ data class Limitations(
         use: Boolean, 
         ignoreSlot: Boolean
     ): Boolean {
-        val itemType = item.type
         val enchants = item.fastFixedEnchants
         
         return when (type) {
-            SLOT -> checkSlot(itemType, slot, ignoreSlot)
-            TARGET -> checkTarget(checkType, creature, itemType, use)
+                SLOT -> checkSlot(item, slot, ignoreSlot)
+                TARGET -> checkTarget(checkType, creature, item, use)
             MAX_CAPABILITY -> checkMaxCapability(item, enchants)
             DEPENDENCE_ENCHANT -> checkDependenceEnchant(value, enchants)
             CONFLICT_ENCHANT -> checkConflictEnchant(value, enchants)
@@ -251,9 +250,9 @@ data class Limitations(
      * @param ignoreSlot 是否忽略槽位检查
      * @return 检查结果
      */
-    private fun checkSlot(itemType: Material, slot: EquipmentSlot?, ignoreSlot: Boolean): Boolean {
+    private fun checkSlot(item: ItemStack, slot: EquipmentSlot?, ignoreSlot: Boolean): Boolean {
         if (slot == null) return ignoreSlot
-        return belonging.targets.find { itemType.isInTarget(it) }?.activeSlots?.contains(slot) ?: false
+        return belonging.targets.find { item.isInTarget(it) }?.activeSlots?.contains(slot) ?: false
     }
 
     /**
@@ -270,13 +269,14 @@ data class Limitations(
     private fun checkTarget(
         checkType: CheckType,
         entity: LivingEntity?,
-        itemType: Material,
+        item: ItemStack,
         use: Boolean
     ): Boolean {
-        if (belonging.targets.any { itemType.isInTarget(it) }) return true
+        if (belonging.targets.any { item.isInTarget(it) }) return true
         if (use) return false
 
         val isCreative = entity is Player && entity.gameMode == GameMode.CREATIVE
+        val itemType = item.type
         val isBookLike = itemType == Material.BOOK || itemType == Material.ENCHANTED_BOOK
 
         return when (checkType) {

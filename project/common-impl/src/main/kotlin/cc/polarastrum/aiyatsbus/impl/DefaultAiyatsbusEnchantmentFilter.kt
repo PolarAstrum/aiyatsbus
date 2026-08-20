@@ -26,7 +26,9 @@ class DefaultAiyatsbusEnchantmentFilter : AiyatsbusEnchantmentFilter {
                 rules.forEach { (value, state) ->
                     if (when (type) {
                             RARITY -> aiyatsbusRarity(value) == enchant.rarity
-                            TARGET -> (enchant.targets.contains(aiyatsbusTarget(value)) || enchant.targets.any { aiyatsbusTarget(value)?.types?.containsAll(it.types) == true })
+                            TARGET -> (enchant.targets.contains(aiyatsbusTarget(value)) || enchant.targets.any { target ->
+                                aiyatsbusTarget(value)?.types?.map { it.identifier }?.containsAll(target.types.map { it.identifier }) == true
+                            })
                             GROUP -> enchant.enchantment.isInGroup(aiyatsbusGroup(value))
                             STRING -> {
                                 enchant.basicData.name.contains(value) ||
