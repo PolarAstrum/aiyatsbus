@@ -5,8 +5,6 @@ import cc.polarastrum.aiyatsbus.core.AiyatsbusSettings
 import cc.polarastrum.aiyatsbus.core.toDisplayMode
 import cc.polarastrum.aiyatsbus.core.toRevertMode
 import com.github.retrooper.packetevents.PacketEvents
-import com.github.retrooper.packetevents.PacketEventsAPI
-import com.github.retrooper.packetevents.event.EventManager
 import com.github.retrooper.packetevents.event.PacketListenerAbstract
 import com.github.retrooper.packetevents.event.PacketReceiveEvent
 import com.github.retrooper.packetevents.event.PacketSendEvent
@@ -22,7 +20,6 @@ import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
-import taboolib.common.util.unsafeLazy
 
 /**
  * Aiyatsbus
@@ -31,7 +28,7 @@ import taboolib.common.util.unsafeLazy
  * @author mical
  * @since 2026/8/18 00:16
  */
-object PacketDisplay2 : PacketListenerAbstract() {
+class PacketDisplay2 : PacketListenerAbstract() {
 
     private fun check(): Boolean {
         val config = AiyatsbusSettings
@@ -115,12 +112,12 @@ object PacketDisplay2 : PacketListenerAbstract() {
             SpigotConversionUtil.toBukkitItemStack(item).toRevertMode(player)
         )
     }
+}
 
-    val packetEvents: PacketEventsAPI<*> by unsafeLazy { PacketEvents.getAPI() }
-    val packetEventManager: EventManager by unsafeLazy { packetEvents.eventManager }
-
-    @Awake(LifeCycle.ACTIVE)
-    fun register() {
-        packetEventManager.registerListener(this)
+@Awake(LifeCycle.ENABLE)
+private fun register() {
+    try {
+        PacketEvents.getAPI().eventManager.registerListener(PacketDisplay2())
+    } catch (_: Throwable) {
     }
 }

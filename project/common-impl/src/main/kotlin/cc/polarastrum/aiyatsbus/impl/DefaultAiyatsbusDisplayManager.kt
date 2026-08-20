@@ -8,7 +8,6 @@ import cc.polarastrum.aiyatsbus.core.data.registry.Rarity
 import cc.polarastrum.aiyatsbus.core.util.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -22,12 +21,12 @@ import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.console
 import taboolib.common.util.resettableLazy
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.chat.ComponentText
 import taboolib.module.chat.component
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.conversion
-import taboolib.module.configuration.util.map
 import taboolib.module.nms.MinecraftVersion
 import taboolib.platform.util.modifyMeta
 import taboolib.platform.util.onlinePlayers
@@ -157,22 +156,18 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
                 loreFormation.forEach { line ->
                     when (line) {
                         "{enchant_lore}" -> addAll(
-                            generatedLore.toBuiltComponent().map { componentFromRaw(it.toRawMessage()) })
+                            generatedLore.toBuiltComponent().map { it.toAdventureComponent() })
                         "{capability_line}" ->
-                            add(
-                                componentFromRaw(
-                                    settings.capabilityLine
-                                        .replace("capability" to item.capability - enchants.size)
-                                        .component().buildColored().toRawMessage()
-                                )
-                            )
+                            add(settings.capabilityLine
+                                    .replace("capability" to item.capability - enchants.size)
+                                    .component().buildColored().toAdventureComponent())
                         "{item_lore}" -> {
                             // 如果是插入物品原 Lore 就在插入前后记录索引
                             firstIndex = size
                             addAll(originLore)
                             lastIndex = size
                         }
-                        else -> add(componentFromRaw(line.component().buildColored().toRawMessage()))
+                        else -> add(line.component().buildColored().toAdventureComponent())
                     }
                 }
             }
@@ -257,8 +252,8 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
         )
     }
 
-    private fun componentFromRaw(raw: String) : Component {
-        return GsonComponentSerializer.gson().deserialize(raw).decoration(TextDecoration.ITALIC, false)
+    private fun ComponentText.toAdventureComponent() : Component {
+        return toAdventureObject().decoration(TextDecoration.ITALIC, false)
     }
 
     companion object {

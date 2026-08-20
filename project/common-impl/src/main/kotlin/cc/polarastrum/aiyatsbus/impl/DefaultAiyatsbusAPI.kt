@@ -5,6 +5,7 @@ import cc.polarastrum.aiyatsbus.core.registration.AiyatsbusEnchantmentRegisterer
 import cc.polarastrum.aiyatsbus.core.script.AiyatsbusScriptHandler
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.util.t
+import taboolib.module.chat.Components
 import taboolib.module.nms.nmsProxy
 import java.util.concurrent.CompletableFuture
 
@@ -90,6 +91,9 @@ class DefaultAiyatsbusAPI : AiyatsbusAPI {
     }
 
     init {
+        /** 使用 adventure 作为底层 */
+        Components.useAdventure = true
+
         CompletableFuture.runAsync {
             minecraftAPI0
         }

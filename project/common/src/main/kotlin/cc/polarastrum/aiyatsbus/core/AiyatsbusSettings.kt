@@ -76,13 +76,17 @@ object AiyatsbusSettings {
     @ConfigNode("Settings.packet.enable")
     var enablePacketSystem = true
 
-    @delegate:ConfigNode("Settings.packet.system")
-    val packetSystem by conversion<String, AiyatsbusDisplayManager.PacketSystem> {
-        try {
-            AiyatsbusDisplayManager.PacketSystem.valueOf(this.uppercase())
+    val packetSystem by resettableLazy {
+        // 逻辑太智障，等待优化
+        val system = conf.getString("Settings.packet.system")
+        var system2 = if (system == null) AiyatsbusDisplayManager.PacketSystem.PACKET_EVENTS
+        else try {
+            AiyatsbusDisplayManager.PacketSystem.valueOf(system.uppercase())
         } catch (_: Throwable) {
             AiyatsbusDisplayManager.PacketSystem.TABOOLIB
         }
+        if (system2 != AiyatsbusDisplayManager.PacketSystem.TABOOLIB && !system2.isAvailable) system2 = AiyatsbusDisplayManager.PacketSystem.TABOOLIB
+        system2
     }
 
     /**

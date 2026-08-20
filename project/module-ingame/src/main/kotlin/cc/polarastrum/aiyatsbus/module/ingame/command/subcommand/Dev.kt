@@ -12,10 +12,14 @@ import cc.polarastrum.aiyatsbus.core.toDisplayMode
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import taboolib.common.io.newFile
 import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.function.getDataFolder
 import taboolib.common5.util.createBar
+import taboolib.common5.util.encodeBase64
 import taboolib.module.chat.colored
 import taboolib.module.nms.NMSItemTag
+import taboolib.platform.util.serializeToByteArray
 import kotlin.system.measureTimeMillis
 
 /**
@@ -35,10 +39,14 @@ val devSubCommand = subCommand {
 //            e.printStackTrace()
 //        }
 
-        (sender as Player).itemInHand.enchantments.keys.forEach { ench ->
-            println(ench::class.java.name)
-            println("Enchant(id=${ench.key.key},isInternal=${(ench as AiyatsbusEnchantment) is InternalAiyatsbusEnchantment},isVanilla=${(ench as AiyatsbusEnchantment) is VanillaAiyatsbusEnchantment},isBuiltin=${(ench as AiyatsbusEnchantment) is BuiltinAiyatsbusEnchantment},isBase=${(ench as AiyatsbusEnchantment) is AiyatsbusEnchantmentBase},isAiyatsbus=${(ench as AiyatsbusEnchantment) is AiyatsbusEnchantment})")
-        }
+        val player = sender as? Player ?: return@execute
+        val item = player.equipment.itemInMainHand
+        val array = item.serializeToByteArray().encodeBase64()
+
+//        (sender as Player).itemInHand.enchantments.keys.forEach { ench ->
+//            println(ench::class.java.name)
+//            println("Enchant(id=${ench.key.key},isInternal=${(ench as AiyatsbusEnchantment) is InternalAiyatsbusEnchantment},isVanilla=${(ench as AiyatsbusEnchantment) is VanillaAiyatsbusEnchantment},isBuiltin=${(ench as AiyatsbusEnchantment) is BuiltinAiyatsbusEnchantment},isBase=${(ench as AiyatsbusEnchantment) is AiyatsbusEnchantmentBase},isAiyatsbus=${(ench as AiyatsbusEnchantment) is AiyatsbusEnchantment})")
+//        }
 
     }
 ////        sender.giveItem(sender.equipment.itemInMainHand.toDisplayMode(sender))
