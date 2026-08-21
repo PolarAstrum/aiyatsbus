@@ -1,6 +1,9 @@
 package cc.polarastrum.aiyatsbus.impl.nmsj21
 
 import cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantment
+import cc.polarastrum.aiyatsbus.core.enchantability
+import cc.polarastrum.aiyatsbus.core.fastFixedEnchants
+import cc.polarastrum.aiyatsbus.core.hasAiyatsbusEnchantability
 import cc.polarastrum.aiyatsbus.core.util.coerceBoolean
 import cc.polarastrum.aiyatsbus.core.util.coerceFloat
 import net.minecraft.core.Holder
@@ -11,16 +14,22 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.enchantment.Enchantment
 import net.minecraft.world.item.enchantment.Enchantments
+import net.minecraft.world.item.enchantment.Enchantable
+import net.minecraft.world.Container
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.enchantment.ItemEnchantments
 import org.apache.commons.lang3.mutable.MutableFloat
 import org.bukkit.craftbukkit.enchantments.CraftEnchantment
 import org.bukkit.craftbukkit.entity.CraftLivingEntity
+import taboolib.module.incision.annotation.Lead
 import taboolib.module.incision.annotation.Operation
+import taboolib.module.incision.annotation.Pointcut
+import taboolib.module.incision.annotation.Selector
+import taboolib.module.incision.annotation.SelectorKind
 import taboolib.module.incision.annotation.Splice
 import taboolib.module.incision.annotation.Surgeon
 import taboolib.module.incision.annotation.Version
 import taboolib.module.incision.api.Theatre
-import taboolib.module.incision.remap.RemapRouter
 
 /**
  * 锋利附魔伤害结算 —— 精确拦截示例。
@@ -43,8 +52,76 @@ import taboolib.module.incision.remap.RemapRouter
 @Surgeon
 object VanillaInjector {
 
-    init {
-        RemapRouter.nms = null
+    /** 在附魔台计算费用前，只为明确配置附魔能力值的目标物品补充组件。 */
+    @Version
+    @Lead(
+        pointcut = Pointcut(
+            allOf = [
+                Selector(
+                    kind = SelectorKind.METHOD,
+                    owner = "net.minecraft.world.inventory.EnchantmentMenu",
+                    name = "slotsChanged",
+                    descriptor = "(Lnet/minecraft/world/Container;)V"
+                )
+            ]
+        )
+    )
+    @Operation(id = "aiyatsbus-enchanting-table-enchantable", enabled = true)
+    fun prepareEnchantable(theatre: Theatre) {
+        val container = theatre.arg<Container>(0) ?: run {
+            return
+        }
+        val itemStack = container.getItem(0)
+        if (itemStack.isEmpty() || itemStack.has(DataComponents.ENCHANTABLE)) return
+
+        val bukkitItem = itemStack.bukkitStack
+        if (bukkitItem.fastFixedEnchants.isNotEmpty()) return
+        if (!bukkitItem.hasAiyatsbusEnchantability) return
+        val enchantability = bukkitItem.enchantability
+        if (enchantability <= 0) return
+
+        itemStack.set(DataComponents.ENCHANTABLE, Enchantable(enchantability))
+    }
+
+    /** 玩家直接点击输入槽时，先清理旧物品，避免组件跟随物品离开附魔台。 */
+    @Lead(scope = "method:net.minecraft.world.inventory.AbstractContainerMenu#clicked(int,int,net.minecraft.world.inventory.ContainerInput,net.minecraft.world.entity.player.Player)void")
+    @Operation(id = "aiyatsbus-enchanting-table-cleanup-clicked", enabled = true)
+    fun cleanupBeforeClicked(theatre: Theatre) {
+        val menu = theatre.self as? net.minecraft.world.inventory.EnchantmentMenu
+            ?: return
+        val slotIndex = theatre.arg<Int>(0)
+        if (slotIndex == 0) {
+            val item = menu.getSlot(0).item
+            if (item.has(DataComponents.ENCHANTABLE) && item.bukkitStack.enchantability > 0) {
+                item.remove(DataComponents.ENCHANTABLE)
+            }
+        }
+    }
+
+    /** 快速移动会在输入物品转移后才调用 Slot.onTake，因此要在转移前清理。 */
+    @Lead(scope = "method:net.minecraft.world.inventory.EnchantmentMenu#quickMoveStack(net.minecraft.world.entity.player.Player,int)net.minecraft.world.item.ItemStack")
+    @Operation(id = "aiyatsbus-enchanting-table-cleanup-quick-move", enabled = true)
+    fun cleanupBeforeQuickMove(theatre: Theatre) {
+        val menu = theatre.self as? net.minecraft.world.inventory.EnchantmentMenu
+            ?: return
+        val slotIndex = theatre.arg<Int>(1) ?: return
+        if (slotIndex == 0) {
+            val item = menu.getSlot(0).item
+            if (item.has(DataComponents.ENCHANTABLE) && item.bukkitStack.enchantability > 0) {
+                item.remove(DataComponents.ENCHANTABLE)
+            }
+        }
+    }
+
+    /** 关闭附魔台时清理槽位中的临时组件。 */
+    @Lead(scope = "method:net.minecraft.world.inventory.EnchantmentMenu#removed(net.minecraft.world.entity.player.Player)void")
+    @Operation(id = "aiyatsbus-enchanting-table-cleanup-remove", enabled = true)
+    fun cleanupAfterRemove(theatre: Theatre) {
+        val menu = theatre.self as? net.minecraft.world.inventory.EnchantmentMenu ?: return
+        val item = menu.getSlot(0).item
+        if (item.has(DataComponents.ENCHANTABLE) && item.bukkitStack.enchantability > 0) {
+            item.remove(DataComponents.ENCHANTABLE)
+        }
     }
 
     @Version(start = "26.1")
@@ -72,8 +149,6 @@ object VanillaInjector {
             @Suppress("UNCHECKED_CAST")
             val holder = entry.key as Holder<Enchantment>
             val level = entry.intValue
-
-//            println(holder.registeredName)
 
             when {
                 holder.`is`(Enchantments.SHARPNESS) || holder.`is`(Enchantments.SMITE) || holder.`is`(Enchantments.IMPALING) -> {

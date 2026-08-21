@@ -191,29 +191,62 @@ object EnchantingTableSupport {
 //                MinecraftVersion.versionId >= 12003 && containerId == 13
 //    }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @SubscribeEvent(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     fun prepareEnchant(event: PrepareItemEnchantEvent) {
         if (!enable)
             return
         val location = event.enchantBlock.location.serialized
+        if (event.item.fastFixedEnchants.isNotEmpty()) return
+        val previousOffers = enchantmentOffers.get(event.enchanter.uniqueId, location)
+        val customTargetItem = event.item.hasAiyatsbusEnchantability
+        if (event.isCancelled && !customTargetItem) {
+            return
+        }
+        if (customTargetItem) {
+            event.isCancelled = false
+        }
         // 记录附魔台的书架等级
         val bonus = event.enchantmentBonus.coerceAtMost(16)
         shelfAmount[location] = bonus
         // 记录附魔台三个附魔选项
-        enchantmentOffers.put(event.enchanter.uniqueId, location, event.offers.toList())
         if (dataDrivenEnchantment) {
             // 预先为所有附魔项生成一个附魔
             val enchants = doPrepareEnchant(event.enchanter, event.item, bonus)
             // 防止物品没有可用附魔，出现死循环
             if (enchants.isEmpty()) {
+                if (customTargetItem && previousOffers?.any { it != null } == true) {
+                    previousOffers.forEachIndexed { index, offer -> event.offers[index] = offer }
+                    event.isCancelled = false
+                    enchantmentOffers.put(event.enchanter.uniqueId, location, event.offers.toList())
+                    return
+                }
                 event.isCancelled = true
             }
-            for (i in 0..2) {
-                val entry = enchants[i] ?: continue
-                event.offers[i]?.enchantment = entry.first.enchantment
-                event.offers[i]?.enchantmentLevel = entry.second
+            if (customTargetItem) {
+                for (i in 0..2) {
+                    val entry = enchants[i]
+                    val cost = i + 1
+                    event.offers[i] = if (entry != null && cost > 0) {
+                        EnchantmentOffer(entry.first.enchantment, entry.second, cost)
+                    } else {
+                        null
+                    }
+                }
+                if (event.offers.all { it == null } && previousOffers != null) {
+                    previousOffers.forEachIndexed { index, offer -> event.offers[index] = offer }
+                    event.isCancelled = false
+                }
+            } else {
+                for (i in 0..2) {
+                    val entry = enchants[i] ?: continue
+                    event.offers[i]?.let { offer ->
+                        offer.enchantment = entry.first.enchantment
+                        offer.enchantmentLevel = entry.second
+                    }
+                }
             }
         }
+        enchantmentOffers.put(event.enchanter.uniqueId, location, event.offers.toList())
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -227,7 +260,10 @@ object EnchantingTableSupport {
         val item = event.item.clone()
         val cost = event.whichButton() + 1
         val bonus = shelfAmount[location] ?: 1
-        val enchantmentOfferHint = enchantmentOffers.get(event.enchanter.uniqueId, location)?.get(event.whichButton()) ?: return
+        val enchantmentOfferHint = enchantmentOffers.get(event.enchanter.uniqueId, location)
+            ?.getOrNull(event.whichButton()) ?: return
+
+        enchantmentOffers.remove(event.enchanter.uniqueId, location)
 
         // 书附魔完变成附魔书
         if (item.type == Material.BOOK) item.type = Material.ENCHANTED_BOOK
@@ -288,6 +324,7 @@ object EnchantingTableSupport {
         }
     }
 
+
     /**
      * 预先生成一个附魔
      */
@@ -314,32 +351,24 @@ object EnchantingTableSupport {
         if (pool.isEmpty()) {
             return result
         }
-        for (i in 0..2) {
+        val remaining = pool.toMutableList()
+        var slot = 0
+        while (slot < 3 && remaining.isNotEmpty()) {
             // 从特定附魔列表中根据品质和附魔的权重抽取一个附魔
-            // FIXME: 有死循环的风险，等待优化
-            //        2026/8/3: 已优化 pool 为空时的情况，不产出任何附魔
-            //                  权重之和小于 0 导致死循环的情况是用户配置错误导致，不修复
-            while (true) {
-                val enchant = pool.drawEt(random) ?: continue
-                val maxLevel = enchant.basicData.maxLevel
-                val limit = enchant.alternativeData.getEnchantMaxLevelLimit(maxLevel, maxLevelLimit)
+            val enchant = remaining.drawEt(random) ?: break
+            remaining.remove(enchant)
+            val maxLevel = enchant.basicData.maxLevel
+            val limit = enchant.alternativeData.getEnchantMaxLevelLimit(maxLevel, maxLevelLimit)
 
-                val level = if (player.hasPermission(fullLevelPrivilege)) maxLevel else levelFormula.calcToInt(
-                    "bonus" to bonus,
-                    "max_level" to limit,
-                    "button" to i + 1,
-                    "random" to random.nextDouble().round(3)
-                ).coerceIn(1, limit)
+            val level = if (player.hasPermission(fullLevelPrivilege)) maxLevel else levelFormula.calcToInt(
+                "bonus" to bonus,
+                "max_level" to limit,
+                "button" to slot + 1,
+                "random" to random.nextDouble().round(3)
+            ).coerceIn(1, limit)
 
-//                if (result.values.any { it.first == enchant && it.second == level }) {
-//                    continue
-//                } 原版就会重复
-
-                if (enchant.limitations.checkAvailable(CheckType.ATTAIN, item, player).isFailure) {
-                    continue
-                }
-                result += i to (enchant to level)
-                break
+            if (enchant.limitations.checkAvailable(CheckType.ATTAIN, item, player).isSuccess) {
+                result += slot++ to (enchant to level)
             }
         }
         return result

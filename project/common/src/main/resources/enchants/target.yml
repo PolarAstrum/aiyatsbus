@@ -19,6 +19,8 @@ swords:
     - COPPER_SWORD
 # 在物品 ID 后追加 ~<最大数量>，可以覆盖目标的默认最大附魔数量：
 # - craftengine:weapons:diamond_sword~8
+# 在物品 ID 后追加 ^<附魔能力值>，可以设置原版附魔台使用的附魔能力值；未填写时不会修改原版行为：
+# - SHIELD^1
 axes:
   max: 12
   name: 斧
@@ -218,7 +220,7 @@ shield:
     - HAND
     - OFF_HAND
   types:
-    - SHIELD
+    - SHIELD^1
 rod:
   max: 7
   name: 钓鱼竿

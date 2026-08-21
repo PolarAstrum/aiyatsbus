@@ -16,9 +16,9 @@ object CraftEngineTargetItemSource : TargetItemSource {
 
     override val id = "craftengine"
 
-    override fun create(identifier: String, capability: Int?): TargetItemType? {
+    override fun create(identifier: String, capability: Int?, enchantability: Int): TargetItemType? {
         if (!AiyatsbusSettings.supportCraftEngine || !craftEngineEnabled) return null
-        return CraftEngineTargetItemType(identifier, capability)
+        return CraftEngineTargetItemType(identifier, capability, enchantability)
     }
 
     @Awake(LifeCycle.LOAD)
@@ -29,9 +29,11 @@ object CraftEngineTargetItemSource : TargetItemSource {
 
 private class CraftEngineTargetItemType(
     override val identifier: String,
-    override val capability: Int?
+    override val capability: Int?,
+    override val enchantability: Int
 ) : TargetItemType {
 
+    override val hasEnchantability = enchantability > 0
     override val vanillaMaterial: Material? = null
 
     override fun matches(item: ItemStack): Boolean {

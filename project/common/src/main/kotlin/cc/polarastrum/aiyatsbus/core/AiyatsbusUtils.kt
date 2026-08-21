@@ -396,6 +396,16 @@ val Material.belongedTargets get() = Target.values.filter(::isInTarget)
 
 val ItemStack.belongedTargets get() = Target.values.filter { isInTarget(it) }
 
+/** 获取物品用于原版附魔台计算的附魔能力值，未匹配目标时返回 0。 */
+val ItemStack.enchantability: Int
+    get() = belongedTargets
+        .flatMap { target -> target.types.filter { it.matches(this) && it.hasEnchantability }.map { it.enchantability } }
+        .minOrNull() ?: 0
+
+/** 判断物品是否配置了原版附魔台能力值。 */
+val ItemStack.hasAiyatsbusEnchantability: Boolean
+    get() = belongedTargets.any { target -> target.types.any { it.matches(this) && it.hasEnchantability } }
+
 /**
  * 获取这个物品所能附魔的最大附魔词条数
  *

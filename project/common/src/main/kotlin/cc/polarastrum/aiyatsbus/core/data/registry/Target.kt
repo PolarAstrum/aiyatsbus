@@ -65,11 +65,15 @@ private fun Any?.asTargetTypes(defaultCapability: Int): List<TargetItemType> {
     val values = this as? Collection<*> ?: return emptyList()
     return values.mapNotNull { value ->
         val raw = value as? String ?: return@mapNotNull null
-        val separator = raw.lastIndexOf('~')
-        val suffix = if (separator == -1) null else raw.substring(separator + 1).toIntOrNull()
-        val identifier = if (suffix == null) raw else raw.substring(0, separator)
-        val capability = suffix ?: defaultCapability
-        TargetItemSources.create(identifier, capability)
+        val enchantabilitySeparator = raw.lastIndexOf('^')
+        val enchantability = if (enchantabilitySeparator == -1) 0
+        else raw.substring(enchantabilitySeparator + 1).toIntOrNull() ?: 0
+        val withoutEnchantability = if (enchantabilitySeparator == -1) raw else raw.substring(0, enchantabilitySeparator)
+        val capabilitySeparator = withoutEnchantability.lastIndexOf('~')
+        val capability = if (capabilitySeparator == -1) defaultCapability
+        else withoutEnchantability.substring(capabilitySeparator + 1).toIntOrNull() ?: defaultCapability
+        val identifier = if (capabilitySeparator == -1) withoutEnchantability else withoutEnchantability.substring(0, capabilitySeparator)
+        TargetItemSources.create(identifier, capability, enchantability)
     }
 }
 
