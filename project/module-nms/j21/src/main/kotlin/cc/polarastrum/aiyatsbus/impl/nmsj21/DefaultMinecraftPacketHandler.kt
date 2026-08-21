@@ -92,6 +92,10 @@ class DefaultMinecraftPacketHandler : MinecraftPacketHandler {
         player.sendPacket(ClientboundContainerSetDataPacket(windowId, 0, cost))
     }
 
+    override fun sendAllContainerData(player: Player) {
+        (player as CraftPlayer).handle.containerMenu.sendAllDataToRemote()
+    }
+
     private fun getGameProfileId(gameProfile: GameProfile): UUID {
         return if (versionId >= 12109) {
             // record

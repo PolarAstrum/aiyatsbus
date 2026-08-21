@@ -29,6 +29,7 @@ import net.minecraft.network.syncher.DataWatcherObject
 import net.minecraft.network.syncher.DataWatcherRegistry
 import net.minecraft.world.entity.player.PlayerAbilities
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
@@ -78,6 +79,10 @@ class DefaultMinecraftPacketHandler : MinecraftPacketHandler {
 
     override fun sendAnvilWindowProperty(player: Player, windowId: Int, cost: Int) {
         player.sendPacket(PacketPlayOutWindowData(windowId, 0, cost))
+    }
+
+    override fun sendAllContainerData(player: Player) {
+        (player as CraftPlayer).handle.containerMenu.sendAllDataToRemote()
     }
 
     override fun setHandActive(player: Player, isHandActive: Boolean) {

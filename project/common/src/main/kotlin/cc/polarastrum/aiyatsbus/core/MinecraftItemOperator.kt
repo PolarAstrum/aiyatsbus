@@ -102,4 +102,7 @@ interface MinecraftItemOperator {
      * @return 为空或 AIR 时返回 true
      */
     fun isAir(item: ItemStack?): Boolean
+
+    /** 清理物品对应的附魔台工作副本 */
+    fun clearEnchantingSession(item: ItemStack)
 }

@@ -32,6 +32,11 @@ import kotlin.jvm.optionals.getOrNull
  */
 class DefaultMinecraftItemOperator : MinecraftItemOperator {
 
+    override fun clearEnchantingSession(item: ItemStack) {
+        val handle = if (item is CraftItemStack) item.handle else CraftItemStack.asNMSCopy(item)
+        VanillaInjector.clearEnchantingSession(handle)
+    }
+
     override fun getRepairCost(item: ItemStack): Int {
         return (item as CraftItemStack).handle[DataComponents.REPAIR_COST] ?: 0
     }

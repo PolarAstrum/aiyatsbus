@@ -34,6 +34,10 @@ import kotlin.experimental.and
  */
 class DefaultMinecraftItemOperator : MinecraftItemOperator {
 
+    override fun clearEnchantingSession(item: ItemStack) {
+        // 旧版本没有物品数据组件，不需要维护工作副本。
+    }
+
     private val NBT_CODEC: Codec<Any, String, IOException, IOException> = PaperAdventure::class.java.getProperty("NBT_CODEC", isStatic = true)!!
 
     override fun getRepairCost(item: ItemStack): Int {

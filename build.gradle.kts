@@ -42,7 +42,7 @@ subprojects {
             enableLegacyDependencyResolver = true
         }
         version {
-            taboolib = "6.3.0-test-260821-6"
+            taboolib = "6.3.0-test-20260821-10"
         }
     }
 

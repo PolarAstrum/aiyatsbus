@@ -46,6 +46,12 @@ import kotlin.random.Random
 @ConfigNode(bind = "core/mechanisms/enchanting_table.yml")
 object EnchantingTableSupport {
 
+    private fun synchronizeOffers(player: Player) {
+        if (player.openInventory.topInventory.type == InventoryType.ENCHANTING) {
+            Aiyatsbus.api().getMinecraftAPI().getPacketHandler().sendAllContainerData(player)
+        }
+    }
+
     /**
      * 是否为数据驱动附魔
      */
@@ -58,9 +64,24 @@ object EnchantingTableSupport {
 
     /**
      * 记录附魔台三个选项的附魔
-     * 位置 to whichButton to (Enchantment to level)
+     * 玩家 to 位置 to 物品指纹及附魔选项
      */
-    private val enchantmentOffers = HashBasedTable.create<UUID, String, List<EnchantmentOffer?>>()
+    private val enchantmentOffers = HashBasedTable.create<UUID, String, CachedOffers>()
+
+    private data class ItemFingerprint(
+        val type: Material,
+        val contentHash: Int,
+        val enchantmentSeed: Int
+    )
+
+    private data class CachedOffers(
+        val fingerprint: ItemFingerprint,
+        val offers: List<EnchantmentOffer?>
+    )
+
+    private fun ItemStack.fingerprint(player: Player): ItemFingerprint {
+        return ItemFingerprint(type, serializeToByteArray().contentHashCode(), player.enchantmentSeed)
+    }
 
     @Config("core/mechanisms/enchanting_table.yml", autoReload = true)
     lateinit var conf: Configuration
@@ -196,14 +217,32 @@ object EnchantingTableSupport {
         if (!enable)
             return
         val location = event.enchantBlock.location.serialized
-        if (event.item.fastFixedEnchants.isNotEmpty()) return
-        val previousOffers = enchantmentOffers.get(event.enchanter.uniqueId, location)
-        val customTargetItem = event.item.hasAiyatsbusEnchantability
+        val fingerprint = event.item.fingerprint(event.enchanter)
+        val cached = enchantmentOffers.get(event.enchanter.uniqueId, location)
+        val previousOffers = cached?.takeIf { it.fingerprint == fingerprint }?.offers
+        if (cached != null && previousOffers == null) {
+            enchantmentOffers.remove(event.enchanter.uniqueId, location)
+        }
+        val customTargetItem = event.item.enchantability > 0
+        val canEnchantCustomItem = customTargetItem && event.item.fastFixedEnchants.isEmpty()
+        if (customTargetItem && !canEnchantCustomItem) {
+            enchantmentOffers.remove(event.enchanter.uniqueId, location)
+            Aiyatsbus.api().getMinecraftAPI().getItemOperator().clearEnchantingSession(event.item)
+            event.isCancelled = true
+            return
+        }
         if (event.isCancelled && !customTargetItem) {
             return
         }
-        if (customTargetItem) {
+        if (canEnchantCustomItem) {
             event.isCancelled = false
+            // 放入青金石会触发一次中间态重算。先恢复上一组有效选项，避免空事件清空界面。
+            if (event.offers.all { it == null } && previousOffers?.any { it != null } == true) {
+                previousOffers.forEachIndexed { index, offer -> event.offers[index] = offer }
+                enchantmentOffers.put(event.enchanter.uniqueId, location, CachedOffers(fingerprint, previousOffers))
+                synchronizeOffers(event.enchanter)
+                return
+            }
         }
         // 记录附魔台的书架等级
         val bonus = event.enchantmentBonus.coerceAtMost(16)
@@ -214,27 +253,36 @@ object EnchantingTableSupport {
             val enchants = doPrepareEnchant(event.enchanter, event.item, bonus)
             // 防止物品没有可用附魔，出现死循环
             if (enchants.isEmpty()) {
-                if (customTargetItem && previousOffers?.any { it != null } == true) {
-                    previousOffers.forEachIndexed { index, offer -> event.offers[index] = offer }
+                if (canEnchantCustomItem && previousOffers?.any { it != null } == true) {
                     event.isCancelled = false
-                    enchantmentOffers.put(event.enchanter.uniqueId, location, event.offers.toList())
+                    previousOffers.forEachIndexed { index, offer ->
+                        event.offers[index] = offer
+                    }
+                    enchantmentOffers.put(event.enchanter.uniqueId, location, CachedOffers(fingerprint, previousOffers))
+                    synchronizeOffers(event.enchanter)
                     return
+                } else {
+                    event.isCancelled = true
                 }
-                event.isCancelled = true
             }
-            if (customTargetItem) {
+            if (canEnchantCustomItem) {
+                val vanillaCosts = event.expLevelCostsOffered
+                val rebuiltOffers = arrayOfNulls<EnchantmentOffer>(3)
                 for (i in 0..2) {
                     val entry = enchants[i]
-                    val cost = i + 1
-                    event.offers[i] = if (entry != null && cost > 0) {
-                        EnchantmentOffer(entry.first.enchantment, entry.second, cost)
-                    } else {
-                        null
+                    if (entry != null) {
+                        val cost = maxOf(
+                            vanillaCosts.getOrNull(i) ?: 0,
+                            previousOffers?.getOrNull(i)?.cost ?: 0,
+                            i + 1
+                        )
+                        rebuiltOffers[i] = EnchantmentOffer(entry.first.enchantment, entry.second, cost)
                     }
                 }
-                if (event.offers.all { it == null } && previousOffers != null) {
+                if (rebuiltOffers.any { it != null }) {
+                    rebuiltOffers.copyInto(event.offers)
+                } else if (previousOffers?.any { it != null } == true) {
                     previousOffers.forEachIndexed { index, offer -> event.offers[index] = offer }
-                    event.isCancelled = false
                 }
             } else {
                 for (i in 0..2) {
@@ -246,7 +294,16 @@ object EnchantingTableSupport {
                 }
             }
         }
-        enchantmentOffers.put(event.enchanter.uniqueId, location, event.offers.toList())
+        if (event.offers.any { it != null }) {
+            enchantmentOffers.put(
+                event.enchanter.uniqueId,
+                location,
+                CachedOffers(fingerprint, event.offers.toList())
+            )
+        }
+        if (canEnchantCustomItem && !event.isCancelled && event.offers.any { it != null }) {
+            synchronizeOffers(event.enchanter)
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -260,10 +317,11 @@ object EnchantingTableSupport {
         val item = event.item.clone()
         val cost = event.whichButton() + 1
         val bonus = shelfAmount[location] ?: 1
-        val enchantmentOfferHint = enchantmentOffers.get(event.enchanter.uniqueId, location)
+        val cached = enchantmentOffers.get(event.enchanter.uniqueId, location)
+        val enchantmentOfferHint = cached
+            ?.takeIf { it.fingerprint == event.item.fingerprint(event.enchanter) }
+            ?.offers
             ?.getOrNull(event.whichButton()) ?: return
-
-        enchantmentOffers.remove(event.enchanter.uniqueId, location)
 
         // 书附魔完变成附魔书
         if (item.type == Material.BOOK) item.type = Material.ENCHANTED_BOOK
@@ -322,6 +380,8 @@ object EnchantingTableSupport {
                 player.giveExpLevels(event.whichButton() + 1 - enchantmentOfferHint.cost)
             }
         }
+        enchantmentOffers.remove(event.enchanter.uniqueId, location)
+        Aiyatsbus.api().getMinecraftAPI().getItemOperator().clearEnchantingSession(event.item)
     }
 
 

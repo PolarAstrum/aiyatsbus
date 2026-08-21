@@ -41,4 +41,7 @@ interface MinecraftPacketHandler {
 
     /** 发送铁砧窗口数据包 */
     fun sendAnvilWindowProperty(player: Player, windowId: Int, cost: Int)
+
+    /** 强制向玩家同步当前容器的全部槽位和属性数据 */
+    fun sendAllContainerData(player: Player)
 }
