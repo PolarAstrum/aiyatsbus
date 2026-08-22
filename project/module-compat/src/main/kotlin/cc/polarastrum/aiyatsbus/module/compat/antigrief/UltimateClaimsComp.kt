@@ -32,6 +32,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 
@@ -77,6 +78,7 @@ class UltimateClaimsComp : AntiGrief {
         return "UltimateClaims"
     }
 
+    @Requires(classes = ["com.craftaro.ultimateclaims.UltimateClaims"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)

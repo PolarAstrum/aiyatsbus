@@ -18,8 +18,8 @@ dependencies {
 // 编译配置
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_HIGHER
-    targetCompatibility = JavaVersion.VERSION_HIGHER
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 // 子模块

@@ -23,16 +23,5 @@ dependencies {
     compileOnly("me.lucko:jar-relocator:1.7")
 }
 
-// 编译配置
-java {
-    withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
-}
-
 // 子模块
 taboolib { subproject = true }

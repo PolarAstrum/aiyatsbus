@@ -23,7 +23,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.library.xseries.XPotion
-import taboolib.module.nms.getI18nName
+//import taboolib.module.nms.getI18nName
 
 /**
  * Aiyatsbus
@@ -59,7 +59,7 @@ object FnEntity {
 
     @Export
     fun entityName(entity: Entity, @Optional player: Player?): String {
-        return if (entity is Player) entity.name else entity.customName ?: entity.getI18nName(player)
+        return if (entity is Player) entity.name else entity.customName ?: ""// TODO ?: entity.getI18nName(player)
     }
 
     @Export

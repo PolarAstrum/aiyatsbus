@@ -30,6 +30,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 import kotlin.jvm.optionals.getOrNull
@@ -76,6 +77,7 @@ class HuskTownsComp : AntiGrief {
         return "HuskTowns"
     }
 
+    @Requires(classes = ["net.william278.husktowns.api.BukkitHuskTownsAPI"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)

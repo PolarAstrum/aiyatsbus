@@ -31,6 +31,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 
@@ -71,6 +72,7 @@ class HuskClaimsComp : AntiGrief {
         return "HuskClaims"
     }
 
+    @Requires(classes = ["net.william278.huskclaims.api.BukkitHuskClaimsAPI"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)

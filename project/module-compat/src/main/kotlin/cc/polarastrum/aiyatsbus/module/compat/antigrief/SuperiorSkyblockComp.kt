@@ -37,6 +37,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 import java.util.*
@@ -146,6 +147,7 @@ class SuperiorSkyblockComp : AntiGrief {
         return "SuperiorSkyblock2"
     }
 
+    @Requires(classes = ["com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)

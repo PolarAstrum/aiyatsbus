@@ -1,12 +1,13 @@
 @file:Suppress("PropertyName", "SpellCheckingInspection")
 
 import io.izzel.taboolib.gradle.*
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
     id("io.izzel.taboolib") version "2.0.37" apply false
-    id("org.jetbrains.kotlin.jvm") version "1.8.22" apply false
+    id("org.jetbrains.kotlin.jvm") version "2.1.10" apply false
     id("org.jetbrains.dokka") version "1.8.20" apply false
 }
 
@@ -24,25 +25,30 @@ subprojects {
         }
         env {
             install(
-                CommandHelper,
-                Bukkit,
-                BukkitHook,
-                BukkitNMSUtil,
-                BukkitUI,
-                BukkitUtil,
-                I18n,
-                Incision,
-                MinecraftChat,
-                MinecraftEffect,
-                Metrics,
+                "platform-bukkit",
+                "platform-bukkit-impl",
+                "bukkit-hook",
+                "bukkit-nms-stable",
+                "bukkit-nms-tag",
+                "bukkit-nms-tag-modern",
+                "bukkit-nms",
+                "bukkit-util",
+                "bukkit-xseries",
+                "minecraft-chat",
+                "minecraft-i18n",
+                "basic-configuration",
+                "bukkit-ui",
+                "incision",
+                "minecraft-metrics"
             )
             forceDownloadInDev = false
             disableOnSkippedVersion = false
             disableWhenPrimitiveLoaderError = true
             enableLegacyDependencyResolver = true
+            debug = true
         }
         version {
-            taboolib = "6.3.0-test-20260821-10"
+            taboolib = "6.3.0-test2-20260822-13"
         }
     }
 
@@ -59,16 +65,16 @@ subprojects {
     // 编译配置
     java {
         withSourcesJar()
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
     }
     tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            freeCompilerArgs = listOf("-Xjvm-default=all", "-Xextended-compiler-checks")
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+            freeCompilerArgs.addAll("-Xjvm-default=all", "-Xextended-compiler-checks")
         }
     }
 }

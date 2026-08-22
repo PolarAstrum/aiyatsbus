@@ -25,12 +25,12 @@ package cc.polarastrum.aiyatsbus.module.compat.antigrief
 
 import biz.princeps.landlord.api.ILandLord
 import cc.polarastrum.aiyatsbus.core.compat.AntiGrief
-import cc.polarastrum.aiyatsbus.core.compat.AntiGriefChecker
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 
@@ -77,6 +77,7 @@ class LandlordComp : AntiGrief {
         return "Landlord"
     }
 
+    @Requires(classes = ["biz.princeps.landlord.api.ILandLord"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)

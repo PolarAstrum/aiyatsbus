@@ -32,6 +32,7 @@ import org.bukkit.entity.Enemy
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 import taboolib.platform.util.bukkitPlugin
@@ -78,6 +79,7 @@ class LandsComp : AntiGrief {
         return "Lands"
     }
 
+    @Requires(classes = ["me.angeschossen.lands.api.flags.type.Flags"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)

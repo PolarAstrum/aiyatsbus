@@ -31,6 +31,7 @@ import com.willfp.libreforge.slot.SlotType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import taboolib.common.Requires
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.util.unsafeLazy
 import java.util.*
@@ -43,6 +44,7 @@ import java.util.concurrent.TimeUnit
  * @author mical
  * @date 2024/8/21 20:08
  */
+@Requires(classes = ["com.willfp.libreforge.slot.ItemHolderFinder"])
 @RuntimeDependency(value = "!com.github.ben-manes.caffeine:caffeine:3.1.5", test = "!com.github.benmanes.caffeine.cache.Caffeine")
 object LibreforgeEnchantFinder {
 

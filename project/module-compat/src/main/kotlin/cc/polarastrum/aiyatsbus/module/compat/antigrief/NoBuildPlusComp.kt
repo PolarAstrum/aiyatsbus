@@ -32,6 +32,7 @@ import p1xel.nobuildplus.API.NBPAPI
 import p1xel.nobuildplus.Flags
 import p1xel.nobuildplus.NoBuildPlus
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
@@ -123,6 +124,7 @@ class NoBuildPlusComp : AntiGrief {
         return "NoBuildPlus"
     }
 
+    @Requires(classes = ["p1xel.nobuildplus.API.NBPAPI"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)

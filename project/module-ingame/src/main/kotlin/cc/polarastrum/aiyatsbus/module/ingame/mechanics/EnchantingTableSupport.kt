@@ -35,7 +35,6 @@ import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.conversion
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketSendEvent
-import taboolib.module.ui.InventoryViewProxy
 import taboolib.platform.util.onlinePlayers
 import taboolib.platform.util.sendMessage
 import taboolib.platform.util.serializeToByteArray
@@ -196,7 +195,7 @@ object EnchantingTableSupport {
         if (e.packet.name == "PacketPlayOutWindowData" || e.packet.name == "ClientboundContainerSetDataPacket") {
             try {
 //                val containerId = e.packet.read<Int>(if (MinecraftVersion.isUniversal) "containerId" else "a", MinecraftVersion.isUniversal)
-                if (InventoryViewProxy.getTopInventory(e.player.openInventory).type != InventoryType.ENCHANTING) return
+                if (e.player.openInventory.topInventory.type != InventoryType.ENCHANTING) return
                 val id = e.packet.read<Int>(if (MinecraftVersion.isUniversal) "id" else "b", MinecraftVersion.isUniversal)
                 if (id in 4..6) {
                     e.packet.write(if (MinecraftVersion.isUniversal) "value" else "c", -1)

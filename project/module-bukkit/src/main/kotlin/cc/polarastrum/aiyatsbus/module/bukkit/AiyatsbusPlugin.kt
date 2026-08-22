@@ -21,22 +21,26 @@ import taboolib.module.nms.MinecraftVersion
 object AiyatsbusPlugin : Plugin() {
 
     init {
-        if (!MinecraftVersion.isUniversal) {
-            error("""
+        registerLifeCycleTask(LifeCycle.INIT) {
+            if (!MinecraftVersion.isUniversal) {
+                error(
+                    """
                 Aiyatsbus 仅支持 1.17 及以上版本。
                 Aiyatsbus only supports 1.17 or above.
-            """.t())
-            throw UnsupportedVersionException()
-            disablePlugin()
-        } else {
-            // 在初始化阶段启动 Aiyatsbus 系统
-            // 必须是 INIT 生命周期启动, 写到其他生命周期用不了
-            registerLifeCycleTask(LifeCycle.INIT) {
-                try {
-                    DefaultAiyatsbusBooster.startup()
-                } catch (ex: Throwable) {
-                    ex.printStackTrace()
-                    disablePlugin()
+            """.t()
+                )
+                throw UnsupportedVersionException()
+                disablePlugin()
+            } else {
+                // 在初始化阶段启动 Aiyatsbus 系统
+                // 必须是 INIT 生命周期启动, 写到其他生命周期用不了
+                registerLifeCycleTask(LifeCycle.INIT) {
+                    try {
+                        DefaultAiyatsbusBooster.startup()
+                    } catch (ex: Throwable) {
+                        ex.printStackTrace()
+                        disablePlugin()
+                    }
                 }
             }
         }

@@ -95,7 +95,16 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
      */
     private fun damageItemStack(nmsStack: Any, amount: Int, enumItemSlot: Any?, entity: LivingEntity) {
         // 1.20.5, 1.21 -> hurtAndBreak(int, EntityLiving, EnumItemSlot), 自动广播事件
-        return (nmsStack as NMSItemStack).hurtAndBreak(amount, (entity as CraftLivingEntity).handle, null)
+        // 过不了构建，你妈
+        dynamic(
+            DynamicOpcode.INVOKEVIRTUAL,
+            "net.minecraft.world.item.ItemStack#hurtAndBreak(Z;net.minecraft.world.entity.LivingEntity;net.minecraft.world.entity.EquipmentSlot;)V",
+            nmsStack as NMSItemStack,
+            amount,
+            (entity as CraftLivingEntity).handle,
+            null
+        )
+//        return (nmsStack as NMSItemStack).hurtAndBreak(amount, (entity as CraftLivingEntity).handle, null)
     }
 
     private fun resourceLocationGetPath(resourceLocation: Any): String {

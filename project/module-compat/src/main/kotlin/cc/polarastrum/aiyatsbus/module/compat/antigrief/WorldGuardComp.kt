@@ -31,11 +31,11 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.bukkit.util.Entities
 import com.sk89q.worldguard.protection.flags.Flags
 import com.sk89q.worldguard.protection.flags.StateFlag
-import com.sk89q.worldguard.protection.regions.RegionContainer
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 
@@ -108,6 +108,7 @@ class WorldGuardComp : AntiGrief {
         return "WorldGuard"
     }
 
+    @Requires(classes = ["com.sk89q.worldguard.WorldGuard"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)

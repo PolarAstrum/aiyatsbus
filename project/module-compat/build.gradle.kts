@@ -34,7 +34,7 @@ dependencies {
     compileOnly("com.mcstarrysky:land:1.0.1")                                     // Land
     compileOnly("com.github.angeschossen:LandsAPI:7.0.2")                         // Lands
     compileOnly("com.github.Ez4p1xEL:NoBuildPlus:1.5.52")                         // NoBuildPlus (新版)
-    compileOnly("com.iridium:IridiumSkyblock:4.0.8")                              // IridiumSkyBlock
+    compileOnly("com.iridium:IridiumSkyblock:4.1.5")                              // IridiumSkyBlock
     compileOnly("world.bentobox:bentobox:2.1.0-SNAPSHOT")                         // BentoBox
     compileOnly("com.griefdefender:api:2.1.0-SNAPSHOT")                           // GriefDefender
     compileOnly("net.william278.husktowns:husktowns-bukkit:3.0.2")                // HuskTowns

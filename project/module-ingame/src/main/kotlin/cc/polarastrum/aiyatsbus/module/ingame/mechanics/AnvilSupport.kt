@@ -28,7 +28,6 @@ import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.conversion
 import taboolib.module.nms.PacketSendEvent
-import taboolib.module.ui.InventoryViewProxy
 import taboolib.platform.util.modifyMeta
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -167,7 +166,7 @@ object AnvilSupport {
     fun e(e: InventoryCloseEvent) {
         if (e.player !is Player) return
         val isCreativeMode = e.player.gameMode == GameMode.CREATIVE
-        if (InventoryViewProxy.getTopInventory(e.view).type == InventoryType.ANVIL) {
+        if (e.view.topInventory.type == InventoryType.ANVIL) {
             if (tooExpensive.remove(e.player.uniqueId) != null) {
                 Aiyatsbus.api().getMinecraftAPI().getPacketHandler().sendPlayerAbilities(e.player as Player, isCreativeMode)
             }

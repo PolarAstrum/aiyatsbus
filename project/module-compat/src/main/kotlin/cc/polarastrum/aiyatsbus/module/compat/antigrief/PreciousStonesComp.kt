@@ -30,6 +30,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 
@@ -70,6 +71,7 @@ class PreciousStonesComp : AntiGrief {
         return "PreciousStones"
     }
 
+    @Requires(classes = ["net.sacredlabyrinth.Phaed.PreciousStones.api.Api"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)

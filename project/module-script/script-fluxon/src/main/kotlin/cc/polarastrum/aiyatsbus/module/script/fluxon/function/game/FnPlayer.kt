@@ -25,7 +25,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.library.xseries.XPotion
-import taboolib.module.nms.getI18nName
+//import taboolib.module.nms.getI18nName
 
 /**
  * Aiyatsbus

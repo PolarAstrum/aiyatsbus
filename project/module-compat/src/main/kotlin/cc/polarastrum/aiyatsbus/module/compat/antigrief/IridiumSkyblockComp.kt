@@ -26,7 +26,7 @@ package cc.polarastrum.aiyatsbus.module.compat.antigrief
 import cc.polarastrum.aiyatsbus.core.compat.AntiGrief
 import cc.polarastrum.aiyatsbus.core.compat.AntiGriefChecker
 import com.iridium.iridiumskyblock.api.IridiumSkyblockAPI
-import com.iridium.iridiumteams.PermissionType
+import com.iridium.iridiumskyblock.dependencies.iridiumteams.PermissionType
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player

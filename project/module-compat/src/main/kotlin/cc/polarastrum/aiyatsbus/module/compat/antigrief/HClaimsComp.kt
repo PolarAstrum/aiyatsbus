@@ -33,6 +33,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
+import taboolib.common.Requires
 import taboolib.common.platform.Awake
 import taboolib.common.util.unsafeLazy
 import kotlin.jvm.optionals.getOrNull
@@ -80,6 +81,7 @@ class HClaimsComp : AntiGrief {
         return "hClaims"
     }
 
+    @Requires(classes = ["com.hakan.claim.ClaimPlugin"])
     companion object {
 
         @Awake(LifeCycle.ACTIVE)
