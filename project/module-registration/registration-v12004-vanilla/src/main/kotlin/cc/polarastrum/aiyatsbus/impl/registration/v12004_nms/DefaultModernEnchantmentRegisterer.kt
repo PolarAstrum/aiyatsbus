@@ -39,6 +39,7 @@ import net.minecraft.core.RegistryMaterials
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.server.MinecraftServer
+import net.minecraft.server.dedicated.DedicatedServer
 import net.minecraft.world.item.enchantment.Enchantments
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R3.CraftRegistry
@@ -49,6 +50,7 @@ import org.bukkit.enchantments.Enchantment
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.util.unsafeLazy
 import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -97,12 +99,18 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
         val server = Bukkit.getServer() as CraftServer
         val api = PlatformFactory.getAPI<AiyatsbusEnchantmentManager>()
 
+        val minecraftRegistry = try {
+            // TabooLib NMSProxy 已知问题: 调用对象中「仅在父类」声明的方法或字段无法被 TabooLib NMSProxy 重定向
+            // TODO: java.lang.NoSuchMethodError: 'net.minecraft.server.dedicated.DedicatedServer net.minecraft.server.dedicated.DedicatedPlayerList.c()'
+            ((server.handle.server as DedicatedServer).registryAccess() as IRegistryCustom).registryOrThrow(Registries.ENCHANTMENT)
+        } catch (e: Throwable) {
+            ((server.handle.invokeMethod<DedicatedServer>("b")!!).registryAccess() as IRegistryCustom).registryOrThrow(Registries.ENCHANTMENT)
+        }
+
         @Suppress("UNCHECKED_CAST")
         val registry = CraftRegistry(
             Enchantment::class.java as Class<in Enchantment?>,
-            // TabooLib NMSProxy 已知问题: 调用对象中「仅在父类」声明的方法或字段无法被 TabooLib NMSProxy 重定向
-            // TODO: java.lang.NoSuchMethodError: 'net.minecraft.server.dedicated.DedicatedServer net.minecraft.server.dedicated.DedicatedPlayerList.c()'
-            ((server.handle.server as MinecraftServer).registryAccess() as IRegistryCustom).registryOrThrow(Registries.ENCHANTMENT)
+            minecraftRegistry
         ) { key, registry ->
             val isVanilla = vanillaEnchantments.contains(key)
             val aiyatsbus = api.getEnchant(key)

@@ -89,6 +89,7 @@ object VanillaInjector {
     }
 
     /** 在附魔台计算费用前，只为明确配置附魔能力值的目标物品补充组件。 */
+    @Version(start = "1.21.2")
     @Splice(scope = "method:net.minecraft.world.item.enchantment.EnchantmentHelper#getEnchantmentCost(net.minecraft.util.RandomSource,int,int,net.minecraft.world.item.ItemStack)int")
     @Operation(id = "aiyatsbus-enchanting-table-enchantable", enabled = true)
     fun prepareEnchantable(theatre: Theatre): Any? {
@@ -114,6 +115,7 @@ object VanillaInjector {
     }
 
     /** 让明确配置附魔能力值的目标物品通过附魔台的可附魔检查。 */
+    @Version(start = "1.21.2")
     @Splice(scope = "method:net.minecraft.world.item.ItemStack#isEnchantable()boolean")
     @Operation(id = "aiyatsbus-enchanting-table-is-enchantable", enabled = true)
     fun isEnchantable(theatre: Theatre): Any? {
@@ -128,6 +130,7 @@ object VanillaInjector {
     }
 
     /** 点击附魔台按钮时，为原版重新生成附魔列表提供同样的临时能力组件。 */
+    @Version(start = "1.21.2")
     @Splice(scope = "method:net.minecraft.world.item.enchantment.EnchantmentHelper#selectEnchantment(net.minecraft.util.RandomSource,net.minecraft.world.item.ItemStack,int,java.util.stream.Stream)java.util.List")
     @Operation(id = "aiyatsbus-enchanting-table-select-enchantment", enabled = true)
     fun selectEnchantable(theatre: Theatre): Any? {
